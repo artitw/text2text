@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="text2text",
-    version="0.0.7",
+    version="0.0.8",
     author="Artit Wangperawong",
     author_email="artitw@gmail.com",
     description="Text2Text: generate questions and summaries for your texts",
@@ -18,7 +18,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords='bert nlp nlg text generation question summary data science machine learning',
+    keywords='bert nlp nlg text generation question summary summarization data science machine learning',
     install_requires=[
         'torch',
         'tqdm',

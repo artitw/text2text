@@ -20,7 +20,7 @@ To cite this work, use the following BibTeX citation.
 * pytorch
 * [pytorch-extension](https://github.com/artitw/apex)
 * numpy
-* few GBs of memory
+* many GBs of memory
 
 ## Installation
 ### A PyTorch Extension (APEX)
@@ -38,6 +38,11 @@ pip install text2text
 ### Colab demo
 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
+
+### Demo Video
+<a href="http://www.youtube.com/watch?feature=player_embedded&v=vi3vpwilCHE
+" target="_blank"><img src="http://img.youtube.com/vi/vi3vpwilCHE/0.jpg" 
+alt="Text2Text demo" width="240" height="180" border="10" /></a>
 
 ### Obtain some texts
 ```
@@ -96,10 +101,6 @@ Note that the last three answers were controlled by specifying the `[SEP]` token
 from text2text import TextGenerator
 sg = TextGenerator(output_type="summary")
 sg.predict([notre_dame_str, bacteria_str, bio_str])
-
-["Notre Dame's students run nine student - run outlets . [X_SEP] Scholastic magazine claims to be the oldest continuous collegiate publication in the United States . [X_SEP] The Observer is an independent publication .",
- 'Bacteria were among the first life forms to appear on Earth .',
- 'biology is the science that studies life .']
 ```
 #### Generated Summaries
 ```
