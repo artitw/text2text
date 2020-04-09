@@ -118,7 +118,7 @@ class TextGenerator(object):
     for model_recover_path in glob.glob(self.model_recover_path.strip()):
       print("***** Recover model: %s *****", model_recover_path)
       map_device = None
-      if torch.cuda.is_available():
+      if not torch.cuda.is_available():
         map_device='cpu'
       model_recover = torch.load(model_recover_path,map_location=map_device)
       self.model = BertForSeq2SeqDecoder.from_pretrained(self.bert_model, state_dict=model_recover, num_labels=cls_num_labels, num_rel=pair_num_relation, type_vocab_size=type_vocab_size, task_idx=3, mask_word_id=mask_word_id, search_beam_size=self.beam_size,

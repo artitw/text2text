@@ -40,8 +40,7 @@ pip install text2text
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
 
 ### Demo Video
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=vi3vpwilCHE
-" target="_blank"><img src="http://img.youtube.com/vi/vi3vpwilCHE/0.jpg" 
+<a href="https://youtu.be/vi3vpwilCHE?t=28" target="_blank"><img src="http://img.youtube.com/vi/vi3vpwilCHE/0.jpg" 
 alt="Text2Text demo" width="240" height="180" border="10" /></a>
 
 ### Obtain some texts

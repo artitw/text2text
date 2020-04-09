@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="text2text",
-    version="0.0.8",
+    version="0.0.9",
     author="Artit Wangperawong",
     author_email="artitw@gmail.com",
     description="Text2Text: generate questions and summaries for your texts",
