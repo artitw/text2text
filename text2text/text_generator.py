@@ -116,7 +116,7 @@ class TextGenerator(object):
     self.download_pretrained_model()
 
     for model_recover_path in glob.glob(self.model_recover_path.strip()):
-      print("***** Recover model: %s *****", model_recover_path)
+      print(f"***** Recover model: {model_recover_path} *****")
       map_device = None
       if not torch.cuda.is_available():
         map_device='cpu'
