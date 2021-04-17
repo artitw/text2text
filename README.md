@@ -16,6 +16,15 @@ To cite this work, use the following BibTeX citation.
 }
 ```
 
+## Examples
+### Colab demo
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
+
+### Demo Video
+<a href="https://youtu.be/vi3vpwilCHE?t=28" target="_blank"><img src="http://img.youtube.com/vi/vi3vpwilCHE/0.jpg" 
+alt="Text2Text demo" width="240" height="180" border="10" /></a>
+
 ## Requirements
 * pytorch
 * [pytorch-extension](https://github.com/artitw/apex)
@@ -33,15 +42,6 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 ```
 pip install text2text
 ```
-
-## Examples
-### Colab demo
-
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
-
-### Demo Video
-<a href="https://youtu.be/vi3vpwilCHE?t=28" target="_blank"><img src="http://img.youtube.com/vi/vi3vpwilCHE/0.jpg" 
-alt="Text2Text demo" width="240" height="180" border="10" /></a>
 
 ### Obtain some texts
 ```
