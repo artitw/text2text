@@ -17,8 +17,6 @@ from functools import wraps
 
 from tqdm import tqdm
 
-import boto3
-from botocore.exceptions import ClientError
 import requests
 
 logger = logging.getLogger(__name__)  # pylint: disable=invalid-name
