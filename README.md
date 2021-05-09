@@ -20,15 +20,18 @@ To cite this work, use the following BibTeX citation.
 ### Colab demo
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
 
-### Related explainer videos - how it works
+### Related explainer videos
+#### Demo of initial version
 <a href="https://youtu.be/vi3vpwilCHE?t=28" target="_blank"><img src="http://img.youtube.com/vi/vi3vpwilCHE/0.jpg" 
 alt="Text2Text demo" width="240" height="180" border="10" /></a>
+
+#### How cross-lingual NLP models work
 <a href="https://youtu.be/caZLVcJqsqo" target="_blank"><img src="http://img.youtube.com/vi/caZLVcJqsqo/0.jpg" 
 alt="Cross-Lingual Models" width="240" height="180" border="10" /></a>
 
 ## Requirements
 * pytorch
-* [pytorch-extension](https://github.com/artitw/apex)
+* [pytorch-extension](https://github.com/artitw/apex) (optional)
 * numpy
 * many GBs of memory
 
@@ -349,5 +352,4 @@ For questions or help using Text2Text, please submit a GitHub issue.
 
 ## Acknowledgements
 This package is based on 
-[Transformers](https://github.com/huggingface/transformers)
-[UniLM](https://github.com/microsoft/unilm)
+[Transformers](https://github.com/huggingface/transformers) and [UniLM](https://github.com/microsoft/unilm)
