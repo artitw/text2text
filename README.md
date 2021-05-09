@@ -1,4 +1,4 @@
-# Text2Text: Multilingual text transformer to generate translations, summarizations, questions and variations
+# Text2Text: Multilingual text transformer for translations, summarizations, questions and variations
 Transform texts in a hundred different languages!
 
 ### Citation
@@ -7,7 +7,7 @@ To cite this work, use the following BibTeX citation.
 ```
 @misc{text2text@2020,
   author={Wangperawong, Artit},
-  title={Text2Text: Multilingual text transformer to generate translations, summarizations, questions and variations},
+  title={Text2Text: Multilingual text transformer for translations, summarizations, questions and variations},
   year={2020},
   publisher = {GitHub},
   journal = {GitHub repository},
@@ -41,10 +41,20 @@ export CUDA_HOME=/usr/local/cuda-10.1
 pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" pytorch-extension
 ```
 
+### Text Handler API quick start
+```
+from text2text import Handler
+h = Handler(["hello, world!"], src_lang="en")
+h.translate(tgt_lang="zh") #['你好,世界!']
+h.summarize() #["World ' s largest world"]
+h.question() #[('What is the name of the world you are in?', 'The world')]
+h.variate() #['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...
+```
+
 ### Languages Available
 ```
-from text2text import TextGenerator
-TextGenerator.LANGUAGES
+from text2text import Transformer
+Transformer.LANGUAGES
 
 # Dict of languages supported
 # code: language
@@ -164,10 +174,7 @@ bio_str = "Biology is the science that studies life. What exactly is life? This 
 
 ### Translation
 ```
-from text2text import Translator
-tr = Translator()
-tr.predict([article_en, notre_dame_str, bacteria_str, bio_str], src_lang='en', tgt_lang='zh')
-
+Handler([article_en, notre_dame_str, bacteria_str, bio_str], src_lang='en').translate(tgt_lang='zh')
 # Translations
 ['联合国秘书长说,叙利亚没有军事解决方案。',
  '与大多数其他大学一样,Notre Dame的学生运行的新闻媒体渠道的数量。九个学生 - 运行的渠道包括三份报纸,两台广播电视台,以及几本杂志和杂志。 开始作为一个一页的杂志在1876年9月,该杂志的Schoolistic发行了每月两次,并声称是美国最古老的连续的大学新闻出版物,和其他杂志,TheJuggler,每年发行两次,并专注于学生文学和艺术作品。 多姆年刊每年发行。 报纸有不同的出版利益,与The Observer发表每日,主要报道大学和其他新闻,并由学生从Notre Dame和圣玛丽的学院。 与Scholastic和The Dome不同,The Observer是一个独立的公众作品,但没有教师顾',
@@ -179,22 +186,17 @@ tr.predict([article_en, notre_dame_str, bacteria_str, bio_str], src_lang='en', t
 # You can specify your own pretrained translator at your own risk.
 # Make sure src_lang and tgt_lang codes conform to that model.
 # Below are some tested examples, which use less memory.
-tr_small = Translator(pretrained_translator="facebook/m2m100_418M")
-tr_small.predict(["I would like to go hiking tomorrow."], src_lang='en', tgt_lang='zh')
+Handler(["I would like to go hiking tomorrow."], src_lang="en", pretrained_translator="facebook/m2m100_418M").translate(tgt_lang='zh')
 ['我想明天去散步。']
 
-tr_mbart50 = Translator(pretrained_translator="facebook/mbart-large-50-many-to-many-mmt")
-tr_mbart50.predict(["I would like to go hiking tomorrow."], src_lang='en_XX', tgt_lang='zh_CN')
+Handler(["I would like to go hiking tomorrow."], src_lang="en_XX", pretrained_translator="facebook/mbart-large-50-many-to-many-mmt").translate(tgt_lang='zh_CN')
 ['我想明天去徒步旅行。']
 ```
 
 ### Question Generation
 ```
-from text2text import Questioner
-qr = Questioner()
-
-qr.predict(["很喜欢陈慧琳唱歌。"], src_lang='zh')
-qr.predict([
+Handler(["很喜欢陈慧琳唱歌。"], src_lang='zh').question()
+Handler([
             bio_str,
             bio_str,
             bio_str,
@@ -210,7 +212,7 @@ qr.predict([
             "I will go to school today to take my math exam. [SEP] school",
             "I will go to school today to take my math exam. [SEP] exam",
             "I will go to school today to take my math exam. [SEP] math",
-          ], src_lang='en')
+          ], src_lang='en').question()
 
 ```
 Note that the last three answers were controlled by specifying the `[SEP]` token in the input above.
@@ -236,9 +238,7 @@ Note that the last three answers were controlled by specifying the `[SEP]` token
 
 ### Summarization
 ```
-from text2text import Summarizer
-sr = Summarizer()
-sr.predict([notre_dame_str, bacteria_str, bio_str], src_lang='en')
+Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
 
 # Summaries
 ["Notre Dame's students run nine student - run outlets . [X_SEP] Scholastic magazine claims to be the oldest continuous collegiate publication in the United States . [X_SEP] The Observer is an independent publication .",
@@ -249,9 +249,7 @@ sr.predict([notre_dame_str, bacteria_str, bio_str], src_lang='en')
 ### Variation
 Useful for augmenting training data
 ```
-from text2text import Variator
-sr = Variator()
-vr.predict([bacteria_str], src_lang='en')
+Handler([bacteria_str], src_lang='en').variate()
 
 # Variations
 ['Bacteria are a kind of biological cell. They form a large domain of prokaryotic micro-organisms. Typically a few micrometers in length, bacteria have a number of shapes, ranging from spheres to borders and spirals. Bacteria were among the first forms of life that appeared on Earth, and are present in most of its habitats.',

@@ -1,8 +1,8 @@
-from text2text import TextGenerator, Translator
+from text2text import Transformer, Translator
 
 class Variator(Translator):
   def predict(self, input_lines, src_lang='en', **kwargs):
-    TextGenerator.predict(self, input_lines, src_lang=src_lang, **kwargs)
+    Transformer.predict(self, input_lines, src_lang=src_lang, **kwargs)
     output_lines = []
     src_lang = src_lang
     for tgt_lang in self.__class__.LANGUAGES:

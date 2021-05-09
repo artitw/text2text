@@ -1,7 +1,7 @@
-from text2text import TextGenerator
+from text2text import Transformer
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-class Translator(TextGenerator):
+class Translator(Transformer):
 
   def __init__(self, **kwargs):
     pretrained_translator = kwargs.get('pretrained_translator')
@@ -26,5 +26,5 @@ class Translator(TextGenerator):
     return tokenizer.batch_decode(generated_tokens, skip_special_tokens=True) 
 
   def predict(self, input_lines, src_lang='en', **kwargs):
-    TextGenerator.predict(self, input_lines, src_lang=src_lang, **kwargs)
+    Transformer.predict(self, input_lines, src_lang=src_lang, **kwargs)
     return self._translate(input_lines, src_lang=src_lang, **kwargs)
