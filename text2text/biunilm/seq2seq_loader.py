@@ -108,7 +108,7 @@ class Seq2SeqDataset(torch.utils.data.Dataset):
 class Preprocess4Seq2seq(Pipeline):
     """ Pre-processing steps for pretraining transformer """
 
-    def __init__(self, max_pred, mask_prob, vocab_words, indexer, max_len=512, skipgram_prb=0, skipgram_size=0, block_mask=False, mask_whole_word=False, new_segment_ids=False, truncate_config={}, mask_source_words=False, mode="s2s", has_oracle=False, num_qkv=0, s2s_special_token=False, s2s_add_segment=False, s2s_share_segment=False, pos_shift=False):
+    def __init__(self, max_pred, mask_prob, vocab_words, indexer, max_len=512, skipgram_prb=0, skipgram_size=0, block_mask=False, mask_whole_word=False, new_segment_ids=False, truncate_config={}, mask_source_words=False, mode="s2s", has_oracle=False, num_qkv=0, s2s_special_token=False, s2s_add_segment=False, s2s_share_segment=False, pos_shift=False, **kwargs):
         super().__init__()
         self.max_len = max_len
         self.max_pred = max_pred  # max tokens of prediction
@@ -318,7 +318,7 @@ class Preprocess4Seq2seq(Pipeline):
 class Preprocess4Seq2seqDecoder(Pipeline):
     """ Pre-processing steps for pretraining transformer """
 
-    def __init__(self, vocab_words, indexer, max_len=512, max_tgt_length=128, new_segment_ids=False, mode="s2s", num_qkv=0, s2s_special_token=False, s2s_add_segment=False, s2s_share_segment=False, pos_shift=False):
+    def __init__(self, vocab_words, indexer, max_len=512, max_tgt_length=128, new_segment_ids=False, mode="s2s", num_qkv=0, s2s_special_token=False, s2s_add_segment=False, s2s_share_segment=False, pos_shift=False, **kwargs):
         super().__init__()
         self.max_len = max_len
         self.vocab_words = vocab_words  # vocabulary (sub)words

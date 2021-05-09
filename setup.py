@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="text2text",
-    version="0.1.0",
+    version="0.1.1",
     author="Artit Wangperawong",
     author_email="artitw@gmail.com",
     description="Text2Text: generate questions and summaries for your texts",
@@ -23,5 +23,7 @@ setuptools.setup(
         'torch',
         'tqdm',
         'numpy',
+        'sentencepiece',
+        'transformers'
     ],
 )
