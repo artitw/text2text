@@ -112,7 +112,7 @@ class Abstractor(TextGenerator):
     self.__class__.bi_uni_pipeline = bi_uni_pipeline
 
   def _translate_lines(self, input_lines, src_lang, tgt_lang):
-    translator = getattr(self.__class__, "translator", Translator(pretrained_model_path=self.__class__.pretrained_model_path))
+    translator = getattr(self.__class__, "translator", Translator(pretrained_translator=self.__class__.pretrained_translator))
     self.__class__.translator = translator
     return translator.predict(input_lines, src_lang=src_lang, tgt_lang=tgt_lang)
 
