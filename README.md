@@ -20,12 +20,7 @@ To cite this work, use the following BibTeX citation.
 ### Colab demo
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
 
-### Related explainer videos
-#### Demo of initial version
-<a href="https://youtu.be/vi3vpwilCHE?t=28" target="_blank"><img src="http://img.youtube.com/vi/vi3vpwilCHE/0.jpg" 
-alt="Text2Text demo" width="240" height="180" border="10" /></a>
-
-#### How cross-lingual NLP models work
+### How cross-lingual NLP models work
 <a href="https://youtu.be/caZLVcJqsqo" target="_blank"><img src="http://img.youtube.com/vi/caZLVcJqsqo/0.jpg" 
 alt="Cross-Lingual Models" width="240" height="180" border="10" /></a>
 
@@ -178,6 +173,19 @@ tr.predict([article_en, notre_dame_str, bacteria_str, bio_str], src_lang='en', t
  '与大多数其他大学一样,Notre Dame的学生运行的新闻媒体渠道的数量。九个学生 - 运行的渠道包括三份报纸,两台广播电视台,以及几本杂志和杂志。 开始作为一个一页的杂志在1876年9月,该杂志的Schoolistic发行了每月两次,并声称是美国最古老的连续的大学新闻出版物,和其他杂志,TheJuggler,每年发行两次,并专注于学生文学和艺术作品。 多姆年刊每年发行。 报纸有不同的出版利益,与The Observer发表每日,主要报道大学和其他新闻,并由学生从Notre Dame和圣玛丽的学院。 与Scholastic和The Dome不同,The Observer是一个独立的公众作品,但没有教师顾',
  '细菌是生物细胞的一种类型. 它们构成一个大范围的亲生微生物. 通常几微米长,细菌有许多形状,从球到杖和螺旋。 细菌是地球上出现的第一个生命形式之一,并且存在于其大多数栖息地。',
  '生物学是研究生命的科学. 究竟什么是生命? 这可能听起来像一个愚蠢的问题,有一个显而易见的答案,但它并不容易定义生命. 例如,一个名为病毒学的生物学分支研究病毒,这些病毒表现出一些活体的特征,但缺乏其他。']
+
+# BYOT: Bring Your Own Translator
+# The default translator requires at least 16GB of memory.
+# You can specify your own pretrained translator at your own risk.
+# Make sure src_lang and tgt_lang codes conform to that model.
+# Below are some tested examples, which use less memory.
+tr_small = Translator(pretrained_translator="facebook/m2m100_418M")
+tr_small.predict(["I would like to go hiking tomorrow."], src_lang='en', tgt_lang='zh')
+['我想明天去散步。']
+
+tr_mbart50 = Translator(pretrained_translator="facebook/mbart-large-50-many-to-many-mmt")
+tr_mbart50.predict(["I would like to go hiking tomorrow."], src_lang='en_XX', tgt_lang='zh_CN')
+['我想明天去徒步旅行。']
 ```
 
 ### Question Generation

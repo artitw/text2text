@@ -54,7 +54,7 @@ class Abstractor(TextGenerator):
     return r
 
   def __init__(self, **kwargs):
-    self.__class__.pretrained_model_path = kwargs.get('pretrained_model_path')
+    self.__class__.pretrained_translator = kwargs.get('pretrained_translator')
     pretrained_parameters = self.__class__.pretrained_parameters
     if pretrained_parameters["max_tgt_length"] >= pretrained_parameters["max_seq_length"] - 2:
       raise ValueError("Maximum tgt length exceeds max seq length - 2.")
