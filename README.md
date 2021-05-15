@@ -360,13 +360,13 @@ To cite this work, use the following BibTeX citation.
 }
 ```
 
-## [Contributing](https://github.com/artitw/text2text/blob/master/CONTRIBUTING.md)
-There are many ways you can contribute:
+## Contributing
+There are many ways you can [contribute](https://github.com/artitw/text2text/blob/master/CONTRIBUTING.md):
 1. Ask or answer a question in [Issues](https://github.com/artitw/text2text/issues)
 2. Share your experiences on using Text2Text
 3. Report bugs with information to reproduce
 4. Request for new features or functionality
 5. Improve code by submitting a [pull request](https://github.com/artitw/text2text/pulls) with outputs demonstrating the change
 
-## [Code of Conduct](https://github.com/artitw/text2text/blob/master/CODE_OF_CONDUCT.md)
+## Code of Conduct
 Please adhere to our [code of conduct](https://github.com/artitw/text2text/blob/master/CODE_OF_CONDUCT.md) when participating in this project.
