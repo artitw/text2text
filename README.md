@@ -184,6 +184,7 @@ Handler(["I would like to go hiking tomorrow."], src_lang="en_XX", pretrained_tr
 ```
 
 ### Question Answering
+Question must follow context with ` [SEP] ` in between.
 ```
 Handler([
          "Hello, this is Text2Text! [SEP] What is this?", 
@@ -362,7 +363,7 @@ To cite this work, use the following BibTeX citation.
 ```
 @misc{text2text@2020,
   author={Wangperawong, Artit},
-  title={Text2Text: Multilingual text transformer for translations, summarizations, questions and variations},
+  title={Text2Text: Multilingual text transformer for translations, summarizations, questions, answers and variations},
   year={2020},
   publisher = {GitHub},
   journal = {GitHub repository},
