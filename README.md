@@ -1,36 +1,15 @@
 # Text2Text: Multilingual text transformer for translations, summarizations, questions and variations
 Transform texts in a hundred different languages!
 
-### Citation
-To cite this work, use the following BibTeX citation.
-
-```
-@misc{text2text@2020,
-  author={Wangperawong, Artit},
-  title={Text2Text: Multilingual text transformer for translations, summarizations, questions and variations},
-  year={2020},
-  publisher = {GitHub},
-  journal = {GitHub repository},
-  howpublished = {\url{https://github.com/artitw/text2text}},
-  url = {https://github.com/artitw/text2text}
-}
-```
-
-## Examples
-### Colab demo
+## Colab demo
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
 
-### How cross-lingual NLP models work
-<a href="https://youtu.be/caZLVcJqsqo" target="_blank"><img src="http://img.youtube.com/vi/caZLVcJqsqo/0.jpg" 
-alt="Cross-Lingual Models" width="240" height="180" border="10" /></a>
+## How cross-lingual NLP models work (click to watch)
+[![Cross-Lingual Models](http://img.youtube.com/vi/caZLVcJqsqo/0.jpg)](https://youtu.be/caZLVcJqsqo "Cross-Lingual Models")
 
-## Requirements
-* pytorch
+## Requirements and Installation
 * [pytorch-extension](https://github.com/artitw/apex) (optional)
-* numpy
-* many GBs of memory
-
-## Installation
+* a lot of memory (optional smaller models for development)
 ### Text2Text
 ```
 pip install text2text
@@ -41,7 +20,16 @@ export CUDA_HOME=/usr/local/cuda-10.1
 pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" pytorch-extension
 ```
 
-### Text Handler API quick start
+## Class Diagram
+<pre>
+        Transformer
+        /         \
+  Translator  <-  Abstractor
+     /             /     \
+Variator    Questioner   Summarizer
+</pre>
+
+## Text Handler API quick start
 ```
 from text2text import Handler
 h = Handler(["hello, world!"], src_lang="en")
@@ -51,7 +39,7 @@ h.question() #[('What is the name of the world you are in?', 'The world')]
 h.variate() #['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...
 ```
 
-### Languages Available
+## Languages Available
 ```
 from text2text import Transformer
 Transformer.LANGUAGES
@@ -160,6 +148,7 @@ Transformer.LANGUAGES
  'zu': 'Zulu'}
 ```
 
+## Examples
 ### Obtain some texts
 ```
 article_en = 'The Secretary-General of the United Nations says there is no military solution in Syria.'
@@ -353,9 +342,31 @@ Handler([bacteria_str], src_lang='en').variate()
  'Bacteria are a type of biocells, they make up a large area of probiotic microorganisms, usually several meters long bacteria have several shapes, from branches to roots and spirals, bacteria are one of the first forms of life that appear on Earth and are present in most of their habitats.',
  'The bacteria is a type of biological cells. The bacteria is a large area of prokaryotic microorganisms. The bacteria is a long micrometres, the bacteria is a spheres in roads and spirals. The bacteria is among the data, data, data, data and data.']
 ```
-## Questions?
-For questions or help using Text2Text, please submit a GitHub issue.
 
-## Acknowledgements
-This package is based on 
-[Transformers](https://github.com/huggingface/transformers) and [UniLM](https://github.com/microsoft/unilm)
+## Questions?
+For questions or help using Text2Text, please submit a [GitHub issue](https://github.com/artitw/text2text/issues).
+
+## Citation
+To cite this work, use the following BibTeX citation.
+```
+@misc{text2text@2020,
+  author={Wangperawong, Artit},
+  title={Text2Text: Multilingual text transformer for translations, summarizations, questions and variations},
+  year={2020},
+  publisher = {GitHub},
+  journal = {GitHub repository},
+  howpublished = {\url{https://github.com/artitw/text2text}},
+  url = {https://github.com/artitw/text2text}
+}
+```
+
+## [Contributing](https://github.com/artitw/text2text/blob/master/CONTRIBUTING.md)
+There are many ways you can contribute:
+1. Ask or answer a question in [Issues](https://github.com/artitw/text2text/issues)
+2. Share your experiences on using Text2Text
+3. Report bugs with information to reproduce
+4. Request for new features or functionality
+5. Improve code by submitting a [pull request](https://github.com/artitw/text2text/pulls) with outputs demonstrating the change
+
+## [Code of Conduct](https://github.com/artitw/text2text/blob/master/CODE_OF_CONDUCT.md)
+Please adhere to our [code of conduct](https://github.com/artitw/text2text/blob/master/CODE_OF_CONDUCT.md) when participating in this project.
