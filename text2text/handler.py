@@ -1,4 +1,4 @@
-from text2text import Questioner, Summarizer, Translator, Variator
+from text2text import Questioner, Answerer, Summarizer, Translator, Variator
 
 class Handler(object):
   """
@@ -7,6 +7,7 @@ class Handler(object):
 
   EXPOSED_TRANSFORMERS = {
     "question": Questioner,
+    "answer": Answerer,
     "summarize": Summarizer,
     "translate": Translator,
     "variate": Variator,

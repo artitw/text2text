@@ -1,4 +1,4 @@
-# Text2Text: Multilingual text transformer for translations, summarizations, questions and variations
+# Text2Text: Multilingual text transformer for translations, summarizations, questions, answers and variations
 Transform texts in a hundred different languages!
 
 ## Colab demo
@@ -22,11 +22,11 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 
 ## Class Diagram
 <pre>
-        Transformer
-        /         \
-  Translator  <-  Abstractor
-     /             /     \
-Variator    Questioner   Summarizer
+      _____Transformer________
+     /         |              \
+Answerer -> Translator <--- Abstractor
+               |             /       \
+             Variator   Questioner   Summarizer
 </pre>
 
 ## Text Handler API quick start
@@ -37,6 +37,7 @@ h.translate(tgt_lang="zh") #['你好,世界!']
 h.summarize() #["World ' s largest world"]
 h.question() #[('What is the name of the world you are in?', 'The world')]
 h.variate() #['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...
+Handler(["Hello, World! [SEP] Hello, what?"]).answer() #['World']
 ```
 
 ## Languages Available
@@ -180,6 +181,16 @@ Handler(["I would like to go hiking tomorrow."], src_lang="en", pretrained_trans
 
 Handler(["I would like to go hiking tomorrow."], src_lang="en_XX", pretrained_translator="facebook/mbart-large-50-many-to-many-mmt").translate(tgt_lang='zh_CN')
 ['我想明天去徒步旅行。']
+```
+
+### Question Answering
+```
+Handler([
+         "Hello, this is Text2Text! [SEP] What is this?", 
+         "It works very well. It's awesome! [SEP] How is it?"
+         ]).answer()
+# Answers
+['Text2Text', 'awesome']
 ```
 
 ### Question Generation
