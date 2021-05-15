@@ -176,10 +176,16 @@ Handler([article_en, notre_dame_str, bacteria_str, bio_str], src_lang='en').tran
 # You can specify your own pretrained translator at your own risk.
 # Make sure src_lang and tgt_lang codes conform to that model.
 # Below are some tested examples, which use less memory.
-Handler(["I would like to go hiking tomorrow."], src_lang="en", pretrained_translator="facebook/m2m100_418M").translate(tgt_lang='zh')
+Handler(["I would like to go hiking tomorrow."], 
+        src_lang="en", 
+        pretrained_translator="facebook/m2m100_418M"
+        ).translate(tgt_lang='zh')
 ['我想明天去散步。']
 
-Handler(["I would like to go hiking tomorrow."], src_lang="en_XX", pretrained_translator="facebook/mbart-large-50-many-to-many-mmt").translate(tgt_lang='zh_CN')
+Handler(["I would like to go hiking tomorrow."], 
+        src_lang="en_XX", 
+        pretrained_translator="facebook/mbart-large-50-many-to-many-mmt"
+        ).translate(tgt_lang='zh_CN')
 ['我想明天去徒步旅行。']
 ```
 
@@ -190,8 +196,14 @@ Handler([
          "Hello, this is Text2Text! [SEP] What is this?", 
          "It works very well. It's awesome! [SEP] How is it?"
          ]).answer()
+Handler(["很喜欢陈慧琳唱歌。[SEP] 喜欢做什么?"], 
+        src_lang="zh",
+        pretrained_translator="facebook/m2m100_418M"
+        ).answer()
+
 # Answers
 ['Text2Text', 'awesome']
+['唱歌']
 ```
 
 ### Question Generation
