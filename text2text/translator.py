@@ -17,6 +17,8 @@ class Translator(Transformer):
     if 'tgt_lang' not in kwargs:
       raise ValueError('tgt_lang not specified')
     tgt_lang = kwargs.get('tgt_lang')
+    if src_lang==tgt_lang:
+      return input_lines
     if self.__class__.pretrained_translator==self.__class__.DEFAULT_TRANSLATOR:
       if tgt_lang not in self.__class__.LANGUAGES:
         raise ValueError(f'{tgt_lang} not found in {self.__class__.LANGUAGES}')

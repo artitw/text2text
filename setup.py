@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="text2text",
-    version="0.1.5",
+    version="0.1.6",
     author="Artit Wangperawong",
     author_email="artitw@gmail.com",
     description="Text2Text: Multilingual text transformer for translations, summarizations, questions, answers and variations",
