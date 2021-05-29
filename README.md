@@ -1,4 +1,4 @@
-# Text2Text: Multilingual text transformer for translations, summarizations, questions, answers and variations
+# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, and text variation
 Transform texts in a hundred different languages!
 
 ## Colab demo
@@ -9,7 +9,7 @@ Transform texts in a hundred different languages!
 
 ## Requirements and Installation
 * [pytorch-extension](https://github.com/artitw/apex) (optional)
-* a lot of memory (optional smaller models for development)
+* more than 16 GB of memory (optional smaller models for development)
 ### Text2Text
 ```
 pip install text2text
@@ -22,6 +22,8 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 
 ## Class Diagram
 <pre>
+            Tokenizer
+               |
       _____Transformer________
      /         |              \
 Answerer -> Translator <--- Abstractor
@@ -32,7 +34,8 @@ Answerer -> Translator <--- Abstractor
 ## Text Handler API quick start
 ```
 from text2text import Handler
-h = Handler(["hello, world!"], src_lang="en")
+h = Handler(["Hello, World!"], src_lang="en")
+h.tokenize() #[['▁Hello', ',', '▁World', '!']]
 h.translate(tgt_lang="zh") #['你好,世界!']
 h.summarize() #["World ' s largest world"]
 h.question() #[('What is the name of the world you are in?', 'The world')]
@@ -162,9 +165,24 @@ bio_str = "Biology is the science that studies life. What exactly is life? This 
 
 ```
 
+### Tokenization
+```
+Handler([
+         "Let's go hiking tomorrow", 
+         "안녕하세요.", 
+         "돼지꿈을 꾸세요~~"
+         ]).tokenize()
+
+# Resulting tokens
+[['▁Let', "'", 's', '▁go', '▁hik', 'ing', '▁tom', 'orrow'],
+ ['▁안녕', '하세요', '.'],
+ ['▁', '돼', '지', '꿈', '을', '▁꾸', '세요', '~~']]
+```
+
 ### Translation
 ```
-Handler([article_en, notre_dame_str, bacteria_str, bio_str], src_lang='en').translate(tgt_lang='zh')
+Handler([article_en, notre_dame_str, bacteria_str, bio_str], 
+        src_lang='en').translate(tgt_lang='zh')
 # Translations
 ['联合国秘书长说,叙利亚没有军事解决方案。',
  '与大多数其他大学一样,Notre Dame的学生运行的新闻媒体渠道的数量。九个学生 - 运行的渠道包括三份报纸,两台广播电视台,以及几本杂志和杂志。 开始作为一个一页的杂志在1876年9月,该杂志的Schoolistic发行了每月两次,并声称是美国最古老的连续的大学新闻出版物,和其他杂志,TheJuggler,每年发行两次,并专注于学生文学和艺术作品。 多姆年刊每年发行。 报纸有不同的出版利益,与The Observer发表每日,主要报道大学和其他新闻,并由学生从Notre Dame和圣玛丽的学院。 与Scholastic和The Dome不同,The Observer是一个独立的公众作品,但没有教师顾',
