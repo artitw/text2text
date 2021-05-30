@@ -1,4 +1,4 @@
-# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, text variation, distance measurement
+# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, text variation, and edit distance
 Transform texts in a hundred different languages!
 
 ## Colab demo
@@ -12,7 +12,7 @@ Transform texts in a hundred different languages!
 * more than 16 GB of memory (optional smaller models for development)
 ### Text2Text
 ```
-pip install text2text
+pip install -U text2text
 ```
 ### [OPTIONAL] A PyTorch Extension (APEX)
 ```
@@ -22,7 +22,7 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 
 ## Class Diagram
 <pre>
-            Tokenizer <--- Measurer
+            Tokenizer <-- Measurer
                |
       _____Transformer________
      /         |              \
@@ -41,6 +41,7 @@ h.summarize() #["World ' s largest world"]
 h.question() #[('What is the name of the world you are in?', 'The world')]
 h.variate() #['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...
 Handler(["Hello, World! [SEP] Hello, what?"]).answer() #['World']
+Handler(["Hello, World! [SEP] Hello, what?"]).measure() #[2]
 ```
 
 ## Languages Available
