@@ -1,4 +1,4 @@
-# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, data augmentation, embedding, edit distance
+# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, data augmentation, embedding, distance measurement
 Transform texts in a hundred different languages!
 
 ## Colab demo
@@ -203,7 +203,7 @@ array([[-0.0589195 ,  0.43412262,  0.06801314, ..., -0.80633867,
 Handler([
          "Hello, World! [SEP] Hello, what?", 
          "안녕하세요. [SEP] 돼지꿈을 꾸세요~~"
-        ]).measure(objective="levenshtein_distance")
+        ]).measure(metric="levenshtein_distance")
 
 # Distances
 [2, 8]

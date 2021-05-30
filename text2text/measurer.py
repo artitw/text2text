@@ -14,7 +14,7 @@ def levenshtein_distance(s1, s2):
 
 class Measurer(Tokenizer):
 
-  def predict(self, input_lines, src_lang='en', objective='levenshtein_distance', **kwargs):
+  def predict(self, input_lines, src_lang='en', metric='levenshtein_distance', **kwargs):
     Transformer.predict(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     tokenizer.src_lang = src_lang

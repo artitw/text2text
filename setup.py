@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="text2text",
-    version="0.1.9",
+    version="0.2.0",
     author="Artit Wangperawong",
     author_email="artitw@gmail.com",
-    description="Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, data augmentation, embedding, edit distance",
+    description="Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, data augmentation, embedding, distance measurement",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/artitw/text2text",
