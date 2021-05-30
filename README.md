@@ -1,4 +1,4 @@
-# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, text variation, and edit distance
+# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, data augmentation, edit distance
 Transform texts in a hundred different languages!
 
 ## Colab demo

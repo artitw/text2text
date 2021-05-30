@@ -8,7 +8,7 @@ setuptools.setup(
     version="0.1.8",
     author="Artit Wangperawong",
     author_email="artitw@gmail.com",
-    description="Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, text variation, and edit distance",
+    description="Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, data augmentation, edit distance",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/artitw/text2text",
