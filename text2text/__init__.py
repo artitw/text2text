@@ -2,6 +2,7 @@ from .transformer import Transformer
 from .tokenizer import Tokenizer
 from .measurer import Measurer
 from .translator import Translator
+from .embedder import Embedder
 from .variator import Variator
 from .abstractor import Abstractor
 from .questioner import Questioner

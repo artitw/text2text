@@ -13,6 +13,7 @@ class Translator(Transformer):
 
   def _translate(self, input_lines, src_lang='en', **kwargs):
     tokenizer = self.__class__.tokenizer
+    model = self.__class__.model
     tokenizer.src_lang = src_lang
     if 'tgt_lang' not in kwargs:
       raise ValueError('tgt_lang not specified')
@@ -24,7 +25,7 @@ class Translator(Transformer):
         raise ValueError(f'{tgt_lang} not found in {self.__class__.LANGUAGES}')
     encoded_inputs = tokenizer(input_lines, padding=True, return_tensors="pt")
     tgt_token_id = tokenizer.lang_code_to_id[tgt_lang]
-    generated_tokens = self.__class__.model.generate(**encoded_inputs, forced_bos_token_id=tgt_token_id)
+    generated_tokens = model.generate(**encoded_inputs, forced_bos_token_id=tgt_token_id)
     return tokenizer.batch_decode(generated_tokens, skip_special_tokens=True) 
 
   def predict(self, input_lines, src_lang='en', **kwargs):
