@@ -1,4 +1,4 @@
-from text2text import Answerer, Questioner, Summarizer, Tokenizer, Translator, Variator
+from text2text import Answerer, Measurer, Questioner, Summarizer, Tokenizer, Translator, Variator
 
 class Handler(object):
   """
@@ -7,6 +7,7 @@ class Handler(object):
 
   EXPOSED_TRANSFORMERS = {
     "answer": Answerer,
+    "measure": Measurer,
     "question": Questioner,
     "summarize": Summarizer,
     "tokenize": Tokenizer,
@@ -24,7 +25,7 @@ class Handler(object):
     self.src_lang = src_lang
     self.__class__.pretrained_translator = kwargs.get("pretrained_translator")
     for k in self.__class__.EXPOSED_TRANSFORMERS:
-      handler = lambda x: lambda tgt_lang="en": self._transformer_handler(transformation=x, tgt_lang=tgt_lang)
+      handler = lambda x: lambda tgt_lang="en", **kwargs: self._transformer_handler(transformation=x, tgt_lang=tgt_lang)
       handler = handler(k)
       setattr(self, k, handler)
     self.__class__.transformer_instances = {}

@@ -1,4 +1,4 @@
-# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, and text variation
+# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, text variation, distance measurement
 Transform texts in a hundred different languages!
 
 ## Colab demo
@@ -22,7 +22,7 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 
 ## Class Diagram
 <pre>
-            Tokenizer
+            Tokenizer <--- Measurer
                |
       _____Transformer________
      /         |              \
@@ -177,6 +177,17 @@ Handler([
 [['▁Let', "'", 's', '▁go', '▁hik', 'ing', '▁tom', 'orrow'],
  ['▁안녕', '하세요', '.'],
  ['▁', '돼', '지', '꿈', '을', '▁꾸', '세요', '~~']]
+```
+
+### Levenshtein Sub-word Edit Distance
+```
+Handler([
+         "Hello, World! [SEP] Hello, what?", 
+         "안녕하세요. [SEP] 돼지꿈을 꾸세요~~"
+        ]).measure(objective="levenshtein_distance")
+
+# Distances
+[2, 8]
 ```
 
 ### Translation
