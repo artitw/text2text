@@ -9,9 +9,9 @@ Transform texts in a hundred different languages!
 
 ## Requirements and Installation
 * [pytorch-extension](https://github.com/artitw/apex) (optional)
-* Large model: >16 GB RAM
+* Default model: >16 GB RAM
 * Smaller models: <16 GB RAM 
- * See Colab Demo and examples below
+  * See Colab Demo and examples below
 
 ### Text2Text
 ```
@@ -427,7 +427,7 @@ To cite this work, use the following BibTeX citation.
 ```
 @misc{text2text@2020,
   author={Wangperawong, Artit},
-  title={Text2Text: Multilingual text transformer for translations, summarizations, questions, answers and variations},
+  title={Text2Text: Multilingual tokenization, embedding, translation, summarization, question generation, question answering, data augmentation, distance measurement},
   year={2020},
   publisher = {GitHub},
   journal = {GitHub repository},
