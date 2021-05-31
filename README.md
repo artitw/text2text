@@ -1,15 +1,18 @@
-# Text2Text: Multilingual tokenization, translation, summarization, question generation, question answering, data augmentation, embedding, distance measurement
+# Text2Text: Multilingual tokenization, embedding, translation, summarization, question generation, question answering, data augmentation, distance measurement
 Transform texts in a hundred different languages!
 
-## Colab demo
+## Colab Demo
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
 
-## How cross-lingual NLP models work (click to watch)
+## How Cross-Lingual NLP Models Work (click to watch)
 [![Cross-Lingual Models](http://img.youtube.com/vi/caZLVcJqsqo/0.jpg)](https://youtu.be/caZLVcJqsqo "Cross-Lingual Models")
 
 ## Requirements and Installation
 * [pytorch-extension](https://github.com/artitw/apex) (optional)
-* more than 16 GB of memory (optional smaller models for development)
+* Large model: >16 GB RAM
+* Smaller models: <16 GB RAM 
+ * See Colab Demo and examples below
+
 ### Text2Text
 ```
 pip install -U text2text
@@ -31,19 +34,20 @@ Answerer -> Translator <---- Abstractor
      Embedder  Variator  Questioner  Summarizer
 </pre>
 
-## Text Handler API quick start
-```
-from text2text import Handler
-h = Handler(["Hello, World!"], src_lang="en")
-h.tokenize() #[['▁Hello', ',', '▁World', '!']]
-h.embed() #array([[0.18745188, 0.05658336, 0.15895301, ..., 0.46946704, 0.6332584 , 0.43805206]], dtype=float32)
-h.translate(tgt_lang="zh") #['你好,世界!']
-h.summarize() #["World ' s largest world"]
-h.question() #[('What is the name of the world you are in?', 'The world')]
-h.variate() #['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...
-Handler(["Hello, World! [SEP] Hello, what?"]).answer() #['World']
-Handler(["Hello, World! [SEP] Hello, what?"]).measure() #[2]
-```
+## API Quick Start Guide
+Functionality | Invocation | Result
+:------------: | :-------------: | :-------------:
+Module Importing | `from text2text import Handler, Transformer` | Libraries imported
+Language Model Setting | `Transformer.pretrained_translator="facebook/m2m100_418M"` | Larger model used by default without this specification
+Intialization | `h = Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
+Tokenization | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
+Embedding | `h.embed()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
+Translation | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
+Summarization | `h.summarize()` | `["World ' s largest world"]`
+Question Generation | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
+Data Augmentation | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
+Question Answering | `Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
+Measurement | `Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 
 ## Languages Available
 ```
@@ -308,7 +312,7 @@ Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
 ```
 
 ### Variation
-Useful for augmenting training data
+Backtranslations useful for augmenting training data
 ```
 Handler([bacteria_str], src_lang='en').variate()
 
