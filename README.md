@@ -4,14 +4,14 @@ Transform texts in a hundred different languages!
 <details>
   <summary>Overview</summary>
 
-1. [Colab Demo](#colab-demo)
-2. [Cross-Lingual Models](#how-cross-lingual-nlp-models-work-click-to-watch)
-3. [Requirements & Installation](#requirements-and-installation)
-4. [Class Diagram](#class-diagram)
-5. [Quick Start Guide](#api-quick-start-guide)
-6. [Languages Available](#languages-available)
-7. [Requirements & Installation](#requirements-and-installation)
-8. [Examples](#examples)
+* [Colab Demo](#colab-demo)
+* [Cross-Lingual Models](#how-cross-lingual-nlp-models-work-click-to-watch)
+* [Requirements & Installation](#requirements-and-installation)
+* [Class Diagram](#class-diagram)
+* [Quick Start Guide](#api-quick-start-guide)
+* [Languages Available](#languages-available)
+* [Requirements & Installation](#requirements-and-installation)
+* [Examples](#examples)
   * [Sample Texts](#sample-texts)
   * [Tokenization](#tokenization)
   * [Embedding](#embedding)
@@ -21,10 +21,10 @@ Transform texts in a hundred different languages!
   * [Question Generation](#question-generation)
   * [Summarization](#summarization)
   * [Variation](#variation)
-9. [Questions?](#questions)
-10. [Citation](#citation)
-11. [Contributing](#contributing)
-11. [Code of Conduct](#code-of-conduct)
+* [Questions?](#questions)
+* [Citation](#citation)
+* [Contributing](#contributing)
+* [Code of Conduct](#code-of-conduct)
 
 </details>
 
