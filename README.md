@@ -1,6 +1,33 @@
 # Text2Text: Multilingual tokenization, embedding, translation, summarization, question generation, question answering, data augmentation, distance measurement
 Transform texts in a hundred different languages!
 
+<details>
+  <summary>Overview</summary>
+
+1. [Colab Demo](#colab-demo)
+2. [Cross-Lingual Models](#how-cross-lingual-nlp-models-work-click-to-watch)
+3. [Requirements & Installation](#requirements-and-installation)
+4. [Class Diagram](#class-diagram)
+5. [Quick Start Guide](#api-quick-start-guide)
+6. [Languages Available](#languages-available)
+7. [Requirements & Installation](#requirements-and-installation)
+8. [Examples](#examples)
+  * [Sample Texts](#sample-texts)
+  * [Tokenization](#tokenization)
+  * [Embedding](#embedding)
+  * [Distance](#levenshtein-sub-word-edit-distance)
+  * [Translation](#translation)
+  * [Question Answering](#question-answering)
+  * [Question Generation](#question-generation)
+  * [Summarization](#summarization)
+  * [Variation](#variation)
+9. [Questions?](#questions)
+10. [Citation](#citation)
+11. [Contributing](#contributing)
+11. [Code of Conduct](#code-of-conduct)
+
+</details>
+
 ## Colab Demo
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
 
@@ -34,7 +61,7 @@ Answerer -> Translator <---- Abstractor
      Embedder  Variator  Questioner  Summarizer
 </pre>
 
-## API Quick Start Guide
+## Quick Start Guide
 Functionality | Invocation | Result
 :------------: | :-------------: | :-------------:
 Module Importing | `from text2text import Handler, Transformer` | Libraries imported
@@ -50,6 +77,9 @@ Question Answering | `Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | 
 Measurement | `Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 
 ## Languages Available
+<details>
+  <summary>Show languages</summary>
+
 ```
 from text2text import Transformer
 Transformer.LANGUAGES
@@ -158,8 +188,10 @@ Transformer.LANGUAGES
  'zu': 'Zulu'}
 ```
 
+</details>
+
 ## Examples
-### Obtain some texts
+### Sample Texts
 ```
 article_en = 'The Secretary-General of the United Nations says there is no military solution in Syria.'
 
