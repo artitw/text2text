@@ -58,7 +58,7 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
      /         |               \
 Answerer -> Translator <---- Abstractor
             /     \          /       \
-     Embedder  Variator  Questioner  Summarizer
+    Vectorizer  Variator  Questioner  Summarizer
 </pre>
 
 ## Quick Start Guide
@@ -68,7 +68,7 @@ Module Importing | `from text2text import Handler, Transformer` | Libraries impo
 Language Model Setting | `Transformer.pretrained_translator="facebook/m2m100_418M"` | Larger model used by default without this specification
 Intialization | `h = Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
 Tokenization | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
-Embedding | `h.embed()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
+Embedding | `h.vectorize()` | `[array([0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206])]`
 Translation | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
 Summarization | `h.summarize()` | `["World ' s largest world"]`
 Question Generation | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
@@ -217,21 +217,21 @@ Handler([
  ['▁', '돼', '지', '꿈', '을', '▁꾸', '세요', '~~']]
 ```
 
-### Embedding
+### Embedding / Vectorization
 ```
 Handler([
          "Let's go hiking tomorrow", 
          "안녕하세요.", 
          "돼지꿈을 꾸세요~~"
-         ]).embed()
+         ]).vectorize()
 
 # Embeddings
-array([[-0.0589195 ,  0.43412262,  0.06801314, ..., -0.80633867,
-        -0.42413312, -0.15440752],
-       [ 0.0426594 ,  0.04762528,  0.14975207, ...,  0.38897714,
+[array([-0.0589195 ,  0.43412262,  0.06801314, ..., -0.80633867,
+        -0.42413312, -0.15440752]),
+ array([ 0.0426594 ,  0.04762528,)  0.14975207, ...,  0.38897714,
          0.4434174 ,  0.14709741],
-       [-0.5611394 , -0.76467717,  0.0817059 , ..., -0.04898087,
-         0.01132951, -0.03406287]], dtype=float32)
+ array([-0.5611394 , -0.76467717,  0.0817059 , ..., -0.04898087,
+         0.01132951, -0.03406287])]
 ```
 
 ### Levenshtein Sub-word Edit Distance
