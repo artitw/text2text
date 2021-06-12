@@ -56,8 +56,8 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 ## Class Diagram
 <pre>
   Tfidfer --> Counter --> Tokenizer <-- Measurer
-                              |
-                     _____Transformer_________
+    /                         |
+Searcher             _____Transformer_________
                     /         |               \
                Answerer -> Translator <---- Abstractor
                            /     \          /       \
