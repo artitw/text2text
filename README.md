@@ -59,9 +59,11 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
     /                         |
 Searcher             _____Transformer_________
                     /         |               \
-               Answerer -> Translator <---- Abstractor
+               Answerer => Translator <==== Abstractor
                            /     \          /       \
                    Vectorizer  Variator  Questioner  Summarizer
+
+=> fat arrows represent invocation, not inheritance
 </pre>
 
 ## Quick Start Guide
@@ -274,7 +276,7 @@ Handler([
 
 ### Search
 ```
-x = Handler([
+Handler([
          "Let's go hiking tomorrow, let's go!", 
          "안녕하세요.", 
          "돼지꿈을 꾸세요~~",
