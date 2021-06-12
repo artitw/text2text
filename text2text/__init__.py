@@ -3,6 +3,8 @@ from .tokenizer import Tokenizer
 from .measurer import Measurer
 from .translator import Translator
 from .vectorizer import Vectorizer
+from .counter import Counter
+from .tfidfer import Tfidfer
 from .variator import Variator
 from .abstractor import Abstractor
 from .questioner import Questioner

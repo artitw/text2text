@@ -1,4 +1,15 @@
-from text2text import Answerer, Vectorizer, Measurer, Questioner, Summarizer, Tokenizer, Translator, Variator
+from text2text import (
+    Answerer, 
+    Counter,
+    Measurer, 
+    Questioner, 
+    Summarizer,
+    Tfidfer,
+    Tokenizer,
+    Translator, 
+    Variator,
+    Vectorizer, 
+)
 
 class Handler(object):
   """
@@ -7,13 +18,15 @@ class Handler(object):
 
   EXPOSED_TRANSFORMERS = {
     "answer": Answerer,
-    "vectorize": Vectorizer,
+    "count": Counter,
     "measure": Measurer,
     "question": Questioner,
     "summarize": Summarizer,
+    "tfidf": Tfidfer,
     "tokenize": Tokenizer,
     "translate": Translator,
     "variate": Variator,
+    "vectorize": Vectorizer,
   }
 
   def _transformer_handler(self, transformation, tgt_lang):

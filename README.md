@@ -1,4 +1,4 @@
-# Text2Text: Multilingual tokenization, embedding, translation, summarization, question generation, question answering, data augmentation, distance measurement
+# Text2Text: Multilingual tokenization, embedding, search, translation, summarization, question generation, question answering, data augmentation, distance measurement
 Transform texts in a hundred different languages!
 
 <details>
@@ -44,6 +44,7 @@ Transform texts in a hundred different languages!
 ```
 pip install -U text2text
 ```
+
 ### [OPTIONAL] A PyTorch Extension (APEX)
 ```
 export CUDA_HOME=/usr/local/cuda-10.1
@@ -52,23 +53,24 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 
 ## Class Diagram
 <pre>
-            Tokenizer <-- Measurer
-               |
-      _____Transformer_________
-     /         |               \
-Answerer -> Translator <---- Abstractor
-            /     \          /       \
-    Vectorizer  Variator  Questioner  Summarizer
+  Tfidfer --> Counter --> Tokenizer <-- Measurer
+                              |
+                     _____Transformer_________
+                    /         |               \
+               Answerer -> Translator <---- Abstractor
+                           /     \          /       \
+                   Vectorizer  Variator  Questioner  Summarizer
 </pre>
 
 ## Quick Start Guide
 Functionality | Invocation | Result
 :------------: | :-------------: | :-------------:
 Module Importing | `from text2text import Handler, Transformer` | Libraries imported
-Language Model Setting | `Transformer.pretrained_translator="facebook/m2m100_418M"` | Larger model used by default without this specification
+Language Model Setting | `Transformer.pretrained_translator="facebook/m2m100_418M"` | Override default with smaller model
 Intialization | `h = Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
 Tokenization | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
 Embedding | `h.vectorize()` | `[array([0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206])]`
+TF-IDF | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
 Translation | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
 Summarization | `h.summarize()` | `["World ' s largest world"]`
 Question Generation | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
@@ -232,6 +234,39 @@ Handler([
          0.4434174 ,  0.14709741],
  array([-0.5611394 , -0.76467717,  0.0817059 , ..., -0.04898087,
          0.01132951, -0.03406287])]
+```
+
+### TF-IDF
+```
+Handler([
+         "Let's go hiking tomorrow", 
+         "안녕하세요.", 
+         "돼지꿈을 꾸세요~~"
+         ]).tfidf()
+
+# TF-IDF values
+[{'!': 0.22360679774997894,
+  "'": 0.44721359549995787,
+  ',': 0.22360679774997894,
+  'ing': 0.22360679774997894,
+  'orrow': 0.22360679774997894,
+  's': 0.44721359549995787,
+  '▁Let': 0.22360679774997894,
+  '▁go': 0.44721359549995787,
+  '▁hik': 0.22360679774997894,
+  '▁let': 0.22360679774997894,
+  '▁tom': 0.22360679774997894},
+ {'.': 0.5773502691896258,
+  '▁안녕': 0.5773502691896258,
+  '하세요': 0.5773502691896258},
+ {'~~': 0.3535533905932738,
+  '▁': 0.3535533905932738,
+  '▁꾸': 0.3535533905932738,
+  '꿈': 0.3535533905932738,
+  '돼': 0.3535533905932738,
+  '세요': 0.3535533905932738,
+  '을': 0.3535533905932738,
+  '지': 0.3535533905932738}]
 ```
 
 ### Levenshtein Sub-word Edit Distance
@@ -459,7 +494,7 @@ To cite this work, use the following BibTeX citation.
 ```
 @misc{text2text@2020,
   author={Wangperawong, Artit},
-  title={Text2Text: Multilingual tokenization, embedding, translation, summarization, question generation, question answering, data augmentation, distance measurement},
+  title={Text2Text: Multilingual tokenization, embedding, search, translation, summarization, question generation, question answering, data augmentation, distance measurement},
   year={2020},
   publisher = {GitHub},
   journal = {GitHub repository},
