@@ -55,15 +55,15 @@ pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cud
 
 ## Class Diagram
 <pre>
-  Tfidfer --> Counter --> Tokenizer <-- Measurer
-    /                         |
-Searcher             _____Transformer_________
-                    /         |               \
-               Answerer => Translator <==== Abstractor
-                           /     \          /       \
-                   Vectorizer  Variator  Questioner  Summarizer
-
-=> fat arrows represent invocation, not inheritance
+  Tfidfer --- Counter   Measurer
+                   \     /
+     Searcher     Tokenizer
+          \_______    |
+           _______Transformer_________
+          /           |               \
+      Answerer    Translator       Abstractor
+                   /     \          /       \
+          Vectorizer  Variator  Questioner  Summarizer
 </pre>
 
 ## Quick Start Guide
@@ -289,19 +289,47 @@ array([[0.4472136 , 0.        , 0.        ],
 
 #### Multiple queries on a single index
 ```
-from text2text import Handler
 tfidf_index = Handler([
                        article_en, 
                        notre_dame_str, 
                        bacteria_str, 
                        bio_str
-                       ]).tfidf()
-search_results_0 = Handler().search(
+                       ]).tfidf(output="ids")
+search_results_tf1 = Handler().search(
     queries=["wonderful life", "university students"], 
-    search_index=tfidf_index)
-search_results_1 = Handler().search(
+    index=tfidf_index)
+search_results_tf2 = Handler().search(
     queries=["Earth creatures are cool", "United Nations"], 
-    search_index=tfidf_index)
+    index=tfidf_index)
+```
+#### Using neural embeddings index
+```
+embedding_index = Handler([
+                       article_en, 
+                       notre_dame_str, 
+                       bacteria_str, 
+                       bio_str
+                       ]).vectorize()
+search_results_em1 = Handler().search(
+    queries=["wonderful life", "university students"],
+    class_name="Vectorizer",
+    index=embedding_index)
+search_results_em2 = Handler().search(
+    queries=["Earth creatures are cool", "United Nations"],
+    class_name="Vectorizer", 
+    index=embedding_index)
+```
+#### Blending neural embeddings and tf-idf
+```
+np.mean( 
+    np.array([
+              search_results_tf1, 
+              search_results_em1,
+              ]), axis=0)
+
+# averaged scores matrix
+array([[ 0.00729176, -0.02835486,  0.0024925 ,  0.08656652],
+       [ 0.06525719,  0.13328168,  0.0185835 ,  0.01900256]])
 ```
 
 ### Levenshtein Sub-word Edit Distance

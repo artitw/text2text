@@ -111,7 +111,7 @@ class Transformer(object):
   SEED = 123
 
   def __init__(self):
-    raise NotImplementedError("Must implement for TextGenerator subclasses.")
+    raise NotImplementedError("Must implement for Transformer subclasses.")
 
   def transform(self, input_lines, src_lang='en', **kwargs):
     if self.__class__.pretrained_translator==self.__class__.DEFAULT_TRANSLATOR:
