@@ -28,6 +28,6 @@ class Translator(Transformer):
     generated_tokens = model.generate(**encoded_inputs, forced_bos_token_id=tgt_token_id)
     return tokenizer.batch_decode(generated_tokens, skip_special_tokens=True) 
 
-  def predict(self, input_lines, src_lang='en', **kwargs):
-    Transformer.predict(self, input_lines, src_lang=src_lang, **kwargs)
+  def transform(self, input_lines, src_lang='en', **kwargs):
+    Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     return self._translate(input_lines, src_lang=src_lang, **kwargs)

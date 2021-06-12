@@ -3,8 +3,8 @@ from text2text import Tokenizer
 
 class Counter(Tokenizer):
 
-  def predict(self, input_lines, src_lang='en', output='tokens', **kwargs):
-    token_ids = Tokenizer.predict(self, input_lines, src_lang=src_lang, output=output, **kwargs)
+  def transform(self, input_lines, src_lang='en', output='tokens', **kwargs):
+    token_ids = Tokenizer.transform(self, input_lines, src_lang=src_lang, output=output, **kwargs)
     token_counts = []
     for tokens in token_ids:
       token_counter = {}

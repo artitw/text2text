@@ -36,11 +36,11 @@ class Questioner(Abstractor):
     answers = list(unique_words-self.__class__.STOP_WORDS)
     return random.choice(answers) if answers else random.choice(list(unique_words))
 
-  def predict(self, input_lines, src_lang='en', **kwargs):
+  def transform(self, input_lines, src_lang='en', **kwargs):
     if src_lang != 'en':
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
     input_lines = [x + " [SEP] " + self._get_random_answer(x) if " [SEP] " not in x else x for x in input_lines]
-    questions = Abstractor.predict(self, input_lines, src_lang='en', **kwargs)
+    questions = Abstractor.transform(self, input_lines, src_lang='en', **kwargs)
     answers = [input.split(" [SEP] ")[1] for input in input_lines]
     if src_lang != 'en':
       questions = self._translate_lines(questions, 'en', src_lang)

@@ -19,7 +19,7 @@ class Answerer(Transformer):
   def _translate_lines(self, input_lines, src_lang, tgt_lang):
     translator = getattr(self.__class__, "translator", Translator(pretrained_translator=self.__class__.pretrained_translator))
     self.__class__.translator = translator
-    return translator.predict(input_lines, src_lang=src_lang, tgt_lang=tgt_lang)
+    return translator.transform(input_lines, src_lang=src_lang, tgt_lang=tgt_lang)
 
   def _get_answers(self, input_lines):
     tokenizer = self.__class__.tokenizer
@@ -38,8 +38,8 @@ class Answerer(Transformer):
     answers = [a.strip() for a in answers]
     return answers
 
-  def predict(self, input_lines, src_lang='en', **kwargs):
-    Transformer.predict(self, input_lines, src_lang, **kwargs)
+  def transform(self, input_lines, src_lang='en', **kwargs):
+    Transformer.transform(self, input_lines, src_lang, **kwargs)
     if src_lang != 'en':
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
 

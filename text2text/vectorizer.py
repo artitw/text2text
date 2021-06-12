@@ -3,8 +3,8 @@ from text2text import Translator, Transformer
 
 class Vectorizer(Translator):
 
-  def predict(self, input_lines, src_lang='en', **kwargs):
-    Transformer.predict(self, input_lines, src_lang=src_lang, **kwargs)
+  def transform(self, input_lines, src_lang='en', **kwargs):
+    Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     model = self.__class__.model
     tokenizer.src_lang = src_lang

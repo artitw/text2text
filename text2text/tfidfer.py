@@ -33,7 +33,7 @@ class Tfidfer(Counter):
         token_counts[i][tk] /= magnitude
     return token_counts
 
-  def predict(self, input_lines, src_lang='en', output='tokens', **kwargs):
-    token_counts = Counter.predict(self, input_lines, src_lang=src_lang, output=output, **kwargs)
+  def transform(self, input_lines, src_lang='en', output='tokens', **kwargs):
+    token_counts = Counter.transform(self, input_lines, src_lang=src_lang, output=output, **kwargs)
     self._calculate_idf(token_counts)
     return self._normalize_counts(token_counts)

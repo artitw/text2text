@@ -113,7 +113,7 @@ class Transformer(object):
   def __init__(self):
     raise NotImplementedError("Must implement for TextGenerator subclasses.")
 
-  def predict(self, input_lines, src_lang='en', **kwargs):
+  def transform(self, input_lines, src_lang='en', **kwargs):
     if self.__class__.pretrained_translator==self.__class__.DEFAULT_TRANSLATOR:
       if src_lang not in self.__class__.LANGUAGES:
         raise ValueError(f'{src_lang} not found in {self.__class__.LANGUAGES}')
