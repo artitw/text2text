@@ -14,7 +14,9 @@ Transform texts in a hundred different languages!
 * [Examples](#examples)
   * [Sample Texts](#sample-texts)
   * [Tokenization](#tokenization)
-  * [Embedding](#embedding)
+  * [Embedding](#tf-idf)
+  * [TF-IDF](#embedding)
+  * [Search](#search)
   * [Distance](#levenshtein-sub-word-edit-distance)
   * [Translation](#translation)
   * [Question Answering](#question-answering)
@@ -71,6 +73,7 @@ Intialization | `h = Handler(["Hello, World!"], src_lang="en")` | Initialized ha
 Tokenization | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
 Embedding | `h.vectorize()` | `[array([0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206])]`
 TF-IDF | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
+Search | `h.search(queries=["hello"])` | `array([[0.5]])`
 Translation | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
 Summarization | `h.summarize()` | `["World ' s largest world"]`
 Question Generation | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
@@ -267,6 +270,19 @@ Handler([
   '세요': 0.3535533905932738,
   '을': 0.3535533905932738,
   '지': 0.3535533905932738}]
+```
+
+### Search
+```
+x = Handler([
+         "Let's go hiking tomorrow, let's go!", 
+         "안녕하세요.", 
+         "돼지꿈을 꾸세요~~",
+         ]).search(queries=["go", "안녕"])
+
+# Match scores matrix
+array([[0.4472136 , 0.        , 0.        ],
+       [0.        , 0.57735027, 0.        ]])
 ```
 
 ### Levenshtein Sub-word Edit Distance

@@ -3,6 +3,7 @@ from text2text import (
     Counter,
     Measurer, 
     Questioner, 
+    Searcher,
     Summarizer,
     Tfidfer,
     Tokenizer,
@@ -21,6 +22,7 @@ class Handler(object):
     "count": Counter,
     "measure": Measurer,
     "question": Questioner,
+    "search": Searcher,
     "summarize": Summarizer,
     "tfidf": Tfidfer,
     "tokenize": Tokenizer,
@@ -29,17 +31,17 @@ class Handler(object):
     "vectorize": Vectorizer,
   }
 
-  def _transformer_handler(self, transformation, tgt_lang):
+  def _transformer_handler(self, transformation, **kwargs):
     transformer = self.__class__.transformer_instances.get(transformation, self.__class__.EXPOSED_TRANSFORMERS[transformation](pretrained_translator=self.__class__.pretrained_translator))
     self.__class__.transformer_instances[transformation] = transformer
-    return transformer.predict(input_lines=self.input_lines, src_lang=self.src_lang, tgt_lang=tgt_lang)
+    return transformer.predict(input_lines=self.input_lines, src_lang=self.src_lang, **kwargs)
     
   def __init__(self, input_lines, src_lang='en', **kwargs):
     self.input_lines = input_lines
     self.src_lang = src_lang
     self.__class__.pretrained_translator = kwargs.get("pretrained_translator")
     for k in self.__class__.EXPOSED_TRANSFORMERS:
-      handler = lambda x: lambda tgt_lang="en", **kwargs: self._transformer_handler(transformation=x, tgt_lang=tgt_lang)
+      handler = lambda x: lambda **kwargs: self._transformer_handler(transformation=x, **kwargs)
       handler = handler(k)
       setattr(self, k, handler)
     self.__class__.transformer_instances = {}

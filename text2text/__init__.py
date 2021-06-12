@@ -5,6 +5,7 @@ from .translator import Translator
 from .vectorizer import Vectorizer
 from .counter import Counter
 from .tfidfer import Tfidfer
+from .searcher import Searcher
 from .variator import Variator
 from .abstractor import Abstractor
 from .questioner import Questioner

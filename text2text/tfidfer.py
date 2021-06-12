@@ -25,7 +25,7 @@ class Tfidfer(Counter):
 
       magnitude = 0
       for tk in token_counts[i]:
-        token_counts[i][tk] *= self.idf.get(tk,0)
+        token_counts[i][tk] *= getattr(self,'idf',{}).get(tk,0)
         magnitude += token_counts[i][tk]**2
 
       magnitude **= 0.5 
