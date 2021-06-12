@@ -25,7 +25,7 @@ class Tfidfer(Counter):
 
       magnitude = 0
       for tk in token_counts[i]:
-        token_counts[i][tk] *= getattr(self,'idf',{}).get(tk,0)
+        token_counts[i][tk] *= getattr(self,'idf',{}).get(tk,1)
         magnitude += token_counts[i][tk]**2
 
       magnitude **= 0.5 
@@ -33,7 +33,8 @@ class Tfidfer(Counter):
         token_counts[i][tk] /= magnitude
     return token_counts
 
-  def transform(self, input_lines, src_lang='en', output='tokens', **kwargs):
+  def transform(self, input_lines, src_lang='en', output='tokens', use_idf=True, **kwargs):
     token_counts = Counter.transform(self, input_lines, src_lang=src_lang, output=output, **kwargs)
-    self._calculate_idf(token_counts)
+    if use_idf:
+      self._calculate_idf(token_counts)
     return self._normalize_counts(token_counts)

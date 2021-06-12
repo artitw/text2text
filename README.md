@@ -287,6 +287,23 @@ array([[0.4472136 , 0.        , 0.        ],
        [0.        , 0.57735027, 0.        ]])
 ```
 
+#### Multiple queries on a single index
+```
+from text2text import Handler
+tfidf_index = Handler([
+                       article_en, 
+                       notre_dame_str, 
+                       bacteria_str, 
+                       bio_str
+                       ]).tfidf()
+search_results_0 = Handler().search(
+    queries=["wonderful life", "university students"], 
+    search_index=tfidf_index)
+search_results_1 = Handler().search(
+    queries=["Earth creatures are cool", "United Nations"], 
+    search_index=tfidf_index)
+```
+
 ### Levenshtein Sub-word Edit Distance
 ```
 Handler([
