@@ -14,8 +14,8 @@ Transform texts in a hundred different languages!
 * [Examples](#examples)
   * [Sample Texts](#sample-texts)
   * [Tokenization](#tokenization)
-  * [Embedding](#tf-idf)
-  * [TF-IDF](#embedding)
+  * [Embedding](#embedding)
+  * [TF-IDF](#tf-idf)
   * [Search](#search)
   * [Distance](#levenshtein-sub-word-edit-distance)
   * [Translation](#translation)
@@ -40,7 +40,7 @@ Transform texts in a hundred different languages!
 * [pytorch-extension](https://github.com/artitw/apex) (optional)
 * Default model: >16 GB RAM
 * Smaller models: <16 GB RAM 
-  * See Colab Demo and examples below
+  * See [Colab Demo](#colab-demo) and [Examples](#examples) below
 
 ### Text2Text
 ```
@@ -72,20 +72,20 @@ Functionality | Invocation | Result
 Module Importing | `from text2text import Handler, Transformer` | Libraries imported
 Language Model Setting | `Transformer.pretrained_translator="facebook/m2m100_418M"` | Override default with smaller model
 Intialization | `h = Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
-Tokenization | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
-Embedding | `h.vectorize()` | `[array([0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206])]`
-TF-IDF | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
-Search | `h.search(queries=["hello"])` | `array([[0.5]])`
-Translation | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
-Summarization | `h.summarize()` | `["World ' s largest world"]`
-Question Generation | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
-Data Augmentation | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
-Question Answering | `Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
-Measurement | `Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
+[Tokenization](#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
+[Embedding](#embedding) | `h.vectorize()` | `[array([0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206])]`
+[TF-IDF](#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
+[Search](#search) | `h.search(queries=["hello"])` | `array([[0.5]])`
+[Translation](#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
+[Summarization](#summarization) | `h.summarize()` | `["World ' s largest world"]`
+[Question Generation](#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
+[Data Augmentation](#variation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
+[Question Answering](#question-answering) | `Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
+[Distance](#levenshtein-sub-word-edit-distance) | `Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 
 ## Languages Available
 <details>
-  <summary>Show languages</summary>
+  <summary>Show all</summary>
 
 ```
 from text2text import Transformer
