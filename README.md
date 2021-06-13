@@ -1,5 +1,5 @@
 # Text2Text: Multilingual tokenization, embedding, search, translation, summarization, question generation, question answering, data augmentation, distance measurement
-Transform texts in a hundred different languages!
+Transform texts in a hundred different [languages](#languages-available)!
 
 <details>
   <summary>Overview</summary>
@@ -40,7 +40,7 @@ Transform texts in a hundred different languages!
 * [pytorch-extension](https://github.com/artitw/apex) (optional)
 * Default model: >16 GB RAM
 * Smaller models: <16 GB RAM 
-  * See [Colab Demo](#colab-demo) and [Examples](#examples) below
+  * See [Colab Demo](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR) and [Examples](#examples) below
 
 ### Text2Text
 ```
@@ -75,7 +75,7 @@ Intialization | `h = Handler(["Hello, World!"], src_lang="en")` | Initialized ha
 [Tokenization](#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
 [Embedding](#embedding) | `h.vectorize()` | `[array([0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206])]`
 [TF-IDF](#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
-[Search](#search) | `h.search(queries=["hello"])` | `array([[0.5]])`
+[Search](#search) | `h.search(queries=["Hello"])` | `array([[0.5]])`
 [Translation](#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
 [Summarization](#summarization) | `h.summarize()` | `["World ' s largest world"]`
 [Question Generation](#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
