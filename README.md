@@ -14,7 +14,7 @@ Transform texts in a hundred different [languages](#languages-available)!
 * [Examples](#examples)
   * [Sample Texts](#sample-texts)
   * [Tokenization](#tokenization)
-  * [Embedding](#embedding)
+  * [Embedding](#embedding--vectorization)
   * [TF-IDF](#tf-idf)
   * [Search](#search)
   * [Distance](#levenshtein-sub-word-edit-distance)
@@ -22,7 +22,7 @@ Transform texts in a hundred different [languages](#languages-available)!
   * [Question Answering](#question-answering)
   * [Question Generation](#question-generation)
   * [Summarization](#summarization)
-  * [Variation](#variation)
+  * [Data Augmentation](#data-augmentation--back-translation)
 * [Questions?](#questions)
 * [Citation](#citation)
 * [Contributing](#contributing)
@@ -79,7 +79,7 @@ Intialization | `h = Handler(["Hello, World!"], src_lang="en")` | Initialized ha
 [Translation](#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
 [Summarization](#summarization) | `h.summarize()` | `["World ' s largest world"]`
 [Question Generation](#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
-[Data Augmentation](#variation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
+[Data Augmentation](#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
 [Question Answering](#question-answering) | `Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](#levenshtein-sub-word-edit-distance) | `Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 
@@ -454,7 +454,7 @@ Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
  'biology is the science that studies life .']
 ```
 
-### Variation
+### Data Augmentation / Back-Translation
 Back-translations useful for augmenting training data
 ```
 Handler([bacteria_str], src_lang='en').variate()
