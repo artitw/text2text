@@ -19,6 +19,10 @@ class Tfidfer(Counter):
       self.idf[tk] = np.log(num_documents/(1+self.idf[tk]))+1
 
   def _normalize_counts(self, token_counts):
+    rows = []
+    cols = []
+    vals = []
+
     for i in range(len(token_counts)):
       num_tokens = sum(token_counts[i].values())
       for tk in token_counts[i]:
@@ -32,16 +36,11 @@ class Tfidfer(Counter):
       magnitude **= 0.5 
       for tk in token_counts[i]:
         token_counts[i][tk] /= magnitude
+        rows.append(i)
+        cols.append(tk)
+        vals.append(token_counts[i][tk])
 
     if self.output == "matrix":
-      rows = []
-      cols = []
-      vals = []
-      for row in range(len(token_counts)):
-        for col, val in token_counts[row].items():
-          rows.append(row)
-          cols.append(col)
-          vals.append(val)
       token_counts = sp.csr_matrix((vals,(rows,cols)), dtype=np.float64)
     return token_counts
 
