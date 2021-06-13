@@ -69,9 +69,9 @@ Tfidfer -- Counter   Measurer
 ## Quick Start Guide
 Functionality | Invocation | Result
 :------------: | :-------------: | :-------------:
-Module Importing | `from text2text import Handler, Transformer` | Libraries imported
-Language Model Setting | `Transformer.pretrained_translator="facebook/m2m100_418M"` | Override default with smaller model
-Intialization | `h = Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
+Module Importing | `import text2text as t2t` | Libraries imported
+Language Model Setting | `t2t.Transformer.pretrained_translator="facebook/m2m100_418M"` | Override default with smaller model
+Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
 [Tokenization](#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
 [Embedding](#embedding) | `h.vectorize()` | `[array([0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206])]`
 [TF-IDF](#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
@@ -80,16 +80,15 @@ Intialization | `h = Handler(["Hello, World!"], src_lang="en")` | Initialized ha
 [Summarization](#summarization) | `h.summarize()` | `["World ' s largest world"]`
 [Question Generation](#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
 [Data Augmentation](#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
-[Question Answering](#question-answering) | `Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
-[Distance](#levenshtein-sub-word-edit-distance) | `Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
+[Question Answering](#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
+[Distance](#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 
 ## Languages Available
 <details>
   <summary>Show all</summary>
 
 ```
-from text2text import Transformer
-Transformer.LANGUAGES
+t2t.Transformer.LANGUAGES
 
 # Dict of languages supported
 # code: language
@@ -212,7 +211,7 @@ bio_str = "Biology is the science that studies life. What exactly is life? This 
 
 ### Tokenization
 ```
-Handler([
+t2t.Handler([
          "Let's go hiking tomorrow", 
          "안녕하세요.", 
          "돼지꿈을 꾸세요~~"
@@ -226,7 +225,7 @@ Handler([
 
 ### Embedding / Vectorization
 ```
-Handler([
+t2t.Handler([
          "Let's go hiking tomorrow", 
          "안녕하세요.", 
          "돼지꿈을 꾸세요~~"
@@ -243,7 +242,7 @@ Handler([
 
 ### TF-IDF
 ```
-Handler([
+t2t.Handler([
          "Let's go hiking tomorrow", 
          "안녕하세요.", 
          "돼지꿈을 꾸세요~~"
@@ -276,7 +275,7 @@ Handler([
 
 ### Search
 ```
-Handler([
+t2t.Handler([
          "Let's go hiking tomorrow, let's go!", 
          "안녕하세요.", 
          "돼지꿈을 꾸세요~~",
@@ -289,36 +288,36 @@ array([[0.4472136 , 0.        , 0.        ],
 
 #### Multiple queries on a single index
 ```
-tfidf_index = Handler([
+tfidf_index = t2t.Handler([
                        article_en, 
                        notre_dame_str, 
                        bacteria_str, 
                        bio_str
                        ]).tfidf(output="matrix")
 
-search_results_tf1 = Handler().search(
+search_results_tf1 = t2t.Handler().search(
     queries=["wonderful life", "university students"], 
     index=tfidf_index)
 
-search_results_tf2 = Handler().search(
+search_results_tf2 = t2t.Handler().search(
     queries=["Earth creatures are cool", "United Nations"], 
     index=tfidf_index)
 ```
 #### Using neural embeddings index
 ```
-embedding_index = Handler([
+embedding_index = t2t.Handler([
                        article_en, 
                        notre_dame_str, 
                        bacteria_str, 
                        bio_str
                        ]).vectorize()
 
-search_results_em1 = Handler().search(
+search_results_em1 = t2t.Handler().search(
     queries=["wonderful life", "university students"],
     class_name="Vectorizer",
     index=embedding_index)
 
-search_results_em2 = Handler().search(
+search_results_em2 = t2t.Handler().search(
     queries=["Earth creatures are cool", "United Nations"],
     class_name="Vectorizer", 
     index=embedding_index)
@@ -338,7 +337,7 @@ array([[ 0.00729176, -0.02835486,  0.0024925 ,  0.08656652],
 
 ### Levenshtein Sub-word Edit Distance
 ```
-Handler([
+t2t.Handler([
          "Hello, World! [SEP] Hello, what?", 
          "안녕하세요. [SEP] 돼지꿈을 꾸세요~~"
         ]).measure(metric="levenshtein_distance")
@@ -349,7 +348,7 @@ Handler([
 
 ### Translation
 ```
-Handler([
+t2t.Handler([
          article_en, 
          notre_dame_str, 
          bacteria_str, 
@@ -370,13 +369,13 @@ Handler([
  * Below are some tested examples, which use less memory.
 
 ```
-Handler(["I would like to go hiking tomorrow."], 
+t2t.Handler(["I would like to go hiking tomorrow."], 
         src_lang="en", 
         pretrained_translator="facebook/m2m100_418M"
         ).translate(tgt_lang='zh')
 ['我想明天去散步。']
 
-Handler(["I would like to go hiking tomorrow."], 
+t2t.Handler(["I would like to go hiking tomorrow."], 
         src_lang="en_XX", 
         pretrained_translator="facebook/mbart-large-50-many-to-many-mmt"
         ).translate(tgt_lang='zh_CN')
@@ -386,12 +385,12 @@ Handler(["I would like to go hiking tomorrow."],
 ### Question Answering
 Question must follow context with ` [SEP] ` in between.
 ```
-Handler([
+t2t.Handler([
          "Hello, this is Text2Text! [SEP] What is this?", 
          "It works very well. It's awesome! [SEP] How is it?"
          ]).answer()
 
-Handler(["很喜欢陈慧琳唱歌。[SEP] 喜欢做什么?"], 
+t2t.Handler(["很喜欢陈慧琳唱歌。[SEP] 喜欢做什么?"], 
         src_lang="zh",
         pretrained_translator="facebook/m2m100_418M"
         ).answer()
@@ -403,8 +402,8 @@ Handler(["很喜欢陈慧琳唱歌。[SEP] 喜欢做什么?"],
 
 ### Question Generation
 ```
-Handler(["很喜欢陈慧琳唱歌。"], src_lang='zh').question()
-Handler([
+t2t.Handler(["很喜欢陈慧琳唱歌。"], src_lang='zh').question()
+t2t.Handler([
             bio_str,
             bio_str,
             bio_str,
@@ -446,7 +445,7 @@ Note that the last three answers were controlled by specifying the `[SEP]` token
 
 ### Summarization
 ```
-Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
+t2t.Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
 
 # Summaries
 ["Notre Dame's students run nine student - run outlets . [X_SEP] Scholastic magazine claims to be the oldest continuous collegiate publication in the United States . [X_SEP] The Observer is an independent publication .",
@@ -457,7 +456,7 @@ Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
 ### Data Augmentation / Back-Translation
 Back-translations useful for augmenting training data
 ```
-Handler([bacteria_str], src_lang='en').variate()
+t2t.Handler([bacteria_str], src_lang='en').variate()
 
 # Variations
 ['Bacteria are a kind of biological cell. They form a large domain of prokaryotic micro-organisms. Typically a few micrometers in length, bacteria have a number of shapes, ranging from spheres to borders and spirals. Bacteria were among the first forms of life that appeared on Earth, and are present in most of its habitats.',
