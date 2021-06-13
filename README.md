@@ -44,13 +44,13 @@ Transform texts in a hundred different [languages](#languages-available)!
 
 ### Text2Text
 ```
-pip install -U text2text
+pip install -q -U text2text
 ```
 
-### [OPTIONAL] A PyTorch Extension (APEX)
+#### [OPTIONAL for GPUs] A PyTorch Extension (APEX)
 ```
 export CUDA_HOME=/usr/local/cuda-10.1
-pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" pytorch-extension
+pip install -q -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" pytorch-extension
 ```
 
 ## Class Diagram
