@@ -111,7 +111,7 @@ class Abstractor(t2t.Transformer):
     self.__class__.bi_uni_pipeline = bi_uni_pipeline
 
   def _translate_lines(self, input_lines, src_lang, tgt_lang):
-    translator = getattr(self.__class__, "translator", Translator(pretrained_translator=self.__class__.pretrained_translator))
+    translator = getattr(self.__class__, "translator", t2t.Translator(pretrained_translator=self.__class__.pretrained_translator))
     self.__class__.translator = translator
     return translator.transform(input_lines, src_lang=src_lang, tgt_lang=tgt_lang)
 
