@@ -13,9 +13,9 @@ from .pytorch_pretrained_bert.modeling import BertForSeq2SeqDecoder
 
 from .biunilm import seq2seq_loader
 
-from text2text import Abstractor
+import text2text as t2t
 
-class Summarizer(Abstractor):
+class Summarizer(t2t.Abstractor):
   pretrained_parameters = {
     "file_id": "1RyJxShxC9tDYVAyZwUwqkSoQ3l5DfjuE",
     "fp16": True,

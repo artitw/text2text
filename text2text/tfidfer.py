@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.sparse as sp
-from text2text import Counter
+import text2text as t2t
 
-class Tfidfer(Counter):
+class Tfidfer(t2t.Counter):
 
   def _calculate_idf(self, token_counts):
     num_documents = len(token_counts)
@@ -48,7 +48,7 @@ class Tfidfer(Counter):
     self.output = output
     if output == "matrix":
       output = "ids"    
-    token_counts = Counter.transform(self, input_lines, src_lang=src_lang, output=output, **kwargs)
+    token_counts = t2t.Counter.transform(self, input_lines, src_lang=src_lang, output=output, **kwargs)
 
     if use_idf:
       self._calculate_idf(token_counts)

@@ -13,10 +13,9 @@ from .pytorch_pretrained_bert.modeling import BertForSeq2SeqDecoder
 
 from .biunilm import seq2seq_loader
 
-from text2text import Transformer
-from text2text import Translator
+import text2text as t2t
 
-class Abstractor(Transformer):
+class Abstractor(t2t.Transformer):
   pretrained_parameters = {}
 
   def _detokenize(self, tk_list):
@@ -117,7 +116,7 @@ class Abstractor(Transformer):
     return translator.transform(input_lines, src_lang=src_lang, tgt_lang=tgt_lang)
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    Transformer.transform(self, input_lines, src_lang, **kwargs)
+    t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     if src_lang != 'en':
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
 

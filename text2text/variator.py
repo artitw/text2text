@@ -1,8 +1,8 @@
-from text2text import Transformer, Translator
+import text2text as t2t
 
-class Variator(Translator):
+class Variator(t2t.Translator):
   def transform(self, input_lines, src_lang='en', **kwargs):
-    Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
+    t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     output_lines = []
     src_lang = src_lang
     for tgt_lang in self.__class__.LANGUAGES:

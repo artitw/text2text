@@ -1,4 +1,4 @@
-from text2text import Tokenizer, Transformer
+import text2text as t2t
 
 def levenshtein_distance(s1, s2):
   prev_row = list(range(1,len(s2)+1)) + [0]
@@ -12,10 +12,10 @@ def levenshtein_distance(s1, s2):
     prev_row = cur_row
   return cur_row[len(s2)-1]
 
-class Measurer(Tokenizer):
+class Measurer(t2t.Tokenizer):
 
   def transform(self, input_lines, src_lang='en', metric='levenshtein_distance', **kwargs):
-    Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
+    t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     tokenizer.src_lang = src_lang
     input_lines = list(zip(*[l.split(" [SEP] ") for l in input_lines]))

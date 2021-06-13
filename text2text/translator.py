@@ -1,7 +1,7 @@
-from text2text import Transformer
+import text2text as t2t
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
-class Translator(Transformer):
+class Translator(t2t.Transformer):
 
   def __init__(self, **kwargs):
     pretrained_translator = kwargs.get('pretrained_translator')
@@ -29,5 +29,5 @@ class Translator(Transformer):
     return tokenizer.batch_decode(generated_tokens, skip_special_tokens=True) 
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
+    t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     return self._translate(input_lines, src_lang=src_lang, **kwargs)

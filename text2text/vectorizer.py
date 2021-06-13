@@ -1,10 +1,10 @@
 import numpy as np
-from text2text import Translator, Transformer
+import text2text as t2t
 
-class Vectorizer(Translator):
+class Vectorizer(t2t.Translator):
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
+    t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     model = self.__class__.model
     tokenizer.src_lang = src_lang

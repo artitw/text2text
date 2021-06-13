@@ -1,11 +1,9 @@
 import torch
-
-from text2text import Transformer
-from text2text import Translator
+import text2text as t2t
 
 from transformers import AutoModelForQuestionAnswering, AutoTokenizer
 
-class Answerer(Transformer):
+class Answerer(t2t.Transformer):
   pretrained_answerer = "valhalla/longformer-base-4096-finetuned-squadv1"
 
   def __init__(self, **kwargs):
@@ -17,7 +15,7 @@ class Answerer(Transformer):
     self.__class__.model = AutoModelForQuestionAnswering.from_pretrained(pretrained_answerer)
 
   def _translate_lines(self, input_lines, src_lang, tgt_lang):
-    translator = getattr(self.__class__, "translator", Translator(pretrained_translator=self.__class__.pretrained_translator))
+    translator = getattr(self.__class__, "translator", t2t.Translator(pretrained_translator=self.__class__.pretrained_translator))
     self.__class__.translator = translator
     return translator.transform(input_lines, src_lang=src_lang, tgt_lang=tgt_lang)
 
@@ -39,7 +37,7 @@ class Answerer(Transformer):
     return answers
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    Transformer.transform(self, input_lines, src_lang, **kwargs)
+    t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     if src_lang != 'en':
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
 

@@ -1,16 +1,4 @@
-from text2text import (
-    Answerer, 
-    Counter,
-    Measurer, 
-    Questioner, 
-    Searcher,
-    Summarizer,
-    Tfidfer,
-    Tokenizer,
-    Translator, 
-    Variator,
-    Vectorizer, 
-)
+import text2text as t2t
 
 class Handler(object):
   """
@@ -18,17 +6,17 @@ class Handler(object):
   """
 
   EXPOSED_TRANSFORMERS = {
-    "answer": Answerer,
-    "count": Counter,
-    "measure": Measurer,
-    "question": Questioner,
-    "search": Searcher,
-    "summarize": Summarizer,
-    "tfidf": Tfidfer,
-    "tokenize": Tokenizer,
-    "translate": Translator,
-    "variate": Variator,
-    "vectorize": Vectorizer,
+    "answer": t2t.Answerer,
+    "count": t2t.Counter,
+    "measure": t2t.Measurer,
+    "question": t2t.Questioner,
+    "search": t2t.Searcher,
+    "summarize": t2t.Summarizer,
+    "tfidf": t2t.Tfidfer,
+    "tokenize": t2t.Tokenizer,
+    "translate": t2t.Translator,
+    "variate": t2t.Variator,
+    "vectorize": t2t.Vectorizer,
   }
 
   def _transformer_handler(self, transformation, **kwargs):

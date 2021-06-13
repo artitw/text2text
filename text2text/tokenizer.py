@@ -1,7 +1,7 @@
-from text2text import Transformer
+import text2text as t2t
 from transformers import AutoTokenizer
 
-class Tokenizer(Transformer):
+class Tokenizer(t2t.Transformer):
 
   def __init__(self, **kwargs):
     pretrained_translator = kwargs.get('pretrained_translator')
@@ -11,7 +11,7 @@ class Tokenizer(Transformer):
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_translator)
 
   def transform(self, input_lines, src_lang='en', output='tokens', **kwargs):
-    Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
+    t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     tokenizer.src_lang = src_lang
     encoded_inputs = tokenizer(input_lines, add_special_tokens=False)

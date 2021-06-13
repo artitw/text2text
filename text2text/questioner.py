@@ -1,8 +1,8 @@
 import random
 import string
-from text2text import Abstractor
+import text2text as t2t
 
-class Questioner(Abstractor):
+class Questioner(t2t.Abstractor):
   pretrained_parameters = {
     "file_id": "1JN2wnkSRotwUnJ_Z-AbWwoPdP53Gcfsn",
     "fp16": False,
@@ -40,7 +40,7 @@ class Questioner(Abstractor):
     if src_lang != 'en':
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
     input_lines = [x + " [SEP] " + self._get_random_answer(x) if " [SEP] " not in x else x for x in input_lines]
-    questions = Abstractor.transform(self, input_lines, src_lang='en', **kwargs)
+    questions = t2t.Abstractor.transform(self, input_lines, src_lang='en', **kwargs)
     answers = [input.split(" [SEP] ")[1] for input in input_lines]
     if src_lang != 'en':
       questions = self._translate_lines(questions, 'en', src_lang)

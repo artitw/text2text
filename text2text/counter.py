@@ -1,10 +1,10 @@
 import numpy as np
-from text2text import Tokenizer
+import text2text as t2t
 
-class Counter(Tokenizer):
+class Counter(t2t.Tokenizer):
 
   def transform(self, input_lines, src_lang='en', output='tokens', **kwargs):
-    token_ids = Tokenizer.transform(self, input_lines, src_lang=src_lang, output=output, **kwargs)
+    token_ids = t2t.Tokenizer.transform(self, input_lines, src_lang=src_lang, output=output, **kwargs)
     token_counts = []
     for tokens in token_ids:
       token_counter = {}

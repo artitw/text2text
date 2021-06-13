@@ -1,8 +1,8 @@
 import numpy as np
 import scipy.sparse as sp
-from text2text import Transformer
+import text2text as t2t
 
-class Searcher(Transformer):
+class Searcher(t2t.Transformer):
 
   def __init__(self, **kwargs):
     pretrained_translator = kwargs.get('pretrained_translator')
@@ -11,9 +11,8 @@ class Searcher(Transformer):
     self.__class__.pretrained_translator = pretrained_translator
 
   def transform(self, input_lines, queries, src_lang='en', class_name="Tfidfer", index=None, **kwargs):
-    Transformer.transform(self, input_lines, src_lang, **kwargs)
-    t2t_module = __import__("text2text")
-    search_class = getattr(t2t_module, class_name)
+    t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
+    search_class = getattr(t2t, class_name)
     search_object = search_class(pretrained_translator=self.__class__.pretrained_translator)
 
     if index is None:
