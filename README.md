@@ -294,7 +294,7 @@ tfidf_index = Handler([
                        notre_dame_str, 
                        bacteria_str, 
                        bio_str
-                       ]).tfidf(output="ids")
+                       ]).tfidf(output="matrix")
 search_results_tf1 = Handler().search(
     queries=["wonderful life", "university students"], 
     index=tfidf_index)
