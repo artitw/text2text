@@ -73,7 +73,7 @@ Module Importing | `import text2text as t2t` | Libraries imported
 Language Model Setting | `t2t.Transformer.pretrained_translator="facebook/m2m100_418M"` | Override default with smaller model
 Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
 [Tokenization](#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
-[Embedding](#embedding) | `h.vectorize()` | `[array([0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206])]`
+[Embedding](#embedding) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
 [TF-IDF](#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
 [Search](#search) | `h.search(queries=["Hello"])` | `array([[0.5]])`
 [Translation](#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
@@ -232,12 +232,12 @@ t2t.Handler([
          ]).vectorize()
 
 # Embeddings
-[array([-0.0589195 ,  0.43412262,  0.06801314, ..., -0.80633867,
-        -0.42413312, -0.15440752]),
- array([ 0.0426594 ,  0.04762528,)  0.14975207, ...,  0.38897714,
-         0.4434174 ,  0.14709741],
- array([-0.5611394 , -0.76467717,  0.0817059 , ..., -0.04898087,
-         0.01132951, -0.03406287])]
+array([[-0.00352954,  0.0260059 ,  0.00407429, ..., -0.04830331,
+        -0.02540749, -0.00924972],
+       [ 0.00043362,  0.00249816,  0.01755436, ...,  0.04451273,
+         0.05118701,  0.01895813],
+       [-0.03563676, -0.04856304,  0.00518898, ..., -0.00311068,
+         0.00071953, -0.00216325]])
 ```
 
 ### TF-IDF

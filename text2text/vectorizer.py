@@ -18,4 +18,4 @@ class Vectorizer(t2t.Translator):
     non_paddings = non_paddings.reshape(last_layer_states.shape)
     x = np.average(last_layer_states, axis=1, weights=non_paddings)
     x /= np.repeat(np.linalg.norm(x, axis=1),x.shape[-1]).reshape(x.shape)
-    return list(x)
+    return x
