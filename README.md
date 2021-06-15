@@ -307,12 +307,12 @@ embedding_index = t2t.Handler([
 
 search_results_em1 = t2t.Handler().search(
     queries=["wonderful life", "university students"],
-    class_name="Vectorizer",
+    vector_class=t2t.Vectorizer,
     index=embedding_index)
 
 search_results_em2 = t2t.Handler().search(
     queries=["Earth creatures are cool", "United Nations"],
-    class_name="Vectorizer", 
+    vector_class=t2t.Vectorizer,
     index=embedding_index)
 ```
 #### Blending neural embeddings and tf-idf
@@ -614,6 +614,8 @@ t2t.Handler([bacteria_str], src_lang='en').variate()
  'Bacteria are a type of biocells, they make up a large area of probiotic microorganisms, usually several meters long bacteria have several shapes, from branches to roots and spirals, bacteria are one of the first forms of life that appear on Earth and are present in most of their habitats.',
  'The bacteria is a type of biological cells. The bacteria is a large area of prokaryotic microorganisms. The bacteria is a long micrometres, the bacteria is a spheres in roads and spirals. The bacteria is among the data, data, data, data and data.']
 ```
+
+</details>
 
 ## Questions?
 For questions or help using Text2Text, please submit a [GitHub issue](https://github.com/artitw/text2text/issues).
