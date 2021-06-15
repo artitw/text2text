@@ -81,7 +81,6 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
   <summary>Show all</summary>
 
 ```
-
 t2t.Transformer.LANGUAGES
 
 # Dict of languages supported
@@ -366,7 +365,6 @@ t2t.Handler([
   <summary>BYOT examples</summary>
 
 ```
-
 t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"
 t2t.Handler(["I would like to go hiking tomorrow."], 
         src_lang="en"
@@ -512,7 +510,6 @@ t2t.Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
   <summary>Back-translations useful for augmenting training data</summary>
 
 ```
-
 t2t.Handler([bacteria_str], src_lang='en').variate()
 
 # Variations

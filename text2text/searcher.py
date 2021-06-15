@@ -4,10 +4,9 @@ import text2text as t2t
 
 class Searcher(t2t.Transformer):
   
-  def transform(self, input_lines, queries, src_lang='en', class_name="Tfidfer", index=None, **kwargs):
+  def transform(self, input_lines, queries, src_lang='en', vector_class=t2t.Tfidfer, index=None, **kwargs):
     t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
-    search_class = getattr(t2t, class_name)
-    search_object = search_class()
+    search_object = vector_class()
 
     if index is None:
       index = search_object.transform(input_lines, src_lang='en', output="matrix")
