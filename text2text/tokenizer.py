@@ -4,10 +4,7 @@ from transformers import AutoTokenizer
 class Tokenizer(t2t.Transformer):
 
   def __init__(self, **kwargs):
-    pretrained_translator = kwargs.get('pretrained_translator')
-    if not pretrained_translator:
-      pretrained_translator = self.__class__.pretrained_translator
-    self.__class__.pretrained_translator = pretrained_translator
+    pretrained_translator = self.__class__.PRETRAINED_TRANSLATOR
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_translator)
 
   def transform(self, input_lines, src_lang='en', output='tokens', **kwargs):

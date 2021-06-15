@@ -37,7 +37,6 @@ Transform texts in a hundred different [languages](#languages-available)!
 [![Cross-Lingual Models](http://img.youtube.com/vi/caZLVcJqsqo/0.jpg)](https://youtu.be/caZLVcJqsqo "Cross-Lingual Models")
 
 ## Requirements and Installation
-* [pytorch-extension](https://github.com/artitw/apex) (optional)
 * Default model: >16 GB RAM
 * Smaller models: <16 GB RAM 
   * See [Colab Demo](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR) and [Examples](#examples) below
@@ -45,12 +44,6 @@ Transform texts in a hundred different [languages](#languages-available)!
 ### Text2Text
 ```
 pip install -q -U text2text
-```
-
-#### [OPTIONAL for GPUs] A PyTorch Extension (APEX)
-```
-export CUDA_HOME=/usr/local/cuda-10.1
-pip install -q -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" pytorch-extension
 ```
 
 ## Class Diagram
@@ -70,7 +63,7 @@ Tfidfer -- Counter   Measurer
 Functionality | Invocation | Result
 :------------: | :-------------: | :-------------:
 Module Importing | `import text2text as t2t` | Libraries imported
-Language Model Setting | `t2t.Transformer.pretrained_translator="facebook/m2m100_418M"` | Override default with smaller model
+Language Model Setting | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Override default with smaller model
 Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
 [Tokenization](#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
 [Embedding](#embedding) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
@@ -88,6 +81,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
   <summary>Show all</summary>
 
 ```
+
 t2t.Transformer.LANGUAGES
 
 # Dict of languages supported
@@ -364,23 +358,84 @@ t2t.Handler([
 
 #### BYOT: Bring Your Own Translator
  * The default translator requires more than 16GB of memory.
- * You can specify your own pretrained translator at your own risk.
+ * You can specify smaller pretrained translators at your own risk.
  * Make sure src_lang and tgt_lang codes conform to that model.
  * Below are some tested examples, which use less memory.
 
+<details>
+  <summary>BYOT examples</summary>
+
 ```
+
+t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"
 t2t.Handler(["I would like to go hiking tomorrow."], 
-        src_lang="en", 
-        pretrained_translator="facebook/m2m100_418M"
+        src_lang="en"
         ).translate(tgt_lang='zh')
 ['我想明天去散步。']
 
+t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/mbart-large-50-many-to-many-mmt"
+t2t.Transformer.LANGUAGES = {
+  'af_ZA': 'Afrikaans',
+  'ar_AR': 'Arabic',
+  'az_AZ': 'Azerbaijani',
+  'bn_IN': 'Bengali',
+  'cs_CZ': 'Czech',
+  'de_DE': 'German',
+  'en_XX': 'English',
+  'es_XX': 'Spanish',
+  'et_EE': 'Estonian',
+  'fa_IR': 'Persian',
+  'fi_FI': 'Finnish',
+  'fr_XX': 'French',
+  'gl_ES': 'Galician',
+  'gu_IN': 'Gujarati',
+  'he_IL': 'Hebrew',
+  'hi_IN': 'Hindi',
+  'hr_HR': 'Croatian',
+  'id_ID': 'Indonesian',
+  'it_IT': 'Italian',
+  'ja_XX': 'Japanese',
+  'ka_GE': 'Georgian',
+  'kk_KZ': 'Kazakh',
+  'km_KH': 'Khmer',
+  'ko_KR': 'Korean',
+  'lt_LT': 'Lithuanian',
+  'lv_LV': 'Latvian',
+  'mk_MK': 'Macedonian',
+  'ml_IN': 'Malayalam',
+  'mn_MN': 'Mongolian',
+  'mr_IN': 'Marathi',
+  'my_MM': 'Burmese',
+  'ne_NP': 'Nepali',
+  'nl_XX': 'Dutch',
+  'pl_PL': 'Polish',
+  'ps_AF': 'Pashto',
+  'pt_XX': 'Portuguese',
+  'ro_RO': 'Romanian',
+  'ru_RU': 'Russian',
+  'si_LK': 'Sinhala',
+  'sl_SI': 'Slovene',
+  'sv_SE': 'Swedish',
+  'sw_KE': 'Swahili',
+  'ta_IN': 'Tamil',
+  'te_IN': 'Telugu',
+  'th_TH': 'Thai',
+  'tl_XX': 'Tagalog',
+  'tr_TR': 'Turkish',
+  'uk_UA': 'Ukrainian',
+  'ur_PK': 'Urdu',
+  'vi_VN': 'Vietnamese',
+  'xh_ZA': 'Xhosa',
+  'zh_CN': 'Chinese'
+}
 t2t.Handler(["I would like to go hiking tomorrow."], 
-        src_lang="en_XX", 
-        pretrained_translator="facebook/mbart-large-50-many-to-many-mmt"
+        src_lang="en_XX"
         ).translate(tgt_lang='zh_CN')
 ['我想明天去徒步旅行。']
+
 ```
+
+</details>
 
 ### Question Answering
 Question must follow context with ` [SEP] ` in between.
@@ -390,10 +445,9 @@ t2t.Handler([
          "It works very well. It's awesome! [SEP] How is it?"
          ]).answer()
 
-t2t.Handler(["很喜欢陈慧琳唱歌。[SEP] 喜欢做什么?"], 
-        src_lang="zh",
-        pretrained_translator="facebook/m2m100_418M"
-        ).answer()
+t2t.Handler([
+             "很喜欢陈慧琳唱歌。[SEP] 喜欢做什么?"
+             ], src_lang="zh").answer()
 
 # Answers
 ['Text2Text', 'awesome']
@@ -454,8 +508,11 @@ t2t.Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
 ```
 
 ### Data Augmentation / Back-Translation
-Back-translations useful for augmenting training data
+<details>
+  <summary>Back-translations useful for augmenting training data</summary>
+
 ```
+
 t2t.Handler([bacteria_str], src_lang='en').variate()
 
 # Variations

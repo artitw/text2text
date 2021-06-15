@@ -7,7 +7,6 @@ class Answerer(t2t.Transformer):
   pretrained_answerer = "valhalla/longformer-base-4096-finetuned-squadv1"
 
   def __init__(self, **kwargs):
-    self.__class__.pretrained_translator = kwargs.get('pretrained_translator')
     pretrained_answerer = kwargs.get('pretrained_answerer')
     if not pretrained_answerer:
       pretrained_answerer = self.__class__.pretrained_answerer
@@ -15,7 +14,7 @@ class Answerer(t2t.Transformer):
     self.__class__.model = AutoModelForQuestionAnswering.from_pretrained(pretrained_answerer)
 
   def _translate_lines(self, input_lines, src_lang, tgt_lang):
-    translator = getattr(self.__class__, "translator", t2t.Translator(pretrained_translator=self.__class__.pretrained_translator))
+    translator = getattr(self.__class__, "translator", t2t.Translator())
     self.__class__.translator = translator
     return translator.transform(input_lines, src_lang=src_lang, tgt_lang=tgt_lang)
 
