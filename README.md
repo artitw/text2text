@@ -506,12 +506,15 @@ t2t.Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
 ```
 
 ### Data Augmentation / Back-Translation
-<details>
-  <summary>Back-translations useful for augmenting training data</summary>
-
+Back-translations useful for augmenting training data
 ```
 t2t.Handler([bacteria_str], src_lang='en').variate()
+```
 
+<details>
+  <summary>Show results</summary>
+
+```
 # Variations
 ['Bacteria are a kind of biological cell. They form a large domain of prokaryotic micro-organisms. Typically a few micrometers in length, bacteria have a number of shapes, ranging from spheres to borders and spirals. Bacteria were among the first forms of life that appeared on Earth, and are present in most of its habitats.',
  'Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles Chronicles',
