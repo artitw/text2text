@@ -20,7 +20,7 @@ class Searcher(t2t.Transformer):
         for j, d in enumerate(index):
             for tk in q:
               scores[i,j] += q.get(tk,0)*d.get(tk,0)
-    elif type(queries[0]) is np.ndarray and type(index[0]) is np.ndarray:
+    elif type(queries) is np.ndarray and type(index) is np.ndarray:
       scores = np.matmul(queries,np.transpose(index))
     elif type(queries) is sp.csr_matrix and type(index) is sp.csr_matrix:
       col_diff = queries.shape[1]-index.shape[1]
