@@ -19,6 +19,8 @@ class Handler(object):
     "vectorize": t2t.Vectorizer,
   }
 
+  transformer_instances = {}
+
   def _transformer_handler(self, transformation, **kwargs):
     transformer = self.__class__.transformer_instances.get(transformation, self.__class__.EXPOSED_TRANSFORMERS[transformation]())
     self.__class__.transformer_instances[transformation] = transformer
@@ -31,4 +33,3 @@ class Handler(object):
       handler = lambda x: lambda **kwargs: self._transformer_handler(transformation=x, **kwargs)
       handler = handler(k)
       setattr(self, k, handler)
-    self.__class__.transformer_instances = {}
