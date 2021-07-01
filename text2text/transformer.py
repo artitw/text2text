@@ -115,6 +115,8 @@ class Transformer(object):
     if src_lang not in self.__class__.LANGUAGES:
       raise ValueError(f'{src_lang} not found in {self.__class__.LANGUAGES}')
     self.__class__.src_lang = src_lang
-    if type(input_lines) != list:
+    if type(input_lines) == str:
       input_lines = [input_lines]
-    pass
+    elif type(input_lines) != list:
+      input_lines = list(input_lines)
+    return input_lines

@@ -36,7 +36,7 @@ class Answerer(t2t.Transformer):
     return answers
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
+    input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     if src_lang != 'en':
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
 

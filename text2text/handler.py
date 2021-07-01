@@ -22,8 +22,11 @@ class Handler(object):
   transformer_instances = {}
 
   def _transformer_handler(self, transformation, **kwargs):
-    transformer = self.__class__.transformer_instances.get(transformation, self.__class__.EXPOSED_TRANSFORMERS[transformation]())
-    self.__class__.transformer_instances[transformation] = transformer
+    if transformation in self.__class__.transformer_instances:
+      transformer = self.__class__.transformer_instances[transformation]
+    else:
+      transformer = self.__class__.EXPOSED_TRANSFORMERS[transformation]()
+      self.__class__.transformer_instances[transformation] = transformer
     return transformer.transform(input_lines=self.input_lines, src_lang=self.src_lang, **kwargs)
     
   def __init__(self, input_lines=[], src_lang='en', **kwargs):

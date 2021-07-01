@@ -5,7 +5,7 @@ import text2text as t2t
 class Vectorizer(t2t.Translator):
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
+    input_lines = t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     model = self.__class__.model
     tokenizer.src_lang = src_lang

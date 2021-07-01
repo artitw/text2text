@@ -25,5 +25,5 @@ class Translator(t2t.Transformer):
     return tokenizer.batch_decode(generated_tokens, skip_special_tokens=True) 
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
+    input_lines = t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     return self._translate(input_lines, src_lang=src_lang, **kwargs)

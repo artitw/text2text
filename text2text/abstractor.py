@@ -30,7 +30,6 @@ class Abstractor(t2t.Transformer):
   def _download_pretrained_model(self):
     pretrained_parameters = self.__class__.pretrained_parameters
     if os.path.isfile(pretrained_parameters["model_recover_path"]):
-      print(f'{pretrained_parameters["model_recover_path"]} found in current directory.')
       return
     s = requests.session()
     file_id = pretrained_parameters["file_id"]
@@ -87,7 +86,6 @@ class Abstractor(t2t.Transformer):
     self._download_pretrained_model()
 
     model_recover_path = glob.glob(pretrained_parameters["model_recover_path"].strip())[0]
-    print(f"***** Recover model: {model_recover_path} *****")
     map_device = None
     if not torch.cuda.is_available():
       map_device='cpu'
@@ -116,7 +114,7 @@ class Abstractor(t2t.Transformer):
     return translator.transform(input_lines, src_lang=src_lang, tgt_lang=tgt_lang)
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
+    input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     if src_lang != 'en':
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
 

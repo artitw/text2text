@@ -37,6 +37,7 @@ class Questioner(t2t.Abstractor):
     return random.choice(answers) if answers else random.choice(list(unique_words))
 
   def transform(self, input_lines, src_lang='en', **kwargs):
+    input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     if src_lang != 'en':
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
     input_lines = [x + " [SEP] " + self._get_random_answer(x) if " [SEP] " not in x else x for x in input_lines]

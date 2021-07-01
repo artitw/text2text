@@ -8,7 +8,7 @@ class Tokenizer(t2t.Transformer):
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_translator)
 
   def transform(self, input_lines, src_lang='en', output='tokens', **kwargs):
-    t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
+    input_lines = t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     tokenizer.src_lang = src_lang
     encoded_inputs = tokenizer(input_lines, add_special_tokens=False)
