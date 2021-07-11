@@ -76,7 +76,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Data Augmentation](#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
 [Question Answering](#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
-[Finetuning](#training--finetuning) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).fit()` | pytorch result
+[Training/Finetuning](#training--finetuning) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).fit()` | Finetuned model saved
 
 ## Languages Available
 <details>
@@ -623,12 +623,18 @@ t2t.Handler([bacteria_str], src_lang='en').variate()
 </details>
 
 ### Training / Finetuning
-Finetune model on your data
+Finetune cross-lingual model on your data
 ```
-t2t.Handler(["Hello, World! [SEP] Hello, what?"], 
+result = t2t.Handler(["Hello, World! [SEP] 你好,世界!"], 
+            src_lang="en",
+            tgt_lang="zh",
             num_epochs=10, 
-            save_directory="model"
+            save_directory="model_dir"
             ).fit()
+
+# load and use model from saved directory
+t2t.Transformer.PRETRAINED_TRANSLATOR = "model_dir"
+t2t.Handler("Hello, World!").translate(tgt_lang="zh")
 ```
 
 ## Questions?
