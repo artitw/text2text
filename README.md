@@ -622,7 +622,7 @@ t2t.Handler([bacteria_str], src_lang='en').variate()
 
 </details>
 
-### Training / Fine-tuning
+### Training / Finetuning
 Finetune model on your data
 ```
 t2t.Handler(["Hello, World! [SEP] Hello, what?"], 
