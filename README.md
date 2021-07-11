@@ -53,11 +53,11 @@ Tfidfer -- Counter   Measurer
                 \     /
   Searcher     Tokenizer
        \_______    |
-        _______Transformer_________
-       /           |               \
-  Answerer     Translator       Abstractor
-                /     \          /       \
-       Vectorizer  Variator  Questioner  Summarizer
+        _______Transformer______________
+       /           |                    \
+  Answerer     Translator              Abstractor
+              /    |     \              /       \
+      Vectorizer  Fitter  Variator  Questioner  Summarizer
 ```
 
 ## Quick Start Guide
@@ -76,7 +76,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Data Augmentation](#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
 [Question Answering](#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
-[Finetuning](#training--finetuning) | `t2t.Handler("Hello, World! [SEP] Hello, what?").fit()` | pytorch result
+[Finetuning](#training--finetuning) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).fit()` | pytorch result
 
 ## Languages Available
 <details>
@@ -625,7 +625,10 @@ t2t.Handler([bacteria_str], src_lang='en').variate()
 ### Training / Fine-tuning
 Finetune model on your data
 ```
-t2t.Handler("Hello, World! [SEP] Hello, what?").fit()
+t2t.Handler(["Hello, World! [SEP] Hello, what?"], 
+            num_epochs=10, 
+            save_directory="model"
+            ).fit()
 ```
 
 ## Questions?
