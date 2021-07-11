@@ -23,6 +23,7 @@ Transform texts in a hundred different [languages](#languages-available)!
   * [Question Generation](#question-generation)
   * [Summarization](#summarization)
   * [Data Augmentation](#data-augmentation--back-translation)
+  * [Finetuning](#training--finetuning)
 * [Questions?](#questions)
 * [Citation](#citation)
 * [Contributing](#contributing)
@@ -54,7 +55,7 @@ Tfidfer -- Counter   Measurer
        \_______    |
         _______Transformer_________
        /           |               \
-   Answerer    Translator       Abstractor
+  Answerer     Translator       Abstractor
                 /     \          /       \
        Vectorizer  Variator  Questioner  Summarizer
 ```
@@ -75,6 +76,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Data Augmentation](#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
 [Question Answering](#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
+[Finetuning](#training--finetuning) | `t2t.Handler("Hello, World! [SEP] Hello, what?").fit()` | pytorch result
 
 ## Languages Available
 <details>
@@ -619,6 +621,12 @@ t2t.Handler([bacteria_str], src_lang='en').variate()
 ```
 
 </details>
+
+### Training / Fine-tuning
+Finetune model on your data
+```
+t2t.Handler("Hello, World! [SEP] Hello, what?").fit()
+```
 
 ## Questions?
 For questions or help using Text2Text, please submit a [GitHub issue](https://github.com/artitw/text2text/issues).

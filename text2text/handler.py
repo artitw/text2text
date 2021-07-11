@@ -8,6 +8,7 @@ class Handler(object):
   EXPOSED_TRANSFORMERS = {
     "answer": t2t.Answerer,
     "count": t2t.Counter,
+    "fit": t2t.Fitter,
     "measure": t2t.Measurer,
     "question": t2t.Questioner,
     "search": t2t.Searcher,

@@ -3,6 +3,7 @@ from .tokenizer import Tokenizer
 from .measurer import Measurer
 from .translator import Translator
 from .vectorizer import Vectorizer
+from .fitter import Fitter
 from .counter import Counter
 from .tfidfer import Tfidfer
 from .searcher import Searcher
