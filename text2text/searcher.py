@@ -28,5 +28,5 @@ class Searcher(t2t.Transformer):
         queries = sp.hstack([queries,padding], format="csr")
       scores = queries.dot(index.transpose())
     else:
-      TypeError("Invalid type for queries and/or index.")
+      raise TypeError("Invalid type for queries and/or index.")
     return scores
