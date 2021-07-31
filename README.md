@@ -1,33 +1,33 @@
 # Text2Text: Multilingual tokenization, embedding, search, translation, summarization, question generation, question answering, data augmentation, distance measurement
-Transform texts in a hundred different [languages](#languages-available)!
+Transform texts in a hundred different [languages](https://github.com/artitw/text2text#languages-available)!
 
 <details>
   <summary>Overview</summary>
 
-* [Colab Demo](#colab-demo)
-* [Cross-Lingual Models](#how-cross-lingual-nlp-models-work-click-to-watch)
-* [Requirements & Installation](#requirements-and-installation)
-* [Class Diagram](#class-diagram)
-* [Quick Start Guide](#api-quick-start-guide)
-* [Languages Available](#languages-available)
-* [Requirements & Installation](#requirements-and-installation)
-* [Examples](#examples)
-  * [Sample Texts](#sample-texts)
-  * [Tokenization](#tokenization)
-  * [Embedding](#embedding--vectorization)
-  * [TF-IDF](#tf-idf)
-  * [Search](#search)
-  * [Distance](#levenshtein-sub-word-edit-distance)
-  * [Translation](#translation)
-  * [Question Answering](#question-answering)
-  * [Question Generation](#question-generation)
-  * [Summarization](#summarization)
-  * [Data Augmentation](#data-augmentation--back-translation)
-  * [Finetuning](#training--finetuning)
-* [Questions?](#questions)
-* [Citation](#citation)
-* [Contributing](#contributing)
-* [Code of Conduct](#code-of-conduct)
+* [Colab Demo](https://github.com/artitw/text2text#colab-demo)
+* [Cross-Lingual Models](https://github.com/artitw/text2text#how-cross-lingual-nlp-models-work-click-to-watch)
+* [Requirements & Installation](https://github.com/artitw/text2text#requirements-and-installation)
+* [Class Diagram](https://github.com/artitw/text2text#class-diagram)
+* [Quick Start Guide](https://github.com/artitw/text2text#api-quick-start-guide)
+* [Languages Available](https://github.com/artitw/text2text#languages-available)
+* [Requirements & Installation](https://github.com/artitw/text2text#requirements-and-installation)
+* [Examples](https://github.com/artitw/text2text#examples)
+  * [Sample Texts](https://github.com/artitw/text2text#sample-texts)
+  * [Tokenization](https://github.com/artitw/text2text#tokenization)
+  * [Embedding](https://github.com/artitw/text2text#embedding--vectorization)
+  * [TF-IDF](https://github.com/artitw/text2text#tf-idf)
+  * [Search](https://github.com/artitw/text2text#search)
+  * [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance)
+  * [Translation](https://github.com/artitw/text2text#translation)
+  * [Question Answering](https://github.com/artitw/text2text#question-answering)
+  * [Question Generation](https://github.com/artitw/text2text#question-generation)
+  * [Summarization](https://github.com/artitw/text2text#summarization)
+  * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
+  * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
+* [Questions?](https://github.com/artitw/text2text#questions)
+* [Citation](https://github.com/artitw/text2text#citation)
+* [Contributing](https://github.com/artitw/text2text#contributing)
+* [Code of Conduct](https://github.com/artitw/text2text#code-of-conduct)
 
 </details>
 
@@ -66,17 +66,17 @@ Functionality | Invocation | Result
 Module Importing | `import text2text as t2t` | Libraries imported
 Language Model Setting | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Override default with smaller model
 Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
-[Tokenization](#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
-[Embedding](#embedding) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
-[TF-IDF](#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
-[Search](#search) | `h.search(queries=["Hello"])` | `array([[0.5]])`
-[Translation](#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
-[Summarization](#summarization) | `h.summarize()` | `["World ' s largest world"]`
-[Question Generation](#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
-[Data Augmentation](#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
-[Question Answering](#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
-[Distance](#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
-[Training/Finetuning](#training--finetuning) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).fit()` | Finetuned model saved
+[Tokenization](https://github.com/artitw/text2text#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
+[Embedding](https://github.com/artitw/text2text#embedding) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
+[TF-IDF](https://github.com/artitw/text2text#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
+[Search](https://github.com/artitw/text2text#search) | `h.search(queries=["Hello"])` | `array([[0.5]])`
+[Translation](https://github.com/artitw/text2text#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
+[Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
+[Question Generation](https://github.com/artitw/text2text#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
+[Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
+[Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
+[Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
+[Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).fit()` | Finetuned model saved
 
 ## Languages Available
 <details>
@@ -661,6 +661,7 @@ There are many ways you can [contribute](https://github.com/artitw/text2text/blo
 3. Report bugs with information to reproduce
 4. Request for new features or functionality
 5. Improve code by submitting a [pull request](https://github.com/artitw/text2text/pulls) with outputs demonstrating the change
+6. Join a [project](https://github.com/artitw/text2text/projects), pick a to-do item
 
 ## Code of Conduct
 Please adhere to our [code of conduct](https://github.com/artitw/text2text/blob/master/CODE_OF_CONDUCT.md) when participating in this project.
