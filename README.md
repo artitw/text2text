@@ -661,7 +661,7 @@ There are many ways you can [contribute](https://github.com/artitw/text2text/blo
 3. Report bugs with information to reproduce
 4. Request for new features or functionality
 5. Improve code by submitting a [pull request](https://github.com/artitw/text2text/pulls) with outputs demonstrating the change
-6. Checkout [projects](https://github.com/artitw/text2text/projects), comment on a task issue to get involved
+6. See [projects](https://github.com/artitw/text2text/projects), comment on a task issue to get involved
 
 ## Code of Conduct
 Please adhere to our [code of conduct](https://github.com/artitw/text2text/blob/master/CODE_OF_CONDUCT.md) when participating in this project.
