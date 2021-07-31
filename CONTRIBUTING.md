@@ -3,4 +3,4 @@
 3. Report bugs with information to reproduce
 4. Request for new features or functionality
 5. Improve code by submitting a [pull request](https://github.com/artitw/text2text/pulls) with outputs demonstrating the change
-6. Join a [project](https://github.com/artitw/text2text/projects), pick a to-do item
+6. Checkout [projects](https://github.com/artitw/text2text/projects), comment on a task issue to get involved
