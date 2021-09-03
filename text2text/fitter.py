@@ -12,7 +12,7 @@ class Fitter(t2t.Translator):
     model.train()
     tokenizer.src_lang = src_lang
     tokenizer.tgt_lang = tgt_lang
-    split_lines = list(zip(*[line.split(" [SEP] ") for line in input_lines]))
+    split_lines = list(zip(*[line.split(" [TGT] ") for line in input_lines]))
     src_text, tgt_text = split_lines[0], split_lines[1]
     encoder_inputs = tokenizer(src_text, return_tensors="pt", padding=True, truncation=True)
     with tokenizer.as_target_tokenizer():

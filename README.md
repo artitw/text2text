@@ -625,7 +625,7 @@ t2t.Handler([bacteria_str], src_lang='en').variate()
 ### Training / Finetuning
 Finetune cross-lingual model on your data
 ```
-result = t2t.Handler(["Hello, World! [SEP] 你好,世界!"], 
+result = t2t.Handler(["Hello, World! [TGT] 你好,世界!"], 
             src_lang="en",
             tgt_lang="zh",
             num_epochs=10, 
