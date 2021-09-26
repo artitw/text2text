@@ -67,7 +67,7 @@ Module Importing | `import text2text as t2t` | Libraries imported
 Language Model Setting | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Override default with smaller model
 Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
 [Tokenization](https://github.com/artitw/text2text#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
-[Embedding](https://github.com/artitw/text2text#embedding) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
+[Embedding](https://github.com/artitw/text2text#embedding--vectorization) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
 [TF-IDF](https://github.com/artitw/text2text#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
 [Search](https://github.com/artitw/text2text#search) | `h.search(queries=["Hello"])` | `array([[0.5]])`
 [Translation](https://github.com/artitw/text2text#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
