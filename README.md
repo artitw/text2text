@@ -645,7 +645,7 @@ To cite this work, use the following BibTeX citation.
 ```
 @misc{text2text@2020,
   author={Wangperawong, Artit},
-  title={Text2Text: Multilingual tokenization, embedding, search, translation, summarization, question generation, question answering, data augmentation, distance measurement},
+  title={Text2Text: Cross-lingual natural language processing and generation toolkit},
   year={2020},
   publisher = {GitHub},
   journal = {GitHub repository},
