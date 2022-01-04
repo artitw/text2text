@@ -1,4 +1,4 @@
-# Text2Text: Multilingual tokenization, embedding, search, translation, summarization, question generation, question answering, data augmentation, distance measurement
+# Text2Text: Cross-lingual natural language processing and generation toolkit
 Transform texts in a hundred different [languages](https://github.com/artitw/text2text#languages-available)!
 
 <details>
