@@ -16,6 +16,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Tokenization](https://github.com/artitw/text2text#tokenization)
   * [Embedding](https://github.com/artitw/text2text#embedding--vectorization)
   * [TF-IDF](https://github.com/artitw/text2text#tf-idf)
+  * [BM25](https://github.com/artitw/text2text#bm25)
   * [Search](https://github.com/artitw/text2text#search)
   * [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance)
   * [Translation](https://github.com/artitw/text2text#translation)
@@ -49,7 +50,7 @@ pip install -q -U text2text
 
 ## Class Diagram
 ```
-Tfidfer -- Counter   Measurer
+           Measurer   Counter -- Tfidfer -- Bm25er
                 \     /
   Searcher     Tokenizer
        \_______    |
@@ -69,6 +70,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Tokenization](https://github.com/artitw/text2text#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
 [Embedding](https://github.com/artitw/text2text#embedding--vectorization) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
 [TF-IDF](https://github.com/artitw/text2text#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
+[BM25](https://github.com/artitw/text2text#bm25) | `h.bm25()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
 [Search](https://github.com/artitw/text2text#search) | `h.search(queries=["Hello"])` | `array([[0.5]])`
 [Translation](https://github.com/artitw/text2text#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
 [Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
@@ -268,6 +270,34 @@ t2t.Handler([
   '지': 0.3535533905932738}]
 ```
 
+### BM25
+```
+t2t.Handler([
+         "Let's go hiking tomorrow", 
+         "안녕하세요.", 
+         "돼지꿈을 꾸세요~~"
+         ]).bm25()
+
+# BM25 values
+[{"'": 1.2792257271403649,
+  'ing': 1.2792257271403649,
+  'orrow': 1.2792257271403649,
+  's': 1.2792257271403649,
+  '▁Let': 1.2792257271403649,
+  '▁go': 1.2792257271403649,
+  '▁hik': 1.2792257271403649,
+  '▁tom': 1.2792257271403649},
+ {'.': 1.751071282233123, '▁안녕': 1.751071282233123, '하세요': 1.751071282233123},
+ {'~~': 1.2792257271403649,
+  '▁': 1.2792257271403649,
+  '▁꾸': 1.2792257271403649,
+  '꿈': 1.2792257271403649,
+  '돼': 1.2792257271403649,
+  '세요': 1.2792257271403649,
+  '을': 1.2792257271403649,
+  '지': 1.2792257271403649}]
+```
+
 ### Search
 ```
 t2t.Handler([
@@ -283,6 +313,26 @@ array([[0.4472136 , 0.        , 0.        ],
 
 #### Multiple queries on a single index
 ```
+bm25_index = t2t.Handler([
+                       article_en, 
+                       notre_dame_str, 
+                       bacteria_str, 
+                       bio_str
+                       ]).bm25(output="matrix")
+
+search_results_bm25_1 = t2t.Handler().search(
+    queries=["wonderful life", "university students"], 
+    vector_class=t2t.Bm25er,
+    index=bm25_index)
+
+search_results_bm25_2 = t2t.Handler().search(
+    queries=["Earth creatures are cool", "United Nations"], 
+    vector_class=t2t.Bm25er,
+    index=bm25_index)
+```
+
+#### Using TF-DF embeddings index
+```
 tfidf_index = t2t.Handler([
                        article_en, 
                        notre_dame_str, 
@@ -292,12 +342,15 @@ tfidf_index = t2t.Handler([
 
 search_results_tf1 = t2t.Handler().search(
     queries=["wonderful life", "university students"], 
+    vector_class=t2t.Tfidfer,
     index=tfidf_index)
 
 search_results_tf2 = t2t.Handler().search(
     queries=["Earth creatures are cool", "United Nations"], 
+    vector_class=t2t.Tfidfer,
     index=tfidf_index)
 ```
+
 #### Using neural embeddings index
 ```
 embedding_index = t2t.Handler([
@@ -317,17 +370,18 @@ search_results_em2 = t2t.Handler().search(
     vector_class=t2t.Vectorizer,
     index=embedding_index)
 ```
-#### Blending neural embeddings and tf-idf
+#### Blending bm25, tf-idf and neural embeddings 
 ```
 np.mean( 
     np.array([
-              search_results_tf1, 
+              search_results_bm25_1,
+              search_results_tf1,
               search_results_em1,
               ]), axis=0)
 
 # averaged scores matrix
-array([[ 0.00729176, -0.02835486,  0.0024925 ,  0.08656652],
-       [ 0.06525719,  0.13328168,  0.0185835 ,  0.01900256]])
+matrix([[ 0.00486117, -0.01890325,  0.53769584,  0.82506883],
+        [ 0.0435048 ,  1.68977281,  0.01238902,  0.01266839]])
 ```
 
 ### Levenshtein Sub-word Edit Distance

@@ -6,6 +6,7 @@ from .vectorizer import Vectorizer
 from .fitter import Fitter
 from .counter import Counter
 from .tfidfer import Tfidfer
+from .bm25er import Bm25er
 from .searcher import Searcher
 from .variator import Variator
 from .abstractor import Abstractor

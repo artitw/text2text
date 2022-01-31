@@ -4,7 +4,7 @@ import text2text as t2t
 
 class Searcher(t2t.Transformer):
   
-  def transform(self, input_lines, queries, src_lang='en', vector_class=t2t.Tfidfer, index=None, **kwargs):
+  def transform(self, input_lines, queries, src_lang='en', vector_class=t2t.Bm25er, index=None, **kwargs):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     search_object = vector_class()
 

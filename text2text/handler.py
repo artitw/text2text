@@ -7,6 +7,7 @@ class Handler(object):
 
   EXPOSED_TRANSFORMERS = {
     "answer": t2t.Answerer,
+    "bm25": t2t.Bm25er,
     "count": t2t.Counter,
     "fit": t2t.Fitter,
     "measure": t2t.Measurer,

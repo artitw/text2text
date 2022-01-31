@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="text2text",
-    version="0.6.4",
+    version="0.6.5",
     author="Artit Wangperawong",
     author_email="artitw@gmail.com",
     description="Text2Text: Cross-lingual natural language processing and generation toolkit",
@@ -18,7 +18,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    keywords='multilingual cross-lingual bert natural language processing nlp nlg text generation question answer answering information retrieval tfidf tf-idf search summary summarizer summarization tokenizer tokenization translation backtranslation data augmentation science machine learning colab embedding levenshtein sub-word edit distance',
+    keywords='multilingual cross-lingual bert natural language processing nlp nlg text generation question answer answering information retrieval tfidf tf-idf bm25 search summary summarizer summarization tokenizer tokenization translation backtranslation data augmentation science machine learning colab embedding levenshtein sub-word edit distance',
     install_requires=[
         'numpy',
         'scipy',
