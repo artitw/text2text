@@ -1,3 +1,4 @@
+import torch
 import text2text as t2t
 from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
 
@@ -5,7 +6,8 @@ class Translator(t2t.Transformer):
 
   def __init__(self, **kwargs):
     pretrained_translator = self.__class__.PRETRAINED_TRANSLATOR
-    self.__class__.model = AutoModelForSeq2SeqLM.from_pretrained(pretrained_translator)
+    device = "cuda" if torch.cuda.is_available() else "cpu"
+    self.__class__.model = AutoModelForSeq2SeqLM.from_pretrained(pretrained_translator).to(device)
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_translator)
 
   def _translate(self, input_lines, src_lang='en', **kwargs):
