@@ -33,9 +33,7 @@ class Abstractor(t2t.Transformer):
       return
     s = requests.session()
     file_id = pretrained_parameters["file_id"]
-    r = s.get(f'https://docs.google.com/uc?export=download&id={file_id}')
-    confirm_code = r.text.split("/uc?export=download&amp;confirm=")[1].split("&amp;id=")[0]
-    r = s.get(f'https://docs.google.com/uc?export=download&confirm={confirm_code}&id={file_id}')
+    r = s.get(f'https://docs.google.com/uc?export=download&id={file_id}&confirm=t')
     z = zipfile.ZipFile(io.BytesIO(r.content))
     z.extractall()
 
