@@ -6,8 +6,8 @@ class Translator(t2t.Transformer):
 
   def __init__(self, **kwargs):
     pretrained_translator = self.__class__.PRETRAINED_TRANSLATOR
-    self.__device = "cuda" if torch.cuda.is_available() else "cpu"
-    self.__class__.model = AutoModelForSeq2SeqLM.from_pretrained(pretrained_translator).to(self.__device)
+    self.__class__.device = "cuda" if torch.cuda.is_available() else "cpu"
+    self.__class__.model = AutoModelForSeq2SeqLM.from_pretrained(pretrained_translator).to(self.__class__.device)
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_translator)
 
   def _translate(self, input_lines, src_lang='en', **kwargs):
@@ -21,7 +21,7 @@ class Translator(t2t.Transformer):
       return input_lines
     if tgt_lang not in self.__class__.LANGUAGES:
       raise ValueError(f'{tgt_lang} not found in {self.__class__.LANGUAGES}')
-    encoded_inputs = tokenizer(input_lines, padding=True, return_tensors="pt").to(self.__device)
+    encoded_inputs = tokenizer(input_lines, padding=True, return_tensors="pt").to(self.__class__.device)
     tgt_token_id = tokenizer.lang_code_to_id[tgt_lang]
     generated_tokens = model.generate(**encoded_inputs, forced_bos_token_id=tgt_token_id)
     return tokenizer.batch_decode(generated_tokens, skip_special_tokens=True) 
