@@ -19,6 +19,7 @@ class Handler(object):
     "translate": t2t.Translator,
     "variate": t2t.Variator,
     "vectorize": t2t.Vectorizer,
+    "identify":t2t.Identifier
   }
 
   transformer_instances = {}
