@@ -18,7 +18,7 @@ class Tfidfer(t2t.Counter):
     for tk in self.idf:
       self.idf[tk] = np.log(num_documents/(1+self.idf[tk]))+1
 
-  def _normalize_counts(self, token_counts):
+  def _get_vectors(self, token_counts):
     rows = []
     cols = []
     vals = []
@@ -51,4 +51,4 @@ class Tfidfer(t2t.Counter):
     token_counts = t2t.Counter.transform(self, input_lines, src_lang=src_lang, output=output, **kwargs)
     if use_idf:
       self._calculate_idf(token_counts)
-    return self._normalize_counts(token_counts)
+    return self._get_vectors(token_counts)
