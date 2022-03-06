@@ -4,7 +4,7 @@ import text2text as t2t
 
 class Bm25er(t2t.Tfidfer):
 
-  def _get_bm25_vectors(self, token_counts):
+  def _get_vectors(self, token_counts):
     rows = []
     cols = []
     vals = []
@@ -42,4 +42,4 @@ class Bm25er(t2t.Tfidfer):
     self.k1 = k1
     token_counts = t2t.Counter.transform(self, input_lines, src_lang=src_lang, output=output, **kwargs)
     self._calculate_idf(token_counts)
-    return self._get_bm25_vectors(token_counts)
+    return self._get_vectors(token_counts)
