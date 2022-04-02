@@ -13,4 +13,5 @@ from .abstractor import Abstractor
 from .questioner import Questioner
 from .summarizer import Summarizer
 from .answerer import Answerer
+from .identifier import Identifier
 from .handler import Handler
