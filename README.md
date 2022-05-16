@@ -25,6 +25,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Summarization](https://github.com/artitw/text2text#summarization)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
   * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
+  * [Identification](https://github.com/artitw/text2text#identification)
 * [Questions?](https://github.com/artitw/text2text#questions)
 * [Citation](https://github.com/artitw/text2text#citation)
 * [Contributing](https://github.com/artitw/text2text#contributing)
@@ -79,6 +80,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
+[Identification](https://github.com/artitw/text2text#identification) | `t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“, ktorý otlačil svoju nohu do povrchu Mesiaca..."]).identify()` | `['Slovak']`
 
 ## Languages Available
 <details>
@@ -690,6 +692,16 @@ result = t2t.Handler(["Hello, World! [TGT] 你好,世界!"],
 t2t.Transformer.PRETRAINED_TRANSLATOR = "model_dir"
 t2t.Handler("Hello, World!").translate(tgt_lang="zh")
 ```
+
+### Identification
+Identify the language of a text.
+```
+t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“, ktorý otlačil svoju nohu do povrchu Mesiaca...",]).identify()
+
+# Prediction
+`['Slovak']`
+```
+NB: Identification is not very accurate yet, especially for short sequences (~ lesser than 10 tokens)
 
 ## Questions?
 For questions or help using Text2Text, please submit a [GitHub issue](https://github.com/artitw/text2text/issues).
