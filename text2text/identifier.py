@@ -48,6 +48,8 @@ class Identifier(t2t.Vectorizer):
         #for prediction in predictions:
         #    print('Language is {}'.format(prediction))
 
+        languages = t2t.Transformer.LANGUAGES
+        predictions = [languages[prediction] for prediction in predictions]
         return predictions
 
     def __init__(self, **kwargs):
