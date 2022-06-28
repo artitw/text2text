@@ -59,6 +59,8 @@ pip install -q -U text2text
   Answerer     Translator              Abstractor
               /    |     \              /       \
       Vectorizer  Fitter  Variator  Questioner  Summarizer
+          /
+      Identifier
 ```
 
 ## Quick Start Guide
