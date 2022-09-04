@@ -26,6 +26,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Summarization](https://github.com/artitw/text2text#summarization)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
   * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
+  * [Web Server](https://github.com/artitw/text2text#serving)
 * [Questions?](https://github.com/artitw/text2text#questions)
 * [Citation](https://github.com/artitw/text2text#citation)
 * [Contributing](https://github.com/artitw/text2text#contributing)
@@ -54,6 +55,7 @@ sudo apt-get install libomp-dev
 ```
 pip install -q -U text2text
 ```
+
 
 
 
@@ -89,6 +91,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
+[Web Server](https://github.com/artitw/text2text#serving) | `t2t.Server()` | Web server started
 
 ## Languages Available
 <details>
@@ -733,6 +736,30 @@ result = t2t.Handler(["Hello, World! [TGT] 你好,世界!"],
 # load and use model from saved directory
 t2t.Transformer.PRETRAINED_TRANSLATOR = "model_dir"
 t2t.Handler("Hello, World!").translate(tgt_lang="zh")
+```
+
+### Serving
+Not all functionality above supported in the current state
+```
+# Start web server
+t2t.Server()
+
+# Make POST request
+import socket
+import requests
+
+address = socket.gethostbyname(socket.getfqdn(socket.gethostname()))
+url = f"http://{address}"
+transform = "translate"
+payload = {
+  "input_lines": ["hello", "world"], 
+  "src_lang": "en",
+  "tgt_lang": "ko",
+}
+r = requests.post(f"{url}/{transform}", json=payload)
+print(r.json())
+
+{'result': ['안녕하세요', '세계']}
 ```
 
 ## Questions?
