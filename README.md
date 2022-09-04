@@ -44,10 +44,18 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 * Smaller models: <16 GB RAM 
   * See [Colab Demo](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR) and [Examples](#examples) below
 
+### Install
+```
+sudo apt-get install libopenblas-dev
+sudo apt-get install libomp-dev
+```
+
 ### Text2Text
 ```
 pip install -q -U text2text
 ```
+
+
 
 ## Class Diagram
 ```
@@ -331,11 +339,6 @@ index.search(["你好, World"], k=3)
 
 (array([[0.61324954, 1.7763932 , 2.        ]], dtype=float32),
  array([[103, 100, 102]]))
-
-# Note prerequisites for Indexer below. See demo notebook for example
-pip install faiss
-sudo apt-get install libopenblas-dev
-sudo apt-get install libomp-dev
 ```
 
 
