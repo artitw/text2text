@@ -17,6 +17,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Embedding](https://github.com/artitw/text2text#embedding--vectorization)
   * [TF-IDF](https://github.com/artitw/text2text#tf-idf)
   * [BM25](https://github.com/artitw/text2text#bm25)
+  * [Index](https://github.com/artitw/text2text#index)
   * [Search](https://github.com/artitw/text2text#search)
   * [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance)
   * [Translation](https://github.com/artitw/text2text#translation)
@@ -25,7 +26,6 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Summarization](https://github.com/artitw/text2text#summarization)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
   * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
-  * [Identification](https://github.com/artitw/text2text#identification)
 * [Questions?](https://github.com/artitw/text2text#questions)
 * [Citation](https://github.com/artitw/text2text#citation)
 * [Contributing](https://github.com/artitw/text2text#contributing)
@@ -51,17 +51,15 @@ pip install -q -U text2text
 
 ## Class Diagram
 ```
-           Measurer   Counter -- Tfidfer -- Bm25er
-                \     /
-  Searcher     Tokenizer
+           Measurer   Counter -- Tfidfer -- Indexer
+                \     /             \
+  Searcher     Tokenizer           Bm25er
        \_______    |
         _______Transformer______________
        /           |                    \
   Answerer     Translator              Abstractor
               /    |     \              /       \
       Vectorizer  Fitter  Variator  Questioner  Summarizer
-          /
-      Identifier
 ```
 
 ## Quick Start Guide
@@ -74,6 +72,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Embedding](https://github.com/artitw/text2text#embedding--vectorization) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
 [TF-IDF](https://github.com/artitw/text2text#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
 [BM25](https://github.com/artitw/text2text#bm25) | `h.bm25()` | `[{'!': 0.3068528194400547, ',': 0.3068528194400547, '▁Hello': 0.3068528194400547, '▁World': 0.3068528194400547}]`
+[Indexer](https://github.com/artitw/text2text#index) | `i = h.index()` | Index object for similarity retrieval
 [Search](https://github.com/artitw/text2text#search) | `h.search(queries=["Hello"])` | `array([[0.09]])`
 [Translation](https://github.com/artitw/text2text#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
 [Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
@@ -82,7 +81,6 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
-[Identification](https://github.com/artitw/text2text#identification) | `t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“, ktorý otlačil svoju nohu do povrchu Mesiaca..."]).identify()` | `['sk', 'Slovak']`
 
 ## Languages Available
 <details>
@@ -302,6 +300,40 @@ t2t.Handler([
   '지': 1.2792257271403649}]
 ```
 
+### Index
+```
+index = t2t.Handler([
+         "Let's go hiking tomorrow, let's go!", 
+         "안녕하세요.", 
+         "돼지꿈을 꾸세요~~",
+         ]).index(ids=[100, 101, 102])
+
+index.search(["돼지", "안녕", "let's go"], k=1)
+
+# Matching L2 distances and corresponding ids
+(
+  array([[0.7752551],
+        [0.8452994],
+        [0.4347524]], dtype=float32), 
+  array([[102],
+        [101],
+        [100]])
+)
+
+# Add documents incrementing on ids if none specified
+index.add(["Hello, World! 你好,世界!"])
+
+# Remove by ids
+index.remove([101])
+
+# Retrieve k results per query sorted by distance
+index.search(["你好, World"], k=3)
+
+(array([[0.61324954, 1.7763932 , 2.        ]], dtype=float32),
+ array([[103, 100, 102]]))
+```
+
+
 ### Search
 ```
 t2t.Handler([
@@ -310,7 +342,7 @@ t2t.Handler([
          "돼지꿈을 꾸세요~~",
          ]).search(queries=["go", "안녕"])
 
-# Match scores matrix
+# Cosine similarity scores matrix
 array([[0.4472136 , 0.        , 0.        ],
        [0.        , 0.57735027, 0.        ]])
 ```
@@ -694,16 +726,6 @@ result = t2t.Handler(["Hello, World! [TGT] 你好,世界!"],
 t2t.Transformer.PRETRAINED_TRANSLATOR = "model_dir"
 t2t.Handler("Hello, World!").translate(tgt_lang="zh")
 ```
-
-### Identification
-Identify the language of a text.
-```
-t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“, ktorý otlačil svoju nohu do povrchu Mesiaca...",]).identify()
-
-# Prediction
-`['sk', 'Slovak']`
-```
-NB: Identification is not very accurate yet, especially for short sequences (~ lesser than 10 tokens)
 
 ## Questions?
 For questions or help using Text2Text, please submit a [GitHub issue](https://github.com/artitw/text2text/issues).

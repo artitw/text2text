@@ -7,6 +7,7 @@ from .fitter import Fitter
 from .counter import Counter
 from .tfidfer import Tfidfer
 from .bm25er import Bm25er
+from .indexer import Indexer
 from .searcher import Searcher
 from .variator import Variator
 from .abstractor import Abstractor
