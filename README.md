@@ -26,6 +26,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Summarization](https://github.com/artitw/text2text#summarization)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
   * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
+  * [Identification](https://github.com/artitw/text2text#identification)
   * [Web Server](https://github.com/artitw/text2text#serving)
 * [Questions?](https://github.com/artitw/text2text#questions)
 * [Citation](https://github.com/artitw/text2text#citation)
@@ -70,6 +71,8 @@ pip install -q -U text2text
   Answerer     Translator              Abstractor
               /    |     \              /       \
       Vectorizer  Fitter  Variator  Questioner  Summarizer
+           /
+    Identifier
 ```
 
 ## Quick Start Guide
@@ -91,6 +94,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
+[Identification](https://github.com/artitw/text2text#identification) | `t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“..."]).identify()` | `['sk', 'Slovak']`
 [Web Server](https://github.com/artitw/text2text#serving) | `t2t.Server()` | Web server started
 
 ## Languages Available
@@ -736,6 +740,15 @@ result = t2t.Handler(["Hello, World! [TGT] 你好,世界!"],
 # load and use model from saved directory
 t2t.Transformer.PRETRAINED_TRANSLATOR = "model_dir"
 t2t.Handler("Hello, World!").translate(tgt_lang="zh")
+```
+
+### Identification
+Identify the language of a text. Not yet accurate for short sequences (<10 tokens)
+```
+t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“, ktorý otlačil svoju nohu do povrchu Mesiaca...",]).identify()
+
+# Prediction
+`['sk', 'Slovak']`
 ```
 
 ### Serving
