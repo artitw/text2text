@@ -419,8 +419,8 @@ np.mean(
               ]), axis=0)
 
 # averaged scores matrix
-matrix([[ 0.00486117, -0.01890325,  0.53769584,  0.82506883],
-        [ 0.0435048 ,  1.68977281,  0.01238902,  0.01266839]])
+#matrix([[ 0.00486117, -0.01890325,  0.53769584,  0.82506883],
+#        [ 0.0435048 ,  1.68977281,  0.01238902,  0.01266839]])
 ```
 
 ### Levenshtein Sub-word Edit Distance
@@ -431,7 +431,7 @@ t2t.Handler([
         ]).measure(metric="levenshtein_distance")
 
 # Distances
-[2, 8]
+ [2, 8]
 ```
 
 ### Translation
@@ -525,7 +525,6 @@ t2t.Handler(["I would like to go hiking tomorrow."],
         src_lang="en_XX"
         ).translate(tgt_lang='zh_CN')
 ['我想明天去徒步旅行。']
-
 ```
 
 </details>
