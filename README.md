@@ -38,8 +38,8 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 ## Colab Demo
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
 
-## How Cross-Lingual NLP Models Work (click to watch)
-[![Cross-Lingual Models](http://img.youtube.com/vi/caZLVcJqsqo/0.jpg)](https://youtu.be/caZLVcJqsqo "Cross-Lingual Models")
+## How Crosslingual Models Work (click to watch)
+[![Crosslingual Models](http://img.youtube.com/vi/caZLVcJqsqo/0.jpg)](https://youtu.be/caZLVcJqsqo "Cross-Lingual Models")
 
 ## Requirements and Installation
 * Default model: >16 GB RAM
@@ -740,7 +740,7 @@ t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“, ktorý ot
 ```
 
 ### Serving
-Not all functionality above supported in the current state
+We aim to serve all functionality above
 ```
 # Start web server
 t2t.Server(host='0.0.0.0', port=80)
