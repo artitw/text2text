@@ -372,7 +372,7 @@ search_results_bm25 = t2t.Handler().search(
     queries=["wonderful life", "university students"], 
     vector_class=t2t.Bm25er,
     index=bm25_index)
-    
+
 search_results_bm25_2 = t2t.Handler().search(
     queries=["Earth creatures are cool", "United Nations"], 
     vector_class=t2t.Bm25er,
@@ -776,7 +776,7 @@ To cite this work, use the following BibTeX citation.
 ```
 @misc{text2text@2020,
   author={Wangperawong, Artit},
-  title={Text2Text: Cross-lingual natural language processing and generation toolkit},
+  title={Text2Text: Crosslingual NLP/G toolkit},
   year={2020},
   publisher = {GitHub},
   journal = {GitHub repository},
