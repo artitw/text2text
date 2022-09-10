@@ -13,6 +13,9 @@ class Indexer(t2t.Tfidfer):
     x = sp.hstack([x, padding], format="csr")
     return x.toarray().astype('float32')
 
+  def size(self, **kwargs):
+    return self.index.ntotal
+
   def add(self, input_lines, src_lang='en', ids=[], faiss_index=None, **kwargs):
     if faiss_index is not None:
       self.index = faiss_index
@@ -40,4 +43,6 @@ class Indexer(t2t.Tfidfer):
   def transform(self, input_lines, src_lang='en', ids=[], **kwargs):
     d = len(self.__class__.tokenizer.get_vocab())
     self.index = faiss.IndexIDMap2(faiss.IndexFlatL2(d))
+    if not input_lines:
+      return self
     return self.add(input_lines, src_lang=src_lang, ids=ids, **kwargs)

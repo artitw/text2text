@@ -5,10 +5,10 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="text2text",
-    version="0.7.6",
+    version="0.7.7",
     author="Artit Wangperawong",
     author_email="artitw@gmail.com",
-    description="Text2Text: Cross-lingual natural language processing and generation toolkit",
+    description="Text2Text: Crosslingual NLP/G toolkit",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/artitw/text2text",
@@ -20,13 +20,14 @@ setuptools.setup(
     ],
     keywords='multilingual cross-lingual bert natural language processing nlp nlg text generation question answer answering information retrieval tfidf tf-idf bm25 search summary summarizer summarization tokenizer tokenization translation backtranslation data augmentation science machine learning colab embedding levenshtein sub-word edit distance',
     install_requires=[
+        'faiss',
+        'flask',
+        'googledrivedownloader',
         'numpy',
         'scipy',
         'sentencepiece',
         'torch',
         'tqdm',
         'transformers',
-        'googledrivedownloader',
-        'faiss',
     ],
 )

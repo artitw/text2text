@@ -1,4 +1,4 @@
-# Text2Text: Cross-lingual natural language processing and generation toolkit
+# Text2Text: Crosslingual NLP/G toolkit
 Transform texts in a hundred different [languages](https://github.com/artitw/text2text#languages-available)!
 
 <details>
@@ -57,9 +57,6 @@ sudo apt-get install libomp-dev
 pip install -q -U text2text
 ```
 
-
-
-
 ## Class Diagram
 ```
            Measurer   Counter -- Tfidfer -- Indexer
@@ -95,7 +92,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
 [Identification](https://github.com/artitw/text2text#identification) | `t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“..."]).identify()` | `['sk', 'Slovak']`
-[Web Server](https://github.com/artitw/text2text#serving) | `t2t.Server()` | Web server started
+[Web Server](https://github.com/artitw/text2text#serving) | `t2t.Server(host='0.0.0.0', port=80)` | Web server started on host and port
 
 ## Languages Available
 <details>
@@ -371,11 +368,11 @@ bm25_index = t2t.Handler([
                        bio_str
                        ]).bm25(output="matrix")
 
-search_results_bm25_1 = t2t.Handler().search(
+search_results_bm25 = t2t.Handler().search(
     queries=["wonderful life", "university students"], 
     vector_class=t2t.Bm25er,
     index=bm25_index)
-
+    
 search_results_bm25_2 = t2t.Handler().search(
     queries=["Earth creatures are cool", "United Nations"], 
     vector_class=t2t.Bm25er,
@@ -391,13 +388,8 @@ tfidf_index = t2t.Handler([
                        bio_str
                        ]).tfidf(output="matrix")
 
-search_results_tf1 = t2t.Handler().search(
+search_results_tf = t2t.Handler().search(
     queries=["wonderful life", "university students"], 
-    vector_class=t2t.Tfidfer,
-    index=tfidf_index)
-
-search_results_tf2 = t2t.Handler().search(
-    queries=["Earth creatures are cool", "United Nations"], 
     vector_class=t2t.Tfidfer,
     index=tfidf_index)
 ```
@@ -411,23 +403,19 @@ embedding_index = t2t.Handler([
                        bio_str
                        ]).vectorize()
 
-search_results_em1 = t2t.Handler().search(
+search_results_em = t2t.Handler().search(
     queries=["wonderful life", "university students"],
     vector_class=t2t.Vectorizer,
     index=embedding_index)
-
-search_results_em2 = t2t.Handler().search(
-    queries=["Earth creatures are cool", "United Nations"],
-    vector_class=t2t.Vectorizer,
-    index=embedding_index)
 ```
+
 #### Blending bm25, tf-idf and neural embeddings 
 ```
 np.mean( 
     np.array([
-              search_results_bm25_1,
-              search_results_tf1,
-              search_results_em1,
+              search_results_bm25,
+              search_results_tf,
+              search_results_em,
               ]), axis=0)
 
 # averaged scores matrix
@@ -755,9 +743,9 @@ t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“, ktorý ot
 Not all functionality above supported in the current state
 ```
 # Start web server
-t2t.Server()
+t2t.Server(host='0.0.0.0', port=80)
 
-# Make POST request
+# Make POST requests
 import socket
 import requests
 
@@ -770,9 +758,14 @@ payload = {
   "tgt_lang": "ko",
 }
 r = requests.post(f"{url}/{transform}", json=payload)
-print(r.json())
+print(r.json()) #{'result': ['안녕하세요', '세계']}
 
-{'result': ['안녕하세요', '세계']}
+# Indexer actions
+r = requests.post(f"{url}/index/add", json=payload)
+r = requests.post(f"{url}/index/size")
+r = requests.post(f"{url}/index/search", json=payload)
+payload["ids"] = [0,1]
+r = requests.post(f"{url}/index/remove", json=payload)
 ```
 
 ## Questions?
