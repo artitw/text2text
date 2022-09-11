@@ -27,14 +27,19 @@ def index(action):
 
 @app.route('/<transformation>', methods=['POST'])
 def transform(transformation):
-  assert transformation in t2t.Handler.EXPOSED_TRANSFORMERS
-  data = request.get_json()
-  input_lines = data.get("input_lines", [])
-  src_lang = data.get("src_lang", "en")
-  h = t2t.Handler(input_lines, src_lang)
-  del data["input_lines"]
-  del data["src_lang"]
-  return {"result": getattr(h, transformation)(**data)}
+  try:
+    assert transformation in t2t.Handler.EXPOSED_TRANSFORMERS
+    data = request.get_json()
+    input_lines = data.get("input_lines", [])
+    src_lang = data.get("src_lang", "en")
+    h = t2t.Handler(input_lines, src_lang)
+    del data["input_lines"]
+    del data["src_lang"]
+    res = getattr(h, transformation)(**data)
+    res = getattr(res, "tolist", lambda: res)()
+    return {"result": res}
+  except Exception as e:
+    return {"result": str(e)}
 
 class Server(object):
   def __init__(self, **kwargs):
