@@ -313,6 +313,7 @@ t2t.Handler([
 ```
 
 ### Index
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RaWj5SqWvyC2SsCTGg8IAVcl9G5hOB50?usp=sharing)
 ```
 index = t2t.Handler([
          "Let's go hiking tomorrow, let's go!", 
@@ -344,7 +345,7 @@ index.search(["你好, World"], k=3)
 (array([[0.61324954, 1.7763932 , 2.        ]], dtype=float32),
  array([[103, 100, 102]]))
 ```
-
+To learn more, see [STF-IDF](https://arxiv.org/abs/2209.14281).
 
 ### Search
 ```
@@ -771,7 +772,17 @@ r = requests.post(f"{url}/index/remove", json=payload)
 For questions or help using Text2Text, please submit a [GitHub issue](https://github.com/artitw/text2text/issues).
 
 ## Citation
-To cite this work, use the following BibTeX citation.
+To cite this work, use the following BibTeX citations.
+```
+@article{stfidf,
+  doi = {10.48550/ARXIV.2209.14281},
+  url = {https://arxiv.org/abs/2209.14281},
+  author = {Wangperawong, Artit},
+  title = {Multilingual Search with Subword TF-IDF},
+  publisher = {arXiv},
+  year = {2022},
+}
+```
 ```
 @misc{text2text@2020,
   author={Wangperawong, Artit},
