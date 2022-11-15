@@ -8,9 +8,6 @@ class Indexer(t2t.Tfidfer):
 
   def get_formatted_matrix(self, input_lines, src_lang='en', **kwargs):
     x = t2t.Tfidfer.transform(self, input_lines, src_lang=src_lang, output='matrix', **kwargs)
-    col_diff = self.index.d-x.shape[1]
-    padding = sp.csr_matrix((x.shape[0], col_diff))
-    x = sp.hstack([x, padding], format="csr")
     return x.toarray().astype('float32')
 
   def size(self, **kwargs):

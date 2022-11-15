@@ -19,13 +19,6 @@ class Searcher(t2t.Transformer):
     if type(queries) is np.ndarray and type(index) is np.ndarray:
       scores = np.matmul(queries,np.transpose(index))
     elif type(queries) is sp.csr_matrix and type(index) is sp.csr_matrix:
-      col_diff = queries.shape[1]-index.shape[1]
-      if col_diff > 0:
-        padding = sp.csr_matrix((index.shape[0], abs(col_diff)))
-        index = sp.hstack([index, padding], format="csr")
-      elif col_diff < 0:
-        padding = sp.csr_matrix((queries.shape[0], abs(col_diff)))
-        queries = sp.hstack([queries,padding], format="csr")
       scores = queries.dot(index.transpose())
     else:
       raise TypeError("Invalid type for queries and/or index.")

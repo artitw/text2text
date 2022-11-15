@@ -41,7 +41,11 @@ class Tfidfer(t2t.Counter):
         vals.append(token_counts[i][tk])
 
     if self.output == "matrix":
-      token_counts = sp.csr_matrix((vals,(rows,cols)))
+      x = sp.csr_matrix((vals,(rows,cols)))
+      d = len(self.__class__.tokenizer.get_vocab())
+      col_diff = d-x.shape[1]
+      padding = sp.csr_matrix((x.shape[0], col_diff))
+      token_counts = sp.hstack([x, padding], format="csr")
     return token_counts
 
   def transform(self, input_lines, src_lang='en', output='tokens', use_idf=True, **kwargs):
