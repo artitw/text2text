@@ -4,11 +4,16 @@ import numpy as np
 import scipy.sparse as sp
 import warnings
 
-class Indexer(t2t.Tfidfer):
+class Indexer(t2t.Searcher):
 
   def get_formatted_matrix(self, input_lines, src_lang='en', **kwargs):
-    x = t2t.Tfidfer.transform(self, input_lines, src_lang=src_lang, output='matrix', **kwargs)
-    return x.toarray().astype('float32')
+    res = np.array([[]]*len(input_lines))
+    for encoder in self.encoders:
+      x = encoder().transform(input_lines, src_lang=src_lang, output='matrix', **kwargs)
+      if not isinstance(x, np.ndarray):
+        x = x.toarray()
+      res = np.concatenate((res, x.reshape(len(input_lines),-1)), axis=1)
+    return res.astype('float32')
 
   def size(self, **kwargs):
     return self.index.ntotal
@@ -37,8 +42,10 @@ class Indexer(t2t.Tfidfer):
     xq = self.get_formatted_matrix(input_lines, src_lang=src_lang, **kwargs)
     return self.index.search(xq, k)
 
-  def transform(self, input_lines, src_lang='en', ids=[], **kwargs):
-    d = len(self.__class__.tokenizer.get_vocab())
+  def transform(self, input_lines, src_lang='en', ids=[], encoders=[t2t.Tfidfer], **kwargs):
+    self.encoders = encoders
+    d = self.get_formatted_matrix(["DUMMY"], src_lang=src_lang, **kwargs).shape[-1]
+    print(f"Creating index with {d} dimensions.")
     self.index = faiss.IndexIDMap2(faiss.IndexFlatL2(d))
     if not input_lines:
       return self
