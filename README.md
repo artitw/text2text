@@ -59,17 +59,17 @@ pip install -q -U text2text
 
 ## Class Diagram
 ```
-           Measurer   Counter -- Tfidfer -- Indexer
-                \     /             \
-  Searcher     Tokenizer           Bm25er
-       \_______    |
-        _______Transformer______________
-       /           |                    \
-  Answerer     Translator              Abstractor
-              /    |     \              /       \
-      Vectorizer  Fitter  Variator  Questioner  Summarizer
-           /
-    Identifier
+  Indexer    Measurer   Counter -- Tfidfer
+       \          \     /             \
+    Searcher     Tokenizer           Bm25er
+         \_______    |
+          _______Transformer______________
+         /           |                    \
+    Answerer     Translator              Abstractor
+                /    |     \              /       \
+        Vectorizer  Fitter  Variator  Questioner  Summarizer
+             /
+      Identifier
 ```
 
 ## Quick Start Guide
