@@ -6,7 +6,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 
 * [Colab Demo](https://github.com/artitw/text2text#colab-demo)
 * [Cross-Lingual Models](https://github.com/artitw/text2text#how-cross-lingual-nlp-models-work-click-to-watch)
-* [Requirements & Installation](https://github.com/artitw/text2text#requirements-and-installation)
+* [Installation Requirements](https://github.com/artitw/text2text#installation-requirements)
 * [Class Diagram](https://github.com/artitw/text2text#class-diagram)
 * [Quick Start Guide](https://github.com/artitw/text2text#api-quick-start-guide)
 * [Languages Available](https://github.com/artitw/text2text#languages-available)
@@ -41,15 +41,13 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 ## How Crosslingual Models Work (click to watch)
 [![Crosslingual Models](http://img.youtube.com/vi/caZLVcJqsqo/0.jpg)](https://youtu.be/caZLVcJqsqo "Cross-Lingual Models")
 
-## Requirements and Installation
-* Default model: >16 GB RAM
-* Smaller models: <16 GB RAM 
-  * See [Colab Demo](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR) and [Examples](#examples) below
-
-### Install
+## Installation Requirements 
 ```
 pip install -q -U text2text
 ```
+* Default model: >16 GB RAM
+* Smaller models: <16 GB RAM 
+  * See [Colab Demo](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR) and [Examples](#examples) below
 
 ## Class Diagram
 ```
