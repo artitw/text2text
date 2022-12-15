@@ -48,12 +48,6 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 
 ### Install
 ```
-sudo apt-get install libopenblas-dev
-sudo apt-get install libomp-dev
-```
-
-### Text2Text
-```
 pip install -q -U text2text
 ```
 
