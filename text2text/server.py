@@ -15,7 +15,7 @@ def index(action):
   try:
     indexer = t2t.Server.indexer
     assert hasattr(indexer, action)
-    data = request.get_json()
+    data = request.get_json() or {}
     input_lines = data.get("input_lines", [])
     src_lang = data.get("src_lang", "en")
     res = getattr(indexer, action)(**data)
@@ -29,7 +29,7 @@ def index(action):
 def transform(transformation):
   try:
     assert transformation in t2t.Handler.EXPOSED_TRANSFORMERS
-    data = request.get_json()
+    data = request.get_json() or {}
     input_lines = data.get("input_lines", [])
     src_lang = data.get("src_lang", "en")
     h = t2t.Handler(input_lines, src_lang)
