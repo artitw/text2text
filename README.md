@@ -723,9 +723,9 @@ dialog = [
 if knowledge != '':
     knowledge = '[KNOWLEDGE] ' + knowledge
 dialog = ' EOS '.join(dialog)
-query = f"{instruction} [CONTEXT] {dialog} {knowledge}"
+input_state = f"{instruction} [CONTEXT] {dialog} {knowledge}"
 
-t2t.Handler([query]).respond()
+t2t.Handler([input_state]).respond()
 # ['About 60 different kinds of cats are recognized by various cat registries.']
 ```
 
