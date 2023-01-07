@@ -9,10 +9,12 @@ class Handler(object):
     "answer": t2t.Answerer,
     "bm25": t2t.Bm25er,
     "count": t2t.Counter,
+    "identify":t2t.Identifier,
     "index": t2t.Indexer,
     "fit": t2t.Fitter,
     "measure": t2t.Measurer,
     "question": t2t.Questioner,
+    "respond": t2t.Responder,
     "search": t2t.Searcher,
     "summarize": t2t.Summarizer,
     "tfidf": t2t.Tfidfer,
@@ -20,7 +22,6 @@ class Handler(object):
     "translate": t2t.Translator,
     "variate": t2t.Variator,
     "vectorize": t2t.Vectorizer,
-    "identify":t2t.Identifier,
   }
 
   transformer_instances = {}

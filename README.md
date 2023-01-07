@@ -25,6 +25,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Question Generation](https://github.com/artitw/text2text#question-generation)
   * [Summarization](https://github.com/artitw/text2text#summarization)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
+  * [Dialog Responder](https://github.com/artitw/text2text#dialog-responder)
   * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
   * [Identification](https://github.com/artitw/text2text#identification)
   * [Web Server](https://github.com/artitw/text2text#serving)
@@ -51,17 +52,17 @@ pip install -q -U text2text
 
 ## Class Diagram
 ```
-  Indexer    Measurer   Counter -- Tfidfer
-       \          \     /             \
-    Searcher     Tokenizer           Bm25er
-         \_______    |
-          _______Transformer______________
-         /           |                    \
-    Answerer     Translator              Abstractor
-                /    |     \              /       \
-        Vectorizer  Fitter  Variator  Questioner  Summarizer
-             /
-      Identifier
+      Indexer    Measurer   Counter -- Tfidfer
+           \          \     /             \
+        Searcher     Tokenizer           Bm25er
+             \_______    |
+              _______Transformer______________
+             /           |                    \
+        Answerer     Translator              Abstractor
+           /         /    |     \              /       \
+  Responder  Vectorizer  Fitter  Variator  Questioner  Summarizer
+                  /
+          Identifier
 ```
 
 ## Quick Start Guide
@@ -77,9 +78,10 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Indexer](https://github.com/artitw/text2text#index) | `i = h.index()` | Index object for similarity retrieval
 [Search](https://github.com/artitw/text2text#search) | `h.search(queries=["Hello"])` | `array([[0.09]])`
 [Translation](https://github.com/artitw/text2text#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
-[Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
 [Question Generation](https://github.com/artitw/text2text#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
+[Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
 [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
+[Dialog Response](https://github.com/artitw/text2text#dialog-responder) | `t2t.Handler(["[CONTEXT] Hello EOS How are you?"]).respond()` | `['I am doing great. How are you?']`
 [Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
@@ -706,6 +708,26 @@ t2t.Handler([bacteria_str], src_lang='en').variate()
 ```
 
 </details>
+
+### Dialog Responder
+Respond to given instructions, knowledge base, and dialog context.
+```
+instruction = ''
+knowledge = 'Domestic cats are valued by humans for companionship and their ability to kill rodents. About 60 cat breeds are recognized by various cat registries.'
+dialog = [
+    'Tell me about cats',
+    'There are many different breeds of cats in the world.',
+    'How many kinds are there?'
+]
+
+if knowledge != '':
+    knowledge = '[KNOWLEDGE] ' + knowledge
+dialog = ' EOS '.join(dialog)
+query = f"{instruction} [CONTEXT] {dialog} {knowledge}"
+
+t2t.Handler([query]).respond()
+# ['About 60 different kinds of cats are recognized by various cat registries.']
+```
 
 ### Training / Finetuning
 Finetune cross-lingual model on your data
