@@ -1,5 +1,7 @@
-from tqdm import tqdm
 import text2text as t2t
+import torch
+from tqdm import tqdm
+
 
 class Fitter(t2t.Translator):
 
@@ -9,7 +11,8 @@ class Fitter(t2t.Translator):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     model = self.__class__.model
-    device = self.__class__.device
+    device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+    model.to(device)
     model.train()
     tokenizer.src_lang = src_lang
     tokenizer.tgt_lang = tgt_lang

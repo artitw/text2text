@@ -42,7 +42,7 @@ class Questioner(t2t.Abstractor):
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
     input_lines = [x + " [SEP] " + self._get_random_answer(x) if " [SEP] " not in x else x for x in input_lines]
     questions = t2t.Abstractor.transform(self, input_lines, src_lang='en', **kwargs)
-    answers = [input.split(" [SEP] ")[1] for input in input_lines]
+    answers = [x.split(" [SEP] ")[1] for x in input_lines]
     if src_lang != 'en':
       questions = self._translate_lines(questions, 'en', src_lang)
       answers = self._translate_lines(answers, 'en', src_lang)
