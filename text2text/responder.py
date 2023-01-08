@@ -30,10 +30,10 @@ class Responder(t2t.Answerer):
 
   def transform(self, input_lines, src_lang='en', knowledge_base=None, **kwargs):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
-    df = pd.DataFrame({"input_lines": input_lines})
+    df = pd.DataFrame({"input_line": input_lines})
     df.loc[len(df)] = "[CONTEXT][KNOWLEDGE]"
     cols = ["instruction", "context", "knowledge"]
-    df[cols] = df["input_lines"].str.split(r"\[CONTEXT\]|\[KNOWLEDGE\]", expand=True)
+    df[cols] = df["input_line"].str.split(r"\[CONTEXT\]|\[KNOWLEDGE\]", expand=True)
     df.drop(df.tail(1).index, inplace=True)
     df.fillna("", inplace=True)
     df[cols] = df[cols].apply(lambda x: x.str.strip())
@@ -45,12 +45,14 @@ class Responder(t2t.Answerer):
 
     if knowledge_base:
       corpus, index = knowledge_base
-      df["knowledge"] = df.apply(lambda row: corpus[index.search([row["context"].lower()], k=1)[1][0][0]] if not row["knowledge"] else row["knowledge"], axis=1)
+      article_ids = index.search(df["context"].str.lower().tolist(), k=1)[1]
+      df["article"] = [corpus[i[0]] for i in article_ids]
+      df["knowledge"] = df.apply(lambda row: row["article"] if not row["knowledge"] else row["knowledge"], axis=1)
 
-    df["input_lines"] = df["instruction"] + " [CONTEXT] " + df["context"]
-    df["input_lines"] = df.apply(lambda row: row["input_lines"] + " [KNOWLEDGE] " + row["knowledge"] if row["knowledge"] else row["input_lines"], axis=1)
+    df["input_line"] = df["instruction"] + " [CONTEXT] " + df["context"]
+    df["input_line"] = df.apply(lambda row: row["input_line"] + " [KNOWLEDGE] " + row["knowledge"] if row["knowledge"] else row["input_line"], axis=1)
     
-    output_lines = self._get_responses(df["input_lines"].tolist())
+    output_lines = self._get_responses(df["input_line"].tolist())
 
     if src_lang != 'en':
       output_lines = self._translate_lines(output_lines, src_lang='en', tgt_lang=src_lang)
