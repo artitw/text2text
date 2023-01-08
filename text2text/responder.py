@@ -31,8 +31,12 @@ class Responder(t2t.Answerer):
   def transform(self, input_lines, src_lang='en', knowledge_base=None, **kwargs):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     df = pd.DataFrame({"input_lines": input_lines})
-    df[["instruction", "context", "knowledge"]] = df["input_lines"].str.split(r" \[CONTEXT\] | \[KNOWLEDGE\] ", expand=True)
+    df.loc[len(df)] = "[CONTEXT][KNOWLEDGE]"
+    cols = ["instruction", "context", "knowledge"]
+    df[cols] = df["input_lines"].str.split(r"\[CONTEXT\]|\[KNOWLEDGE\]", expand=True)
+    df.drop(df.tail(1).index, inplace=True)
     df.fillna("", inplace=True)
+    df[cols] = df[cols].apply(lambda x: x.str.strip())
 
     if src_lang != 'en':
       df["instruction"] = self._translate_lines(df["instruction"].tolist(), src_lang, 'en')
