@@ -307,7 +307,7 @@ t2t.Handler([
 ```
 
 ### Index
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RaWj5SqWvyC2SsCTGg8IAVcl9G5hOB50?usp=sharing)
+[![STF-IDF Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RaWj5SqWvyC2SsCTGg8IAVcl9G5hOB50?usp=sharing)
 ```
 index = t2t.Handler([
          "Let's go hiking tomorrow, let's go!", 
@@ -711,6 +711,7 @@ t2t.Handler([bacteria_str], src_lang='en').variate()
 
 ### Dialog Responder
 Respond to given instructions, knowledge base, and dialog context.
+To use a dynamic knowledge base, see [![Q&A Dialog Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/19zaOzY-VU7pYkjCUlnxLzV-b51ZqASFq?usp=sharing)
 ```
 instruction = ''
 knowledge = 'Domestic cats are valued by humans for companionship and their ability to kill rodents. About 60 cat breeds are recognized by various cat registries.'

@@ -27,10 +27,14 @@ class Responder(t2t.Answerer):
 
     return [tokenizer.decode(out, skip_special_tokens=True) for out in outputs]
 
-  def transform(self, input_lines, src_lang='en', **kwargs):
+  def transform(self, input_lines, src_lang='en', knowledge_base=None, **kwargs):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     if src_lang != 'en':
       input_lines = self._translate_lines(input_lines, src_lang, 'en')
+    
+    if knowledge_base:
+      corpus, index = knowledge_base
+      input_lines = [line + " [KNOWLEDGE] " + corpus[index.search([line.lower()], k=1)[1][0][0]] for line in input_lines]
 
     output_lines = self._get_responses(input_lines)
 
