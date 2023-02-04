@@ -12,7 +12,7 @@ class Responder(t2t.Answerer):
     if not pretrained_model:
       pretrained_model = self.__class__.pretrained_model
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
-    self.__class__.model = AutoModelForSeq2SeqLM.from_pretrained(pretrained_model)
+    self.__class__.model = AutoModelForSeq2SeqLM.from_pretrained(pretrained_model, device_map="auto", load_in_8bit=True)
 
   def _get_responses(self, input_lines):
     tokenizer = self.__class__.tokenizer
@@ -23,7 +23,7 @@ class Responder(t2t.Answerer):
     outputs = model.generate(
         input_ids=inputs['input_ids'],
         attention_mask=inputs['attention_mask'],
-        max_length=128, min_length=8, top_p=0.9, do_sample=True,
+        max_length=128, min_length=8,
     )
 
     return [tokenizer.decode(out, skip_special_tokens=True) for out in outputs]
