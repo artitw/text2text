@@ -11,7 +11,7 @@ class Answerer(t2t.Transformer):
     if not pretrained_answerer:
       pretrained_answerer = self.__class__.pretrained_answerer
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_answerer)
-    self.__class__.model = AutoModelForQuestionAnswering.from_pretrained(pretrained_answerer, device_map="auto", load_in_8bit=True)
+    self.__class__.model = AutoModelForQuestionAnswering.from_pretrained(pretrained_answerer)
 
   def _translate_lines(self, input_lines, src_lang, tgt_lang):
     translator = getattr(self.__class__, "translator", t2t.Translator())
