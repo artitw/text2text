@@ -26,6 +26,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Summarization](https://github.com/artitw/text2text#summarization)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
   * [Dialog Responder](https://github.com/artitw/text2text#dialog-responder)
+  * [Assistant](https://github.com/artitw/text2text#assistant)
   * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
   * [Identification](https://github.com/artitw/text2text#identification)
   * [Web Server](https://github.com/artitw/text2text#serving)
@@ -55,7 +56,7 @@ pip install -q -U text2text
       Indexer    Measurer   Counter -- Tfidfer
            \          \     /             \
         Searcher     Tokenizer           Bm25er
-             \_______    |
+             \_______    |      ________________ Assistant
               _______Transformer______________
              /           |                    \
         Answerer     Translator              Abstractor
@@ -82,6 +83,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
 [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
 [Dialog Response](https://github.com/artitw/text2text#dialog-responder) | `t2t.Handler(["[CONTEXT] Hello EOS How are you?"]).respond()` | `['I am doing great. How are you?']`
+[Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Handler(["Explain Text2Text in one sentence"]).assist()` | `['Text to text translation uses a deep learning model to generate a text in another language from a given source text.']`
 [Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
@@ -728,6 +730,15 @@ input_state = f"{instruction} [CONTEXT] {dialog} {knowledge}"
 
 t2t.Handler([input_state]).respond()
 # ['About 60 different kinds of cats are recognized by various cat registries.']
+```
+
+### Assistant
+Not chatGPT level but it works
+```
+res = t2t.Handler(["Outline steps for contributing to open source code"]).assist()
+# 1) Find an open source project that you are interested in. You can do this by searching the internet for the project name or using a search engine to find the project page on GitHub.
+# 2) Verify that you have the necessary permissions to make changes to the code. If the project uses basic permissions, you can use git to check out the code. If the code uses more advanced permissions, you can find a way to use those permissions.
+# 3) Perform a code review to ensure that your contributions are properly credits and, if necessary, include a reasoning of your changes.
 ```
 
 ### Training / Finetuning

@@ -1,4 +1,5 @@
 from .transformer import Transformer
+from .assistant import Assistant
 from .tokenizer import Tokenizer
 from .measurer import Measurer
 from .translator import Translator
