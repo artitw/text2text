@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name="text2text",
-  version="1.0.0",
+  version="1.0.1",
   author="Artit Wangperawong",
   author_email="artitw@gmail.com",
   description="Text2Text: Crosslingual NLP/G toolkit",
@@ -22,6 +22,7 @@ setuptools.setup(
   install_requires=[
     'accelerate',
     'bitsandbytes',
+    'peft',
     'faiss-cpu',
     'flask',
     'googledrivedownloader',
@@ -31,6 +32,6 @@ setuptools.setup(
     'sentencepiece',
     'torch',
     'tqdm',
-    'transformers==4.25.1',
+    'transformers',
   ],
 )

@@ -17,11 +17,9 @@ class Responder(t2t.Answerer):
   def _get_responses(self, input_lines):
     tokenizer = self.__class__.tokenizer
     model = self.__class__.model
-
     inputs = tokenizer(input_lines, return_tensors="pt", padding=True)
-
     outputs = model.generate(
-        input_ids=inputs['input_ids'],
+        input_ids=inputs['input_ids'].to(model.device),
         attention_mask=inputs['attention_mask'],
         max_length=128, min_length=8,
     )

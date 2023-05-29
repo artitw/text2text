@@ -1,9 +1,10 @@
-I am providing code in the repository to you under an open source license. Because this is my personal repository, the license you receive to my code is from me and not my employer (Facebook).
+This open source software utilizes other open source components with their own 
+licensing agreements. As the consumer of this software, you agree to abide by 
+the licensing requirements set forth by the respective components used.
 
 The MIT License (MIT)
 
 Copyright (c) Artit Wangperawong
-Copyright (c) Microsoft Corporation
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
