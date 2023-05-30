@@ -733,9 +733,13 @@ t2t.Handler([input_state]).respond()
 ```
 
 ### Assistant
-Not chatGPT level but it works
+Based on LLaMA, which is not commercially licensed.
 ```
-res = t2t.Handler(["Outline steps for contributing to open source code"]).assist()
+instructions = """
+Generate a JSON output mapping with keys as English characters and values as Greek equivalents.
+{
+"""
+res = t2t.Handler([instructions]).assist()
 # 1) Find an open source project that you are interested in. You can do this by searching the internet for the project name or using a search engine to find the project page on GitHub.
 # 2) Verify that you have the necessary permissions to make changes to the code. If the project uses basic permissions, you can use git to check out the code. If the code uses more advanced permissions, you can find a way to use those permissions.
 # 3) Perform a code review to ensure that your contributions are properly credits and, if necessary, include a reasoning of your changes.

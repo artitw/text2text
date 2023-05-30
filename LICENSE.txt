@@ -1,6 +1,7 @@
 This open source software utilizes other open source components with their own 
 licensing agreements. As the consumer of this software, you agree to abide by 
-the licensing requirements set forth by the respective components used.
+the licensing requirements set forth by the respective components used, e.g.
+Assistant is based on the LLaMA model, which is non-commercially licensed.
 
 The MIT License (MIT)
 
