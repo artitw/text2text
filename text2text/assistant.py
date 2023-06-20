@@ -1,30 +1,31 @@
-import torch
 import text2text as t2t
-from peft import PeftModel    
-from transformers import AutoModelForCausalLM, LlamaTokenizer
+from transformers import AutoTokenizer
+from auto_gptq import AutoGPTQForCausalLM
 
 class Assistant(t2t.Transformer):
 
   def __init__(self, **kwargs):
-    model_name = "decapoda-research/llama-7b-hf"
-    adapters_name = 'timdettmers/guanaco-7b'
-    m = AutoModelForCausalLM.from_pretrained(
-        model_name,
-        #load_in_4bit=True,
-        torch_dtype=torch.bfloat16,
-        device_map={"": 0}
+    model_name_or_path = "TheBloke/vicuna-13b-v1.3-GPTQ"
+    model_basename = "vicuna-13b-v1.3-GPTQ-4bit-128g.no-act.order"
+
+    self.__class__.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
+
+    self.__class__.model = AutoGPTQForCausalLM.from_quantized(model_name_or_path,
+      model_basename=model_basename,
+      use_safetensors=True,
+      trust_remote_code=False,
+      device="cuda:0",
+      use_triton=False,
+      quantize_config=None
     )
-    m = PeftModel.from_pretrained(m, adapters_name)
-    self.__class__.model = m.merge_and_unload()
-    self.__class__.tokenizer = LlamaTokenizer.from_pretrained(model_name)
-    self.__class__.tokenizer.bos_token_id = 1
 
   def transform(self, input_lines, src_lang='en', **kwargs):
+    input_lines = [f'''USER: {prompt}\nASSISTANT:''' for prompt in input_lines]
     temperature = kwargs.get('temperature', 0.7)
     top_p = kwargs.get('top_p', 0.9)
     top_k = kwargs.get('top_k', 0)
     repetition_penalty = kwargs.get('repetition_penalty', 1.1)
-    max_new_tokens = kwargs.get('max_new_tokens', 1536)
+    max_new_tokens = kwargs.get('max_new_tokens', 512)
     tok = self.__class__.tokenizer
     m = self.__class__.model
     input_ids = tok(input_lines, return_tensors="pt").input_ids
@@ -39,5 +40,9 @@ class Assistant(t2t.Transformer):
         repetition_penalty=repetition_penalty,
     )
 
-    return tok.batch_decode(m.generate(**generate_kwargs), skip_special_tokens=True) 
+    output_lines = tok.batch_decode(m.generate(**generate_kwargs)) 
+
+    for i in range(len(input_lines)):
+      output_lines[i] = output_lines[i].replace('<s>',"").replace('</s>',"").replace(input_lines[i], "").strip()
     
+    return output_lines

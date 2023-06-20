@@ -83,7 +83,7 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
 [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
 [Dialog Response](https://github.com/artitw/text2text#dialog-responder) | `t2t.Handler(["[CONTEXT] Hello EOS How are you?"]).respond()` | `['I am doing great. How are you?']`
-[Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Handler(["Explain Text2Text in one sentence"]).assist()` | `['Text to text translation uses a deep learning model to generate a text in another language from a given source text.']`
+[Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Handler(["Describe Text2Text in a few words: "]).assist()` | `['Text2Text is an AI-powered text generation tool that creates coherent and continuous text based on prompts.']`
 [Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
@@ -733,16 +733,13 @@ t2t.Handler([input_state]).respond()
 ```
 
 ### Assistant
-Based on LLaMA, which is not commercially licensed.
+Based on Vicuna 13B, which is based on LLaMA, which is not commercially licensed.
 ```
-instructions = """
-Generate a JSON output mapping with keys as English characters and values as Greek equivalents.
-{
-"""
+instructions = "Generate a JSON object that maps English characters as keys and Greek equivalents as values: {"
 res = t2t.Handler([instructions]).assist()
-# 1) Find an open source project that you are interested in. You can do this by searching the internet for the project name or using a search engine to find the project page on GitHub.
-# 2) Verify that you have the necessary permissions to make changes to the code. If the project uses basic permissions, you can use git to check out the code. If the code uses more advanced permissions, you can find a way to use those permissions.
-# 3) Perform a code review to ensure that your contributions are properly credits and, if necessary, include a reasoning of your changes.
+#[
+#  '{\n"a": "α",\n"b": "β",\n"c": "γ",\n"d": "δ",\n"e": "ε",\n"f": "φ",\n"g": "χ",\n"h": "ι",\n"i": "η",\n"j": "κ",\n"k": "λ",\n"l": "μ",\n"m": "ν",\n"n": "ξ",\n"o": "ο",\n"p": "π",\n"q": "ρ",\n"r": "σ",\n"s": "τ",\n"t": "υ",\n"u": "ύ",\n"v": "φ",\n"w": "χ",\n"x": "ψ",\n"y": "ω",\n"z": "ζ"\n}'
+#]
 ```
 
 ### Training / Finetuning
