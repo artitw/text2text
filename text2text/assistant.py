@@ -51,9 +51,7 @@ class Assistant(t2t.Transformer):
         repetition_penalty=repetition_penalty,
     )
 
-    output_lines = tok.batch_decode(m.generate(**generate_kwargs)) 
+    df["output_line"] = tok.batch_decode(m.generate(**generate_kwargs)) 
+    df["output_line"] = df.apply(lambda row: row["output_line"].replace('<s>',"").replace('</s>',"").replace(row["input_line"], "").strip(), axis=1)
 
-    for i in range(len(input_lines)):
-      output_lines[i] = output_lines[i].replace('<s>',"").replace('</s>',"").replace(input_lines[i], "").strip()
-    
-    return output_lines
+    return df["output_line"].tolist()

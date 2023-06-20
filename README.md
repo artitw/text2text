@@ -7,8 +7,8 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 * [Colab Notebooks](https://github.com/artitw/text2text#colab-notebooks)
 * [Crosslingual Models](https://github.com/artitw/text2text#how-crosslingual-models-work-click-to-watch)
 * [Installation Requirements](https://github.com/artitw/text2text#installation-requirements)
-* [Class Diagram](https://github.com/artitw/text2text#class-diagram)
 * [Quick Start Guide](https://github.com/artitw/text2text#api-quick-start-guide)
+* [Class Diagram](https://github.com/artitw/text2text#class-diagram)
 * [Languages Available](https://github.com/artitw/text2text#languages-available)
 * [Requirements & Installation](https://github.com/artitw/text2text#requirements-and-installation)
 * [Examples](https://github.com/artitw/text2text#examples)
@@ -44,11 +44,11 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 ## How Crosslingual Models Work (click to watch)
 [![Crosslingual Models](http://img.youtube.com/vi/caZLVcJqsqo/0.jpg)](https://youtu.be/caZLVcJqsqo "Cross-Lingual Models")
 
-## Installation Requirements 
+## Installation Requirements
 ```
 pip install -qq -U text2text
 ```
-* [Examples](#examples) all work with <16 GB RAM, so they run free on [Colab](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR).
+* [Examples](#examples) can run with <16 GB RAM on free [Colab GPUs](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR).
 
 ## Quick Start Guide
 Functionality | Invocation | Result
@@ -219,8 +219,8 @@ res = t2t.Handler([instructions]).assist()
 ### Tokenization
 ```
 t2t.Handler([
-         "Let's go hiking tomorrow", 
-         "안녕하세요.", 
+         "Let's go hiking tomorrow",
+         "안녕하세요.",
          "돼지꿈을 꾸세요~~"
          ]).tokenize()
 
@@ -233,8 +233,8 @@ t2t.Handler([
 ### Embedding / Vectorization
 ```
 t2t.Handler([
-         "Let's go hiking tomorrow", 
-         "안녕하세요.", 
+         "Let's go hiking tomorrow",
+         "안녕하세요.",
          "돼지꿈을 꾸세요~~"
          ]).vectorize()
 
@@ -250,8 +250,8 @@ array([[-0.00352954,  0.0260059 ,  0.00407429, ..., -0.04830331,
 ### TF-IDF
 ```
 t2t.Handler([
-         "Let's go hiking tomorrow", 
-         "안녕하세요.", 
+         "Let's go hiking tomorrow",
+         "안녕하세요.",
          "돼지꿈을 꾸세요~~"
          ]).tfidf()
 
@@ -283,8 +283,8 @@ t2t.Handler([
 ### BM25
 ```
 t2t.Handler([
-         "Let's go hiking tomorrow", 
-         "안녕하세요.", 
+         "Let's go hiking tomorrow",
+         "안녕하세요.",
          "돼지꿈을 꾸세요~~"
          ]).bm25()
 
@@ -312,8 +312,8 @@ t2t.Handler([
 [![STF-IDF Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RaWj5SqWvyC2SsCTGg8IAVcl9G5hOB50?usp=sharing)
 ```
 index = t2t.Handler([
-         "Let's go hiking tomorrow, let's go!", 
-         "안녕하세요.", 
+         "Let's go hiking tomorrow, let's go!",
+         "안녕하세요.",
          "돼지꿈을 꾸세요~~",
          ]).index(ids=[100, 101, 102])
 
@@ -323,7 +323,7 @@ index.search(["돼지", "안녕", "let's go"], k=1)
 (
   array([[0.7752551],
         [0.8452994],
-        [0.4347524]], dtype=float32), 
+        [0.4347524]], dtype=float32),
   array([[102],
         [101],
         [100]])
@@ -346,8 +346,8 @@ To learn more, see [STF-IDF](https://arxiv.org/abs/2209.14281).
 ### Search
 ```
 t2t.Handler([
-         "Let's go hiking tomorrow, let's go!", 
-         "안녕하세요.", 
+         "Let's go hiking tomorrow, let's go!",
+         "안녕하세요.",
          "돼지꿈을 꾸세요~~",
          ]).search(queries=["go", "안녕"])
 
@@ -367,19 +367,19 @@ bacteria_str = "Bacteria are a type of biological cell. They constitute a large 
 bio_str = "Biology is the science that studies life. What exactly is life? This may sound like a silly question with an obvious answer, but it is not easy to define life. For example, a branch of biology called virology studies viruses, which exhibit some of the characteristics of living entities but lack others. It turns out that although viruses can attack living organisms, cause diseases, and even reproduce, they do not meet the criteria that biologists use to define life."
 
 bm25_index = t2t.Handler([
-                       article_en, 
-                       notre_dame_str, 
-                       bacteria_str, 
+                       article_en,
+                       notre_dame_str,
+                       bacteria_str,
                        bio_str
                        ]).bm25(output="matrix")
 
 search_results_bm25 = t2t.Handler().search(
-    queries=["wonderful life", "university students"], 
+    queries=["wonderful life", "university students"],
     vector_class=t2t.Bm25er,
     index=bm25_index)
 
 search_results_bm25_2 = t2t.Handler().search(
-    queries=["Earth creatures are cool", "United Nations"], 
+    queries=["Earth creatures are cool", "United Nations"],
     vector_class=t2t.Bm25er,
     index=bm25_index)
 ```
@@ -387,14 +387,14 @@ search_results_bm25_2 = t2t.Handler().search(
 #### Using TF-DF embeddings index
 ```
 tfidf_index = t2t.Handler([
-                       article_en, 
-                       notre_dame_str, 
-                       bacteria_str, 
+                       article_en,
+                       notre_dame_str,
+                       bacteria_str,
                        bio_str
                        ]).tfidf(output="matrix")
 
 search_results_tf = t2t.Handler().search(
-    queries=["wonderful life", "university students"], 
+    queries=["wonderful life", "university students"],
     vector_class=t2t.Tfidfer,
     index=tfidf_index)
 ```
@@ -402,9 +402,9 @@ search_results_tf = t2t.Handler().search(
 #### Using neural embeddings index
 ```
 embedding_index = t2t.Handler([
-                       article_en, 
-                       notre_dame_str, 
-                       bacteria_str, 
+                       article_en,
+                       notre_dame_str,
+                       bacteria_str,
                        bio_str
                        ]).vectorize()
 
@@ -414,9 +414,9 @@ search_results_em = t2t.Handler().search(
     index=embedding_index)
 ```
 
-#### Blending bm25, tf-idf and neural embeddings 
+#### Blending bm25, tf-idf and neural embeddings
 ```
-np.mean( 
+np.mean(
     np.array([
               search_results_bm25,
               search_results_tf,
@@ -431,7 +431,7 @@ np.mean(
 ### Levenshtein Sub-word Edit Distance
 ```
 t2t.Handler([
-         "Hello, World! [SEP] Hello, what?", 
+         "Hello, World! [SEP] Hello, what?",
          "안녕하세요. [SEP] 돼지꿈을 꾸세요~~"
         ]).measure(metric="levenshtein_distance")
 
@@ -442,9 +442,9 @@ t2t.Handler([
 ### Translation
 ```
 t2t.Handler([
-         article_en, 
-         notre_dame_str, 
-         bacteria_str, 
+         article_en,
+         notre_dame_str,
+         bacteria_str,
          bio_str
          ], src_lang='en').translate(tgt_lang='zh')
 
@@ -519,7 +519,7 @@ t2t.Transformer.LANGUAGES = {
   'xh_ZA': 'Xhosa',
   'zh_CN': 'Chinese'
 }
-t2t.Handler(["I would like to go hiking tomorrow."], 
+t2t.Handler(["I would like to go hiking tomorrow."],
         src_lang="en_XX"
         ).translate(tgt_lang='zh_CN')
 ['我想明天去徒步旅行。']
@@ -531,7 +531,7 @@ t2t.Handler(["I would like to go hiking tomorrow."],
 Question must follow context with ` [SEP] ` in between.
 ```
 t2t.Handler([
-         "Hello, this is Text2Text! [SEP] What is this?", 
+         "Hello, this is Text2Text! [SEP] What is this?",
          "It works very well. It's awesome! [SEP] How is it?"
          ]).answer()
 
@@ -736,10 +736,10 @@ t2t.Handler([input_state]).respond()
 ### Training / Finetuning
 Finetune cross-lingual model on your data
 ```
-result = t2t.Handler(["Hello, World! [TGT] 你好,世界!"], 
+result = t2t.Handler(["Hello, World! [TGT] 你好,世界!"],
             src_lang="en",
             tgt_lang="zh",
-            num_epochs=10, 
+            num_epochs=10,
             save_directory="model_dir"
             ).fit()
 
@@ -771,7 +771,7 @@ address = socket.gethostbyname(socket.getfqdn(socket.gethostname()))
 url = f"http://{address}"
 transform = "translate"
 payload = {
-  "input_lines": ["hello", "world"], 
+  "input_lines": ["hello", "world"],
   "src_lang": "en",
   "tgt_lang": "ko",
 }
