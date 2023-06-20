@@ -45,7 +45,6 @@ class Indexer(t2t.Searcher):
   def transform(self, input_lines, src_lang='en', ids=[], encoders=[t2t.Tfidfer], **kwargs):
     self.encoders = encoders
     d = self.get_formatted_matrix(["DUMMY"], src_lang=src_lang, **kwargs).shape[-1]
-    print(f"Creating index with {d} dimensions.")
     self.index = faiss.IndexIDMap2(faiss.IndexFlatL2(d))
     if not input_lines:
       return self

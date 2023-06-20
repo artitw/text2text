@@ -25,8 +25,8 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Question Generation](https://github.com/artitw/text2text#question-generation)
   * [Summarization](https://github.com/artitw/text2text#summarization)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
-  * [Dialog Responder](https://github.com/artitw/text2text#dialog-responder)
   * [Assistant](https://github.com/artitw/text2text#assistant)
+  * [Dialog Responder](https://github.com/artitw/text2text#dialog-responder)
   * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
   * [Identification](https://github.com/artitw/text2text#identification)
   * [Web Server](https://github.com/artitw/text2text#serving)
@@ -81,8 +81,8 @@ Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialize
 [Question Generation](https://github.com/artitw/text2text#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
 [Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
 [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
-[Dialog Response](https://github.com/artitw/text2text#dialog-responder) | `t2t.Handler(["[CONTEXT] Hello EOS How are you?"]).respond()` | `['I am doing great. How are you?']`
 [Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Handler(["Describe Text2Text in a few words: "]).assist()` | `['Text2Text is an AI-powered text generation tool that creates coherent and continuous text based on prompts.']`
+[Dialog Response](https://github.com/artitw/text2text#dialog-responder) | `t2t.Handler(["[CONTEXT] Hello EOS How are you?"]).respond()` | `['I am doing great. How are you?']`
 [Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
@@ -703,6 +703,18 @@ t2t.Handler([bacteria_str], src_lang='en').variate()
 
 </details>
 
+### Assistant
+Based on Vicuna 13B, which is based on LLaMA, which is not commercially licensed.
+Not ChatGPT level but it works well.
+To use a dynamic knowledge base, see [![Q&A Assistant Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hkNgpSmmUA-mzUibqz25xq-E8KYOLuVx?usp=sharing)
+```
+instructions = "Generate a JSON object that maps English characters as keys and Greek equivalents as values: {"
+res = t2t.Handler([instructions]).assist()
+#[
+#  '{\n"a": "α",\n"b": "β",\n"c": "γ",\n"d": "δ",\n"e": "ε",\n"f": "φ",\n"g": "χ",\n"h": "ι",\n"i": "η",\n"j": "κ",\n"k": "λ",\n"l": "μ",\n"m": "ν",\n"n": "ξ",\n"o": "ο",\n"p": "π",\n"q": "ρ",\n"r": "σ",\n"s": "τ",\n"t": "υ",\n"u": "ύ",\n"v": "φ",\n"w": "χ",\n"x": "ψ",\n"y": "ω",\n"z": "ζ"\n}'
+#]
+```
+
 ### Dialog Responder
 Respond to given instructions, knowledge base, and dialog context.
 To use a dynamic knowledge base, see [![Q&A Dialog Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/19zaOzY-VU7pYkjCUlnxLzV-b51ZqASFq?usp=sharing)
@@ -722,17 +734,6 @@ input_state = f"{instruction} [CONTEXT] {dialog} {knowledge}"
 
 t2t.Handler([input_state]).respond()
 # ['About 60 different kinds of cats are recognized by various cat registries.']
-```
-
-### Assistant
-Based on Vicuna 13B, which is based on LLaMA, which is not commercially licensed.
-Not ChatGPT level but it works well
-```
-instructions = "Generate a JSON object that maps English characters as keys and Greek equivalents as values: {"
-res = t2t.Handler([instructions]).assist()
-#[
-#  '{\n"a": "α",\n"b": "β",\n"c": "γ",\n"d": "δ",\n"e": "ε",\n"f": "φ",\n"g": "χ",\n"h": "ι",\n"i": "η",\n"j": "κ",\n"k": "λ",\n"l": "μ",\n"m": "ν",\n"n": "ξ",\n"o": "ο",\n"p": "π",\n"q": "ρ",\n"r": "σ",\n"s": "τ",\n"t": "υ",\n"u": "ύ",\n"v": "φ",\n"w": "χ",\n"x": "ψ",\n"y": "ω",\n"z": "ζ"\n}'
-#]
 ```
 
 ### Training / Finetuning

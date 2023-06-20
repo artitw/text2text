@@ -1,3 +1,4 @@
+import pandas as pd
 import text2text as t2t
 from transformers import AutoTokenizer
 from auto_gptq import AutoGPTQForCausalLM
@@ -19,8 +20,17 @@ class Assistant(t2t.Transformer):
       quantize_config=None
     )
 
-  def transform(self, input_lines, src_lang='en', **kwargs):
-    input_lines = [f'''USER: {prompt}\nASSISTANT:''' for prompt in input_lines]
+  def transform(self, input_lines, src_lang='en', knowledge_base=None, **kwargs):
+    input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
+    df = pd.DataFrame({"input_line": input_lines})
+    if src_lang != 'en':
+      df["input_line"] = self._translate_lines(df["input_line"].tolist(), src_lang, 'en')
+    if knowledge_base:
+      corpus, index = knowledge_base
+      article_ids = index.search(df["input_line"].str.lower().tolist(), k=1)[1]
+      df["knowledge"] = [corpus[i[0]] for i in article_ids]
+      df["input_line"] = df["knowledge"] + " - " + df["input_line"]
+    df["input_line"] = "USER: " + df["input_line"] + "\nASSISTANT:"
     temperature = kwargs.get('temperature', 0.7)
     top_p = kwargs.get('top_p', 0.9)
     top_k = kwargs.get('top_k', 0)
@@ -28,7 +38,8 @@ class Assistant(t2t.Transformer):
     max_new_tokens = kwargs.get('max_new_tokens', 512)
     tok = self.__class__.tokenizer
     m = self.__class__.model
-    input_ids = tok(input_lines, return_tensors="pt").input_ids
+
+    input_ids = tok(df["input_line"].tolist(), return_tensors="pt", padding=True).input_ids
     input_ids = input_ids.to(m.device)
     generate_kwargs = dict(
         input_ids=input_ids,
