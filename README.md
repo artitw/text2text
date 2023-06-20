@@ -36,8 +36,10 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 
 </details>
 
-## Colab Demo
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
+## Colab Notebooks
+* Assistant with knowledge base [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hkNgpSmmUA-mzUibqz25xq-E8KYOLuVx?usp=sharing)
+* STF-IDF multilingual search [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RaWj5SqWvyC2SsCTGg8IAVcl9G5hOB50?usp=sharing)
+* All examples [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
 
 ## How Crosslingual Models Work (click to watch)
 [![Crosslingual Models](http://img.youtube.com/vi/caZLVcJqsqo/0.jpg)](https://youtu.be/caZLVcJqsqo "Cross-Lingual Models")
@@ -46,29 +48,13 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 ```
 pip install -qq -U text2text
 ```
-* All functionality in the demo and examples work with <16 GB RAM, which means they run on Colab.
-  * See [Colab Demo](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR) and [Examples](#examples) below
-
-## Class Diagram
-```
-      Indexer    Measurer   Counter -- Tfidfer
-           \          \     /             \
-        Searcher     Tokenizer           Bm25er
-             \_______    |      ________________ Assistant
-              _______Transformer______________
-             /           |                    \
-        Answerer     Translator              Abstractor
-           /         /    |     \              /       \
-  Responder  Vectorizer  Fitter  Variator  Questioner  Summarizer
-                  /
-          Identifier
-```
+* [Examples](#examples) all work with <16 GB RAM, so they run free on [Colab](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR).
 
 ## Quick Start Guide
 Functionality | Invocation | Result
 :------------: | :-------------: | :-------------:
 Module Importing | `import text2text as t2t` | Libraries imported
-[Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Handler(["Describe Text2Text in a few words: "]).assist()` | `['Text2Text is an AI-powered text generation tool that creates coherent and continuous text based on prompts.']`
+[Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Handler("Describe Text2Text in a few words: ").assist()` | `['Text2Text is an AI-powered text generation tool that creates coherent and continuous text based on prompts.']`
 Language Model Setting | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Change from default
 Text Handler | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
 [Tokenization](https://github.com/artitw/text2text#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
@@ -87,6 +73,21 @@ Text Handler | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
 [Identification](https://github.com/artitw/text2text#identification) | `t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“..."]).identify()` | `['sk', 'Slovak']`
 [Web Server](https://github.com/artitw/text2text#serving) | `t2t.Server(host='0.0.0.0', port=80)` | Web server started on host and port
+
+## Class Diagram
+```
+      Indexer    Measurer   Counter -- Tfidfer
+           \          \     /             \
+        Searcher     Tokenizer           Bm25er
+             \_______    |      ________________ Assistant
+              _______Transformer______________
+             /           |                    \
+        Answerer     Translator              Abstractor
+           /         /    |     \              /       \
+  Responder  Vectorizer  Fitter  Variator  Questioner  Summarizer
+                  /
+          Identifier
+```
 
 ## Languages Available
 <details>
