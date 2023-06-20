@@ -4,8 +4,8 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 <details>
   <summary>Overview</summary>
 
-* [Colab Demo](https://github.com/artitw/text2text#colab-demo)
-* [Cross-Lingual Models](https://github.com/artitw/text2text#how-cross-lingual-nlp-models-work-click-to-watch)
+* [Colab Notebooks](https://github.com/artitw/text2text#colab-notebooks)
+* [Crosslingual Models](https://github.com/artitw/text2text#how-crosslingual-models-work-click-to-watch)
 * [Installation Requirements](https://github.com/artitw/text2text#installation-requirements)
 * [Class Diagram](https://github.com/artitw/text2text#class-diagram)
 * [Quick Start Guide](https://github.com/artitw/text2text#api-quick-start-guide)
