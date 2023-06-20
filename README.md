@@ -45,10 +45,9 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 
 ## Installation Requirements 
 ```
-pip install -q -U text2text
+pip install -qq -U text2text
 ```
-* Default model: >16 GB RAM
-* Smaller models: <16 GB RAM 
+* By default, all functionality in the demo and examples below work with less than 16 GB RAM, which means it runs on Colab.
   * See [Colab Demo](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR) and [Examples](#examples) below
 
 ## Class Diagram
@@ -70,7 +69,7 @@ pip install -q -U text2text
 Functionality | Invocation | Result
 :------------: | :-------------: | :-------------:
 Module Importing | `import text2text as t2t` | Libraries imported
-Language Model Setting | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Override default with smaller model
+Language Model Setting | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Default model
 Intialization | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
 [Tokenization](https://github.com/artitw/text2text#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
 [Embedding](https://github.com/artitw/text2text#embedding--vectorization) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
@@ -448,21 +447,14 @@ t2t.Handler([
 ```
 
 #### BYOT: Bring Your Own Translator
- * The default translator requires more than 16GB of memory.
- * You can specify smaller pretrained translators at your own risk.
+ * The default translator requires no more than 16GB of memory.
+ * You can specify other pretrained translators at your own risk.
  * Make sure src_lang and tgt_lang codes conform to that model.
- * Below are some tested examples, which use less memory.
 
 <details>
   <summary>BYOT examples</summary>
 
 ```
-t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"
-t2t.Handler(["I would like to go hiking tomorrow."], 
-        src_lang="en"
-        ).translate(tgt_lang='zh')
-['我想明天去散步。']
-
 t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/mbart-large-50-many-to-many-mmt"
 t2t.Transformer.LANGUAGES = {
   'af_ZA': 'Afrikaans',
@@ -734,6 +726,7 @@ t2t.Handler([input_state]).respond()
 
 ### Assistant
 Based on Vicuna 13B, which is based on LLaMA, which is not commercially licensed.
+Not ChatGPT level but it works well
 ```
 instructions = "Generate a JSON object that maps English characters as keys and Greek equivalents as values: {"
 res = t2t.Handler([instructions]).assist()
