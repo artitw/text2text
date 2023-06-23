@@ -48,7 +48,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 ```
 pip install -qq -U text2text
 ```
-* [Examples](#examples) can run with <16 GB RAM on free [Colab GPUs](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR).
+* [Examples](#examples) run with <16 GB RAM on free [Colab GPUs](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR).
 
 ## Quick Start Guide
 Functionality | Invocation | Result

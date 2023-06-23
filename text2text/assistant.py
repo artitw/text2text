@@ -6,8 +6,8 @@ from auto_gptq import AutoGPTQForCausalLM
 class Assistant(t2t.Transformer):
 
   def __init__(self, **kwargs):
-    model_name_or_path = "TheBloke/vicuna-13b-v1.3-GPTQ"
-    model_basename = "vicuna-13b-v1.3-GPTQ-4bit-128g.no-act.order"
+    model_name_or_path = kwargs.get("model_name_or_path", "TheBloke/vicuna-13b-v1.3-GPTQ")
+    model_basename = kwargs.get("model_basename", "vicuna-13b-v1.3-GPTQ-4bit-128g.no-act.order")
 
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
