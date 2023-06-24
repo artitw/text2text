@@ -74,21 +74,6 @@ Text Handler | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized
 [Identification](https://github.com/artitw/text2text#identification) | `t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“..."]).identify()` | `['sk', 'Slovak']`
 [Web Server](https://github.com/artitw/text2text#serving) | `t2t.Server(host='0.0.0.0', port=80)` | Web server started on host and port
 
-## Class Diagram
-```
-      Indexer    Measurer   Counter -- Tfidfer
-           \          \     /             \
-        Searcher     Tokenizer           Bm25er
-             \_______    |      ________________ Assistant
-              _______Transformer______________
-             /           |                    \
-        Answerer     Translator              Abstractor
-           /         /    |     \              /       \
-  Responder  Vectorizer  Fitter  Variator  Questioner  Summarizer
-                  /
-          Identifier
-```
-
 ## Languages Available
 <details>
   <summary>Show all</summary>

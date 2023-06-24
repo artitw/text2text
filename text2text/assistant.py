@@ -20,16 +20,15 @@ class Assistant(t2t.Transformer):
       quantize_config=None
     )
 
-  def transform(self, input_lines, src_lang='en', knowledge_base=None, **kwargs):
+  def transform(self, input_lines, src_lang='en', retriever=None, **kwargs):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     df = pd.DataFrame({"input_line": input_lines})
     if src_lang != 'en':
       df["input_line"] = self._translate_lines(df["input_line"].tolist(), src_lang, 'en')
-    if knowledge_base:
-      corpus, index = knowledge_base
-      article_ids = index.search(df["input_line"].str.lower().tolist(), k=1)[1]
-      df["knowledge"] = [corpus[i[0]] for i in article_ids]
-      df["input_line"] = df["knowledge"] + " - " + df["input_line"]
+    if retriever:
+      k = kwargs.get('k', 1)
+      df["knowledge"] = retriever.retrieve(df["input_line"].str.lower().tolist(), k=k)
+      df["input_line"] = df["knowledge"].apply(' '.join) + " - " + df["input_line"]
     df["input_line"] = "USER: " + df["input_line"] + "\nASSISTANT:"
     temperature = kwargs.get('temperature', 0.7)
     top_p = kwargs.get('top_p', 0.9)

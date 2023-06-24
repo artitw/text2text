@@ -26,7 +26,7 @@ class Responder(t2t.Answerer):
 
     return [tokenizer.decode(out, skip_special_tokens=True) for out in outputs]
 
-  def transform(self, input_lines, src_lang='en', knowledge_base=None, **kwargs):
+  def transform(self, input_lines, src_lang='en', retriever=None, **kwargs):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     df = pd.DataFrame({"input_line": input_lines})
     df.loc[len(df)] = "[CONTEXT][KNOWLEDGE]"
@@ -41,10 +41,10 @@ class Responder(t2t.Answerer):
       df["context"] = self._translate_lines(df["context"].tolist(), src_lang, 'en')
       df["knowledge"] = self._translate_lines(df["knowledge"].tolist(), src_lang, 'en')
 
-    if knowledge_base:
-      corpus, index = knowledge_base
-      article_ids = index.search(df["context"].str.lower().tolist(), k=1)[1]
-      df["article"] = [corpus[i[0]] for i in article_ids]
+    if retriever:
+      k = kwargs.get('k', 1)
+      df["article"] = retriever.retrieve(df["input_line"].str.lower().tolist(), k=k)
+      df["article"] = df["article"].apply(' '.join)
       df["knowledge"] = df.apply(lambda row: row["article"] if not row["knowledge"] else row["knowledge"], axis=1)
 
     df["input_line"] = df["instruction"] + " [CONTEXT] " + df["context"]
