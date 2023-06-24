@@ -16,7 +16,6 @@ class Handler(object):
     "measure": t2t.Measurer,
     "question": t2t.Questioner,
     "respond": t2t.Responder,
-    "search": t2t.Searcher,
     "summarize": t2t.Summarizer,
     "tfidf": t2t.Tfidfer,
     "tokenize": t2t.Tokenizer,

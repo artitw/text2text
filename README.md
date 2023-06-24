@@ -18,7 +18,6 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [TF-IDF](https://github.com/artitw/text2text#tf-idf)
   * [BM25](https://github.com/artitw/text2text#bm25)
   * [Index](https://github.com/artitw/text2text#index)
-  * [Search](https://github.com/artitw/text2text#search)
   * [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance)
   * [Translation](https://github.com/artitw/text2text#translation)
   * [Question Answering](https://github.com/artitw/text2text#question-answering)
@@ -55,14 +54,13 @@ Functionality | Invocation | Result
 :------------: | :-------------: | :-------------:
 Module Importing | `import text2text as t2t` | Libraries imported
 [Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Handler("Describe Text2Text in a few words: ").assist()` | `['Text2Text is an AI-powered text generation tool that creates coherent and continuous text based on prompts.']`
-Language Model Setting | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Change from default
+[Language Model Setting](https://github.com/artitw/text2text#byot-bring-your-own-translator) | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Change from default
 Text Handler | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
 [Tokenization](https://github.com/artitw/text2text#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
 [Embedding](https://github.com/artitw/text2text#embedding--vectorization) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
 [TF-IDF](https://github.com/artitw/text2text#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
 [BM25](https://github.com/artitw/text2text#bm25) | `h.bm25()` | `[{'!': 0.3068528194400547, ',': 0.3068528194400547, '▁Hello': 0.3068528194400547, '▁World': 0.3068528194400547}]`
-[Indexer](https://github.com/artitw/text2text#index) | `i = h.index()` | Index object for similarity retrieval
-[Search](https://github.com/artitw/text2text#search) | `h.search(queries=["Hello"])` | `array([[0.09]])`
+[Indexer](https://github.com/artitw/text2text#index) | `index = h.index()` | Index object for information retrieval
 [Translation](https://github.com/artitw/text2text#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
 [Question Generation](https://github.com/artitw/text2text#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
 [Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
@@ -300,118 +298,20 @@ index = t2t.Handler([
          "Let's go hiking tomorrow, let's go!",
          "안녕하세요.",
          "돼지꿈을 꾸세요~~",
-         ]).index(ids=[100, 101, 102])
+         ]).index()
 
-index.search(["돼지", "안녕", "let's go"], k=1)
-
-# Matching L2 distances and corresponding ids
-(
-  array([[0.7752551],
-        [0.8452994],
-        [0.4347524]], dtype=float32),
-  array([[102],
-        [101],
-        [100]])
-)
+index.retrieve(["돼지"], k=1) #[['"돼지꿈을 꾸세요~~"']]
 
 # Add documents incrementing on ids if none specified
 index.add(["Hello, World! 你好,世界!"])
 
 # Remove by ids
-index.remove([101])
+index.remove([2]) #Removes "안녕하세요."
 
 # Retrieve k results per query sorted by distance
-index.search(["你好, World"], k=3)
-
-(array([[0.61324954, 1.7763932 , 2.        ]], dtype=float32),
- array([[103, 100, 102]]))
+index.retrieve(["你好, World"], k=3)
 ```
 To learn more, see [STF-IDF](https://arxiv.org/abs/2209.14281).
-
-### Search
-```
-t2t.Handler([
-         "Let's go hiking tomorrow, let's go!",
-         "안녕하세요.",
-         "돼지꿈을 꾸세요~~",
-         ]).search(queries=["go", "안녕"])
-
-# Cosine similarity scores matrix
-array([[0.4472136 , 0.        , 0.        ],
-       [0.        , 0.57735027, 0.        ]])
-```
-
-#### Multiple queries on a single index
-```
-article_en = 'The Secretary-General of the United Nations says there is no military solution in Syria.'
-
-notre_dame_str = "As at most other universities, Notre Dame's students run a number of news media outlets. The nine student - run outlets include three newspapers, both a radio and television station, and several magazines and journals. Begun as a one - page journal in September 1876, the Scholastic magazine is issued twice monthly and claims to be the oldest continuous collegiate publication in the United States. The other magazine, The Juggler, is released twice a year and focuses on student literature and artwork. The Dome yearbook is published annually. The newspapers have varying publication interests, with The Observer published daily and mainly reporting university and other news, and staffed by students from both Notre Dame and Saint Mary's College. Unlike Scholastic and The Dome, The Observer is an independent publication and does not have a faculty advisor or any editorial oversight from the University. In 1987, when some students believed that The Observer began to show a conservative bias, a liberal newspaper, Common Sense was published. Likewise, in 2003, when other students believed that the paper showed a liberal bias, the conservative paper Irish Rover went into production. Neither paper is published as often as The Observer; however, all three are distributed to all students. Finally, in Spring 2008 an undergraduate journal for political science research, Beyond Politics, made its debut."
-
-bacteria_str = "Bacteria are a type of biological cell. They constitute a large domain of prokaryotic microorganisms. Typically a few micrometres in length, bacteria have a number of shapes, ranging from spheres to rods and spirals. Bacteria were among the first life forms to appear on Earth, and are present in most of its habitats."
-
-bio_str = "Biology is the science that studies life. What exactly is life? This may sound like a silly question with an obvious answer, but it is not easy to define life. For example, a branch of biology called virology studies viruses, which exhibit some of the characteristics of living entities but lack others. It turns out that although viruses can attack living organisms, cause diseases, and even reproduce, they do not meet the criteria that biologists use to define life."
-
-bm25_index = t2t.Handler([
-                       article_en,
-                       notre_dame_str,
-                       bacteria_str,
-                       bio_str
-                       ]).bm25(output="matrix")
-
-search_results_bm25 = t2t.Handler().search(
-    queries=["wonderful life", "university students"],
-    vector_class=t2t.Bm25er,
-    index=bm25_index)
-
-search_results_bm25_2 = t2t.Handler().search(
-    queries=["Earth creatures are cool", "United Nations"],
-    vector_class=t2t.Bm25er,
-    index=bm25_index)
-```
-
-#### Using TF-DF embeddings index
-```
-tfidf_index = t2t.Handler([
-                       article_en,
-                       notre_dame_str,
-                       bacteria_str,
-                       bio_str
-                       ]).tfidf(output="matrix")
-
-search_results_tf = t2t.Handler().search(
-    queries=["wonderful life", "university students"],
-    vector_class=t2t.Tfidfer,
-    index=tfidf_index)
-```
-
-#### Using neural embeddings index
-```
-embedding_index = t2t.Handler([
-                       article_en,
-                       notre_dame_str,
-                       bacteria_str,
-                       bio_str
-                       ]).vectorize()
-
-search_results_em = t2t.Handler().search(
-    queries=["wonderful life", "university students"],
-    vector_class=t2t.Vectorizer,
-    index=embedding_index)
-```
-
-#### Blending bm25, tf-idf and neural embeddings
-```
-np.mean(
-    np.array([
-              search_results_bm25,
-              search_results_tf,
-              search_results_em,
-              ]), axis=0)
-
-# averaged scores matrix
-#matrix([[ 0.00486117, -0.01890325,  0.53769584,  0.82506883],
-#        [ 0.0435048 ,  1.68977281,  0.01238902,  0.01266839]])
-```
 
 ### Levenshtein Sub-word Edit Distance
 ```
@@ -426,6 +326,15 @@ t2t.Handler([
 
 ### Translation
 ```
+# Sample texts
+article_en = 'The Secretary-General of the United Nations says there is no military solution in Syria.'
+
+notre_dame_str = "As at most other universities, Notre Dame's students run a number of news media outlets. The nine student - run outlets include three newspapers, both a radio and television station, and several magazines and journals. Begun as a one - page journal in September 1876, the Scholastic magazine is issued twice monthly and claims to be the oldest continuous collegiate publication in the United States. The other magazine, The Juggler, is released twice a year and focuses on student literature and artwork. The Dome yearbook is published annually. The newspapers have varying publication interests, with The Observer published daily and mainly reporting university and other news, and staffed by students from both Notre Dame and Saint Mary's College. Unlike Scholastic and The Dome, The Observer is an independent publication and does not have a faculty advisor or any editorial oversight from the University. In 1987, when some students believed that The Observer began to show a conservative bias, a liberal newspaper, Common Sense was published. Likewise, in 2003, when other students believed that the paper showed a liberal bias, the conservative paper Irish Rover went into production. Neither paper is published as often as The Observer; however, all three are distributed to all students. Finally, in Spring 2008 an undergraduate journal for political science research, Beyond Politics, made its debut."
+
+bacteria_str = "Bacteria are a type of biological cell. They constitute a large domain of prokaryotic microorganisms. Typically a few micrometres in length, bacteria have a number of shapes, ranging from spheres to rods and spirals. Bacteria were among the first life forms to appear on Earth, and are present in most of its habitats."
+
+bio_str = "Biology is the science that studies life. What exactly is life? This may sound like a silly question with an obvious answer, but it is not easy to define life. For example, a branch of biology called virology studies viruses, which exhibit some of the characteristics of living entities but lack others. It turns out that although viruses can attack living organisms, cause diseases, and even reproduce, they do not meet the criteria that biologists use to define life."
+
 t2t.Handler([
          article_en,
          notre_dame_str,
