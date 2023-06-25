@@ -25,7 +25,7 @@ class Indexer(t2t.Transformer):
     ids = list(range(starting_id, starting_id+len(input_lines)))
     v = self.get_formatted_matrix(input_lines, src_lang=src_lang, **kwargs)
     self.index.add_with_ids(v, np.array(ids))
-    self.corpus.append(list(input_lines))
+    self.corpus += list(input_lines)
     return self
 
   def remove(self, ids, faiss_index=None, **kwargs):
