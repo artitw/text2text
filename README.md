@@ -53,24 +53,23 @@ pip install -qq -U text2text
 Functionality | Invocation | Result
 :------------: | :-------------: | :-------------:
 Module Importing | `import text2text as t2t` | Libraries imported
-[Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Handler("Describe Text2Text in a few words: ").assist()` | `['Text2Text is an AI-powered text generation tool that creates coherent and continuous text based on prompts.']`
+[Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Assistant().transform("Describe Text2Text in a few words: ")` | `['Text2Text is an AI-powered text generation tool that creates coherent and continuous text based on prompts.']`
 [Language Model Setting](https://github.com/artitw/text2text#byot-bring-your-own-translator) | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Change from default
-Text Handler | `h = t2t.Handler(["Hello, World!"], src_lang="en")` | Initialized handler with some text
-[Tokenization](https://github.com/artitw/text2text#tokenization) | `h.tokenize()` | `[['▁Hello', ',', '▁World', '!']]`
-[Embedding](https://github.com/artitw/text2text#embedding--vectorization) | `h.vectorize()` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
-[TF-IDF](https://github.com/artitw/text2text#tf-idf) | `h.tfidf()` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
-[BM25](https://github.com/artitw/text2text#bm25) | `h.bm25()` | `[{'!': 0.3068528194400547, ',': 0.3068528194400547, '▁Hello': 0.3068528194400547, '▁World': 0.3068528194400547}]`
-[Indexer](https://github.com/artitw/text2text#index) | `index = h.index()` | Index object for information retrieval
-[Translation](https://github.com/artitw/text2text#translation) | `h.translate(tgt_lang="zh")` | `['你好,世界!']`
-[Question Generation](https://github.com/artitw/text2text#question-generation) | `h.question()` | `[('What is the name of the world you are in?', 'The world')]`
-[Summarization](https://github.com/artitw/text2text#summarization) | `h.summarize()` | `["World ' s largest world"]`
-[Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `h.variate()` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
-[Dialog Response](https://github.com/artitw/text2text#dialog-responder) | `t2t.Handler(["[CONTEXT] Hello EOS How are you?"]).respond()` | `['I am doing great. How are you?']`
-[Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).answer()` | `['World']`
-[Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Handler(["Hello, World! [SEP] Hello, what?"]).measure()` | `[2]`
-[Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Handler(["Hello, World! [TGT] Hello, what?"]).fit()` | Finetuned model saved
-[Identification](https://github.com/artitw/text2text#identification) | `t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“..."]).identify()` | `['sk', 'Slovak']`
-[Web Server](https://github.com/artitw/text2text#serving) | `t2t.Server(host='0.0.0.0', port=80)` | Web server started on host and port
+[Tokenization](https://github.com/artitw/text2text#tokenization) | `t2t.Tokenizer().transform(["Hello, World!"])` | `[['▁Hello', ',', '▁World', '!']]`
+[Embedding](https://github.com/artitw/text2text#embedding--vectorization) | `t2t.Vectorizer().transform(["Hello, World!"])` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
+[TF-IDF](https://github.com/artitw/text2text#tf-idf) | `t2t.Tfidfer().transform(["Hello, World!"])` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
+[BM25](https://github.com/artitw/text2text#bm25) | `t2t.Bm25er().transform(["Hello, World!"])` | `[{'!': 0.3068528194400547, ',': 0.3068528194400547, '▁Hello': 0.3068528194400547, '▁World': 0.3068528194400547}]`
+[Indexer](https://github.com/artitw/text2text#index) | `index = t2t.Indexer().transform(["Hello, World!"])` | Index object for information retrieval
+[Translation](https://github.com/artitw/text2text#translation) | `t2t.Translater().transform(["Hello, World!"], src_lang="en, tgt_lang="zh")` | `['你好,世界!']`
+[Question Generation](https://github.com/artitw/text2text#question-generation) | `t2t.Questioner().transform(["Hello, World!"], src_lang="en)` | `[('What is the name of the world you are in?', 'The world')]`
+[Summarization](https://github.com/artitw/text2text#summarization) | `t2t.Summarizer().transform(["Hello, World!"], src_lang="en)` | `["World ' s largest world"]`
+[Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `t2t.Variator().transform(["Hello, World!"], src_lang="en)` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
+[Dialog Response](https://github.com/artitw/text2text#dialog-responder) | `t2t.Responder().transform(["[CONTEXT] Hello EOS How are you?"])` | `['I am doing great. How are you?']`
+[Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Answerer().transform(["Hello, World! [SEP] Hello, what?"], src_lang="en")` | `['World']`
+[Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Measurer().transform(["Hello, World! [SEP] Hello, what?"])` | `[2]`
+[Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Fitter().transform(["Hello, World! [TGT] Hello, what?"])` | Finetuned model saved
+[Identification](https://github.com/artitw/text2text#identification) | `t2t.Identifier().transform(["Aj keď sa Buzz Aldrin stal až „druhým človekom“..."])` | `['sk', 'Slovak']`
+[Web Server](https://github.com/artitw/text2text#serving) | `t2t.Serve(host='0.0.0.0', port=80)` | Web server started on host and port
 
 ## Languages Available
 <details>
@@ -193,7 +192,7 @@ Not ChatGPT level but it works well.
 To use a dynamic knowledge base, see [![Q&A Assistant Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hkNgpSmmUA-mzUibqz25xq-E8KYOLuVx?usp=sharing)
 ```
 instructions = "Generate a JSON object that maps English characters as keys and Greek equivalents as values: {"
-res = t2t.Handler([instructions]).assist()
+res = t2t.Assistant().transform([instructions])
 #[
 #  '{\n"a": "α",\n"b": "β",\n"c": "γ",\n"d": "δ",\n"e": "ε",\n"f": "φ",\n"g": "χ",\n"h": "ι",\n"i": "η",\n"j": "κ",\n"k": "λ",\n"l": "μ",\n"m": "ν",\n"n": "ξ",\n"o": "ο",\n"p": "π",\n"q": "ρ",\n"r": "σ",\n"s": "τ",\n"t": "υ",\n"u": "ύ",\n"v": "φ",\n"w": "χ",\n"x": "ψ",\n"y": "ω",\n"z": "ζ"\n}'
 #]
@@ -201,11 +200,11 @@ res = t2t.Handler([instructions]).assist()
 
 ### Tokenization
 ```
-t2t.Handler([
-         "Let's go hiking tomorrow",
-         "안녕하세요.",
-         "돼지꿈을 꾸세요~~"
-         ]).tokenize()
+t2t.Tokenizer().transform([
+  "Let's go hiking tomorrow",
+  "안녕하세요.",
+  "돼지꿈을 꾸세요~~"
+])
 
 # Sub-word tokens
 [['▁Let', "'", 's', '▁go', '▁hik', 'ing', '▁tom', 'orrow'],
@@ -215,11 +214,11 @@ t2t.Handler([
 
 ### Embedding / Vectorization
 ```
-t2t.Handler([
-         "Let's go hiking tomorrow",
-         "안녕하세요.",
-         "돼지꿈을 꾸세요~~"
-         ]).vectorize()
+t2t.Vectorizer().transform([
+  "Let's go hiking tomorrow",
+  "안녕하세요.",
+  "돼지꿈을 꾸세요~~"
+])
 
 # Embeddings
 array([[-0.00352954,  0.0260059 ,  0.00407429, ..., -0.04830331,
@@ -232,11 +231,11 @@ array([[-0.00352954,  0.0260059 ,  0.00407429, ..., -0.04830331,
 
 ### TF-IDF
 ```
-t2t.Handler([
-         "Let's go hiking tomorrow",
-         "안녕하세요.",
-         "돼지꿈을 꾸세요~~"
-         ]).tfidf()
+t2t.Tfidfer().transform([
+  "Let's go hiking tomorrow",
+  "안녕하세요.",
+  "돼지꿈을 꾸세요~~"
+])
 
 # TF-IDF values
 [{'!': 0.22360679774997894,
@@ -265,11 +264,11 @@ t2t.Handler([
 
 ### BM25
 ```
-t2t.Handler([
-         "Let's go hiking tomorrow",
-         "안녕하세요.",
-         "돼지꿈을 꾸세요~~"
-         ]).bm25()
+t2t.Bm25er().transform([
+  "Let's go hiking tomorrow",
+  "안녕하세요.",
+  "돼지꿈을 꾸세요~~"
+])
 
 # BM25 values
 [{"'": 1.2792257271403649,
@@ -294,11 +293,11 @@ t2t.Handler([
 ### Index
 [![STF-IDF Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RaWj5SqWvyC2SsCTGg8IAVcl9G5hOB50?usp=sharing)
 ```
-index = t2t.Handler([
-         "Let's go hiking tomorrow, let's go!",
-         "안녕하세요.",
-         "돼지꿈을 꾸세요~~",
-         ]).index()
+index = t2t.Indexer().transform([
+  "Let's go hiking tomorrow, let's go!",
+  "안녕하세요.",
+  "돼지꿈을 꾸세요~~",
+])
 
 index.retrieve(["돼지"], k=1) #[['"돼지꿈을 꾸세요~~"']]
 
@@ -315,10 +314,10 @@ To learn more, see [STF-IDF](https://arxiv.org/abs/2209.14281).
 
 ### Levenshtein Sub-word Edit Distance
 ```
-t2t.Handler([
-         "Hello, World! [SEP] Hello, what?",
-         "안녕하세요. [SEP] 돼지꿈을 꾸세요~~"
-        ]).measure(metric="levenshtein_distance")
+t2t.Measurer().transform([
+  "Hello, World! [SEP] Hello, what?",
+  "안녕하세요. [SEP] 돼지꿈을 꾸세요~~"
+], metric="levenshtein_distance")
 
 # Distances
  [2, 8]
@@ -335,12 +334,12 @@ bacteria_str = "Bacteria are a type of biological cell. They constitute a large 
 
 bio_str = "Biology is the science that studies life. What exactly is life? This may sound like a silly question with an obvious answer, but it is not easy to define life. For example, a branch of biology called virology studies viruses, which exhibit some of the characteristics of living entities but lack others. It turns out that although viruses can attack living organisms, cause diseases, and even reproduce, they do not meet the criteria that biologists use to define life."
 
-t2t.Handler([
-         article_en,
-         notre_dame_str,
-         bacteria_str,
-         bio_str
-         ], src_lang='en').translate(tgt_lang='zh')
+t2t.Translator().transform([
+  article_en,
+  notre_dame_str,
+  bacteria_str,
+  bio_str
+], src_lang='en', tgt_lang='zh')
 
 # Translations
 ['联合国秘书长说,叙利亚没有军事解决方案。',
@@ -413,9 +412,11 @@ t2t.Transformer.LANGUAGES = {
   'xh_ZA': 'Xhosa',
   'zh_CN': 'Chinese'
 }
-t2t.Handler(["I would like to go hiking tomorrow."],
-        src_lang="en_XX"
-        ).translate(tgt_lang='zh_CN')
+t2t.Translator().transform(
+  ["I would like to go hiking tomorrow."],
+  src_lang="en_XX",
+  tgt_lang='zh_CN'
+)
 ['我想明天去徒步旅行。']
 ```
 
@@ -424,14 +425,14 @@ t2t.Handler(["I would like to go hiking tomorrow."],
 ### Question Answering
 Question must follow context with ` [SEP] ` in between.
 ```
-t2t.Handler([
-         "Hello, this is Text2Text! [SEP] What is this?",
-         "It works very well. It's awesome! [SEP] How is it?"
-         ]).answer()
+t2t.Answerer().transform([
+  "Hello, this is Text2Text! [SEP] What is this?",
+  "It works very well. It's awesome! [SEP] How is it?"
+])
 
-t2t.Handler([
-             "很喜欢陈慧琳唱歌。[SEP] 喜欢做什么?"
-             ], src_lang="zh").answer()
+t2t.Answerer().transform([
+  "很喜欢陈慧琳唱歌。[SEP] 喜欢做什么?"
+], src_lang="zh")
 
 # Answers
 ['Text2Text', 'awesome']
@@ -440,24 +441,24 @@ t2t.Handler([
 
 ### Question Generation
 ```
-t2t.Handler(["很喜欢陈慧琳唱歌。"], src_lang='zh').question()
-t2t.Handler([
-            bio_str,
-            bio_str,
-            bio_str,
-            bio_str,
-            bio_str,
-            "I will go to school today to take my math exam.",
-            "I will go to school today to take my math exam.",
-            "Tomorrow is my cousin's birthday. He will turn 24 years old.",
-            notre_dame_str,
-            bacteria_str,
-            bacteria_str,
-            bacteria_str,
-            "I will go to school today to take my math exam. [SEP] school",
-            "I will go to school today to take my math exam. [SEP] exam",
-            "I will go to school today to take my math exam. [SEP] math",
-          ], src_lang='en').question()
+t2t.Questioner().transform(["很喜欢陈慧琳唱歌。"], src_lang='zh')
+t2t.Questioner().transform([
+  bio_str,
+  bio_str,
+  bio_str,
+  bio_str,
+  bio_str,
+  "I will go to school today to take my math exam.",
+  "I will go to school today to take my math exam.",
+  "Tomorrow is my cousin's birthday. He will turn 24 years old.",
+  notre_dame_str,
+  bacteria_str,
+  bacteria_str,
+  bacteria_str,
+  "I will go to school today to take my math exam. [SEP] school",
+  "I will go to school today to take my math exam. [SEP] exam",
+  "I will go to school today to take my math exam. [SEP] math",
+], src_lang='en')
 
 ```
 Note that the last three answers were controlled by specifying the `[SEP]` token in the input above.
@@ -483,7 +484,7 @@ Note that the last three answers were controlled by specifying the `[SEP]` token
 
 ### Summarization
 ```
-t2t.Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
+t2t.Summarizer().transform([notre_dame_str, bacteria_str, bio_str], src_lang='en')
 
 # Summaries
 ["Notre Dame's students run nine student - run outlets . [X_SEP] Scholastic magazine claims to be the oldest continuous collegiate publication in the United States . [X_SEP] The Observer is an independent publication .",
@@ -494,7 +495,7 @@ t2t.Handler([notre_dame_str, bacteria_str, bio_str], src_lang='en').summarize()
 ### Data Augmentation / Back-Translation
 Back-translations useful for augmenting training data
 ```
-t2t.Handler([bacteria_str], src_lang='en').variate()
+t2t.Variator().transform([bacteria_str], src_lang='en')
 ```
 
 <details>
@@ -623,29 +624,29 @@ if knowledge != '':
 dialog = ' EOS '.join(dialog)
 input_state = f"{instruction} [CONTEXT] {dialog} {knowledge}"
 
-t2t.Handler([input_state]).respond()
+t2t.Responder().transform([input_state])
 # ['About 60 different kinds of cats are recognized by various cat registries.']
 ```
 
 ### Training / Finetuning
 Finetune cross-lingual model on your data
 ```
-result = t2t.Handler(["Hello, World! [TGT] 你好,世界!"],
-            src_lang="en",
-            tgt_lang="zh",
-            num_epochs=10,
-            save_directory="model_dir"
-            ).fit()
+result = t2t.Fitter().transform(["Hello, World! [TGT] 你好,世界!"],
+  src_lang="en",
+  tgt_lang="zh",
+  num_epochs=10,
+  save_directory="model_dir"
+)
 
 # load and use model from saved directory
 t2t.Transformer.PRETRAINED_TRANSLATOR = "model_dir"
-t2t.Handler("Hello, World!").translate(tgt_lang="zh")
+t2t.Translator().transform("Hello, World!", src_lang="en", tgt_lang="zh")
 ```
 
 ### Identification
 Identify the language of a text. Not yet accurate for short sequences (<10 tokens)
 ```
-t2t.Handler(["Aj keď sa Buzz Aldrin stal až „druhým človekom“, ktorý otlačil svoju nohu do povrchu Mesiaca...",]).identify()
+t2t.Identifier().transform(["Aj keď sa Buzz Aldrin stal až „druhým človekom“, ktorý otlačil svoju nohu do povrchu Mesiaca...",])
 
 # Prediction
 `['sk', 'Slovak']`

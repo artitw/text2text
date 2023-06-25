@@ -16,5 +16,4 @@ from .summarizer import Summarizer
 from .answerer import Answerer
 from .responder import Responder
 from .identifier import Identifier
-from .handler import Handler
 from .server import Server

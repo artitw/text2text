@@ -111,6 +111,7 @@ class Transformer(object):
 
   def __init__(self):
     pass
+    
   def transform(self, input_lines, src_lang='en', **kwargs):
     if src_lang not in self.__class__.LANGUAGES:
       raise ValueError(f'{src_lang} not found in {self.__class__.LANGUAGES}')
