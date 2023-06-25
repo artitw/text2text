@@ -15,7 +15,6 @@ class Handler(object):
     "fit": t2t.Fitter,
     "measure": t2t.Measurer,
     "question": t2t.Questioner,
-    "respond": t2t.Responder,
     "summarize": t2t.Summarizer,
     "tfidf": t2t.Tfidfer,
     "tokenize": t2t.Tokenizer,

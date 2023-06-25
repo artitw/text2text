@@ -24,7 +24,6 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Question Generation](https://github.com/artitw/text2text#question-generation)
   * [Summarization](https://github.com/artitw/text2text#summarization)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
-  * [Dialog Responder](https://github.com/artitw/text2text#dialog-responder)
   * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
   * [Identification](https://github.com/artitw/text2text#identification)
   * [Web Server](https://github.com/artitw/text2text#serving)
@@ -64,7 +63,6 @@ Module Importing | `import text2text as t2t` | Libraries imported
 [Question Generation](https://github.com/artitw/text2text#question-generation) | `t2t.Questioner().transform(["Hello, World!"], src_lang="en)` | `[('What is the name of the world you are in?', 'The world')]`
 [Summarization](https://github.com/artitw/text2text#summarization) | `t2t.Summarizer().transform(["Hello, World!"], src_lang="en)` | `["World ' s largest world"]`
 [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `t2t.Variator().transform(["Hello, World!"], src_lang="en)` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
-[Dialog Response](https://github.com/artitw/text2text#dialog-responder) | `t2t.Responder().transform(["[CONTEXT] Hello EOS How are you?"])` | `['I am doing great. How are you?']`
 [Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Answerer().transform(["Hello, World! [SEP] Hello, what?"], src_lang="en")` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Measurer().transform(["Hello, World! [SEP] Hello, what?"])` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Fitter().transform(["Hello, World! [TGT] Hello, what?"])` | Finetuned model saved
@@ -606,27 +604,6 @@ t2t.Variator().transform([bacteria_str], src_lang='en')
 ```
 
 </details>
-
-### Dialog Responder
-Respond to given instructions, knowledge base, and dialog context.
-To use a dynamic knowledge base, see [![Q&A Dialog Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/19zaOzY-VU7pYkjCUlnxLzV-b51ZqASFq?usp=sharing)
-```
-instruction = ''
-knowledge = 'Domestic cats are valued by humans for companionship and their ability to kill rodents. About 60 cat breeds are recognized by various cat registries.'
-dialog = [
-    'Tell me about cats',
-    'There are many different breeds of cats in the world.',
-    'How many kinds are there?'
-]
-
-if knowledge != '':
-    knowledge = '[KNOWLEDGE] ' + knowledge
-dialog = ' EOS '.join(dialog)
-input_state = f"{instruction} [CONTEXT] {dialog} {knowledge}"
-
-t2t.Responder().transform([input_state])
-# ['About 60 different kinds of cats are recognized by various cat registries.']
-```
 
 ### Training / Finetuning
 Finetune cross-lingual model on your data
