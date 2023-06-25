@@ -25,7 +25,7 @@ class Indexer(t2t.Transformer):
     ids = list(range(starting_id, starting_id+len(input_lines)))
     v = self.get_formatted_matrix(input_lines, src_lang=src_lang, **kwargs)
     self.index.add_with_ids(v, np.array(ids))
-    self.corpus.append(input_lines)
+    self.corpus.append(list(input_lines))
     return self
 
   def remove(self, ids, faiss_index=None, **kwargs):
@@ -52,7 +52,7 @@ class Indexer(t2t.Transformer):
     self.encoders = encoders
     d = self.get_formatted_matrix(["DUMMY"], src_lang=src_lang, **kwargs).shape[-1]
     self.index = faiss.IndexIDMap2(faiss.IndexFlatL2(d))
-    self.corpus = input_lines
+    self.corpus = []
     if not input_lines:
       return self
     return self.add(input_lines, src_lang=src_lang, **kwargs)

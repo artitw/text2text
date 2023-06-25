@@ -11,7 +11,7 @@ class Tokenizer(t2t.Transformer):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     tokenizer.src_lang = src_lang
-    encoded_inputs = tokenizer(input_lines, add_special_tokens=False)
+    encoded_inputs = tokenizer(input_lines, add_special_tokens=False, truncation=True)
     if output == 'ids':
       return encoded_inputs["input_ids"]
     return [
