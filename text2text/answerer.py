@@ -11,7 +11,7 @@ class Answerer(t2t.Transformer):
     if not pretrained_answerer:
       pretrained_answerer = self.__class__.pretrained_answerer
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_answerer)
-    self.__class__.model = AutoModelForQuestionAnswering.from_pretrained(pretrained_answerer)
+    self.__class__.model = AutoModelForQuestionAnswering.from_pretrained(pretrained_answerer, device_map="auto", load_in_8bit=True)
 
   def _translate_lines(self, input_lines, src_lang, tgt_lang):
     translator = getattr(self.__class__, "translator", t2t.Translator())
@@ -22,7 +22,7 @@ class Answerer(t2t.Transformer):
     tokenizer = self.__class__.tokenizer
     model = self.__class__.model
     num_examples = len(input_lines)
-    encoded_inputs = tokenizer.batch_encode_plus(input_lines, padding=True, return_tensors="pt")
+    encoded_inputs = tokenizer.batch_encode_plus(input_lines, padding=True, return_tensors="pt").to("cuda" if torch.cuda.is_available() else "cpu")
     input_ids = encoded_inputs["input_ids"]
     attention_mask = encoded_inputs["attention_mask"]
     results = model(input_ids, attention_mask=attention_mask)

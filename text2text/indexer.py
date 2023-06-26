@@ -1,6 +1,7 @@
 import text2text as t2t
 import faiss
 import numpy as np
+import pandas as pd
 import scipy.sparse as sp
 import warnings
 
@@ -21,19 +22,22 @@ class Indexer(t2t.Transformer):
   def add(self, input_lines, src_lang='en', faiss_index=None, **kwargs):
     if faiss_index is not None:
       self.index = faiss_index
-    starting_id = np.amax(faiss.vector_to_array(self.index.id_map), initial=0)
+    starting_id = 0
+    if self.index.ntotal:
+      starting_id = 1+np.amax(faiss.vector_to_array(self.index.id_map), initial=0)
     ids = list(range(starting_id, starting_id+len(input_lines)))
-    v = self.get_formatted_matrix(input_lines, src_lang=src_lang, **kwargs)
-    self.index.add_with_ids(v, np.array(ids))
-    self.corpus += list(input_lines)
+    vectors = self.get_formatted_matrix(input_lines, src_lang=src_lang, **kwargs)
+    self.index.add_with_ids(vectors, np.array(ids))
+    new_docs = pd.DataFrame({'document': input_lines})
+    new_docs.index = ids
+    self.corpus = pd.concat([self.corpus, new_docs])
     return self
 
   def remove(self, ids, faiss_index=None, **kwargs):
     if faiss_index is not None:
       self.index = faiss_index
     self.index.remove_ids(np.array(ids))
-    for i in ids:
-      del self.corpus[i]
+    self.corpus = self.corpus[~self.corpus.index.isin(ids)]
 
   def search(self, input_lines, src_lang='en', k=3, faiss_index=None, **kwargs):
     if faiss_index is not None:
@@ -44,15 +48,16 @@ class Indexer(t2t.Transformer):
     xq = self.get_formatted_matrix(input_lines, src_lang=src_lang, **kwargs)
     return self.index.search(xq, k)
 
-  def retrieve(self, input_lines, k=3):
+  def retrieve(self, input_lines, k=3, **kwargs):
     distances, pred_ids = self.search(input_lines, k=k)
-    return [[self.corpus[i] for i in line_ids] for line_ids in pred_ids]
+    return [self.corpus["document"].loc[[i for i in line_ids if i >= 0]].tolist() for line_ids in pred_ids]
 
   def transform(self, input_lines, src_lang='en', encoders=[t2t.Tfidfer], **kwargs):
     self.encoders = encoders
+    self.src_lang = src_lang
     d = self.get_formatted_matrix(["DUMMY"], src_lang=src_lang, **kwargs).shape[-1]
     self.index = faiss.IndexIDMap2(faiss.IndexFlatL2(d))
-    self.corpus = []
+    self.corpus = pd.DataFrame({"document": []})
     if not input_lines:
       return self
     return self.add(input_lines, src_lang=src_lang, **kwargs)

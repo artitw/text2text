@@ -9,7 +9,7 @@ class Vectorizer(t2t.Translator):
     tokenizer = self.__class__.tokenizer
     model = self.__class__.model
     tokenizer.src_lang = src_lang
-    encoder_inputs = tokenizer(input_lines, padding=True, return_tensors="pt")
+    encoder_inputs = tokenizer(input_lines, padding=True, truncation=True, return_tensors="pt")
     outputs = model.forward(**encoder_inputs, decoder_input_ids=torch.zeros(len(input_lines),1,dtype=int))
     last_layer_states = outputs.encoder_last_hidden_state.cpu().detach().numpy()
     if output_dimension==1:

@@ -299,11 +299,11 @@ index = t2t.Indexer().transform([
 
 index.retrieve(["돼지"], k=1) #[['"돼지꿈을 꾸세요~~"']]
 
-# Add documents incrementing on ids if none specified
+# Add documents
 index.add(["Hello, World! 你好,世界!"])
 
 # Remove by ids
-index.remove([2]) #Removes "안녕하세요."
+index.remove([2]) #Removes "돼지꿈을 꾸세요~~"
 
 # Retrieve k results per query sorted by distance
 index.retrieve(["你好, World"], k=3)
@@ -641,21 +641,22 @@ import requests
 
 address = socket.gethostbyname(socket.getfqdn(socket.gethostname()))
 url = f"http://{address}"
-transform = "translate"
+transformer = "Translator"
 payload = {
   "input_lines": ["hello", "world"],
   "src_lang": "en",
   "tgt_lang": "ko",
 }
-r = requests.post(f"{url}/{transform}", json=payload)
+r = requests.post(f"{url}/{transformer}", json=payload)
 print(r.json()) #{'result': ['안녕하세요', '세계']}
 
 # Indexer actions
-r = requests.post(f"{url}/index/add", json=payload)
-r = requests.post(f"{url}/index/size")
-r = requests.post(f"{url}/index/search", json=payload)
+r = requests.post(f"{url}/Indexer/add", json=payload)
+r = requests.post(f"{url}/Indexer/size")
+r = requests.post(f"{url}/Indexer/search", json=payload)
+r = requests.post(f"{url}/Indexer/retrieve", json=payload)
 payload["ids"] = [0,1]
-r = requests.post(f"{url}/index/remove", json=payload)
+r = requests.post(f"{url}/Indexer/remove", json=payload)
 ```
 
 ## Questions?

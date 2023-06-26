@@ -10,34 +10,32 @@ app = Flask(__name__)
 def hello():
   return {"result": "Hello, this Text2Text at your service."}
 
-@app.route('/indexer/<action>', methods=['POST'])
+@app.route('/Indexer/<action>', methods=['POST'])
 def indexer(action):
   try:
-    data = request.get_json() or {}
-    input_lines = data.get("input_lines", [])
-    src_lang = data.get("src_lang", "en")
-    if hasattr(t2t.Server, "index"):
-      index = t2t.Server.index
-    else:
-      t2t.Server.index = t2t.Indexer().add(input_lines)
+    if not hasattr(t2t.Server, "index"):
+      t2t.Server.index = t2t.Indexer().transform([])
+    index = t2t.Server.index
     assert hasattr(index, action)
+    data = request.get_json() or {}
     res = getattr(index, action)(**data)
     if action in ["search", "size"]:
       return {"result": np.array(res).tolist()}
+    elif action in ["retrieve"]:
+      return {"result": res}
   except Exception as e:
     return {"result": str(e)}
-  return {"result": f"indexer/{action} performed"}
+  return {"result": f"Indexer/{action} performed"}
 
 @app.route('/<transformer>', methods=['POST'])
 def transform(transformer):
   try:
     assert hasattr(t2t, transformer)
+    transformer_instance = transformer.lower()
+    if not hasattr(t2t.Server, transformer_instance):
+      setattr(t2t.Server, transformer_instance, getattr(t2t, transformer)())
     data = request.get_json() or {}
-    input_lines = data.get("input_lines", [])
-    src_lang = data.get("src_lang", "en")
-    res = getattr(t2t, transformer)(input_lines, src_lang)
-    del data["input_lines"]
-    del data["src_lang"]
+    res = getattr(t2t.Server, transformer_instance).transform(**data)
     return {"result": res}
   except Exception as e:
     return {"result": str(e)}
