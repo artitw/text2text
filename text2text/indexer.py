@@ -9,8 +9,10 @@ class Indexer(t2t.Transformer):
 
   def get_formatted_matrix(self, input_lines, src_lang='en', **kwargs):
     res = np.array([[]]*len(input_lines))
+    if not self.encoders:
+      self.encoders = [t2t.Tfidfer()]
     for encoder in self.encoders:
-      x = encoder().transform(input_lines, src_lang=src_lang, output='matrix', **kwargs)
+      x = encoder.transform(input_lines, src_lang=src_lang, output='matrix', **kwargs)
       if not isinstance(x, np.ndarray):
         x = x.toarray()
       res = np.concatenate((res, x.reshape(len(input_lines),-1)), axis=1)
@@ -52,7 +54,7 @@ class Indexer(t2t.Transformer):
     distances, pred_ids = self.search(input_lines, k=k)
     return [self.corpus["document"].loc[[i for i in line_ids if i >= 0]].tolist() for line_ids in pred_ids]
 
-  def transform(self, input_lines, src_lang='en', encoders=[t2t.Tfidfer], **kwargs):
+  def transform(self, input_lines, src_lang='en', encoders=[], **kwargs):
     self.encoders = encoders
     self.src_lang = src_lang
     d = self.get_formatted_matrix(["DUMMY"], src_lang=src_lang, **kwargs).shape[-1]
