@@ -12,7 +12,7 @@ class Indexer(t2t.Transformer):
     if not self.encoders:
       self.encoders = [t2t.Tfidfer()]
     for encoder in self.encoders:
-      x = encoder.transform(input_lines, src_lang=src_lang, output='matrix', **kwargs)
+      x = encoder.transform(input_lines, src_lang=src_lang, output='matrix', batch_process=True, **kwargs)
       if not isinstance(x, np.ndarray):
         x = x.toarray()
       res = np.concatenate((res, x.reshape(len(input_lines),-1)), axis=1)
