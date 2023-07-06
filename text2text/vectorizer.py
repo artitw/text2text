@@ -11,9 +11,10 @@ def mean_pooling(model_output, attention_mask):
 
 class Vectorizer(t2t.Transformer):
 
-  def __init__(self, pretrained_model='sentence-transformers/all-mpnet-base-v2'):
+  def __init__(self, pretrained_model='sentence-transformers/all-mpnet-base-v2', batch_process=True):
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
     self.__class__.model = AutoModel.from_pretrained(pretrained_model)
+    self.__class__.batch_process = batch_process
 
   def batch_embed(self, input_lines):
     encoder_inputs = self.__class__.tokenizer(input_lines, padding=True, truncation=True, return_tensors='pt')
@@ -26,7 +27,7 @@ class Vectorizer(t2t.Transformer):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     model = self.__class__.model
-    if batch_process:
+    if self.__class__.batch_process:
       return np.array(self.batch_embed(input_lines))
     else:
       embeddings = None
