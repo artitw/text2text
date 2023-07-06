@@ -3,6 +3,7 @@ import faiss
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
+import sklearn.preprocessing as preprocessing
 import warnings
 
 class Indexer(t2t.Transformer):
@@ -16,6 +17,7 @@ class Indexer(t2t.Transformer):
       if not isinstance(x, np.ndarray):
         x = x.toarray()
       res = np.concatenate((res, x.reshape(len(input_lines),-1)), axis=1)
+    res = preprocessing.normalize(res, norm='l2')
     return res.astype('float32')
 
   def size(self, **kwargs):

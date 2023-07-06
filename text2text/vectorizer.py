@@ -2,6 +2,7 @@ import torch
 import numpy as np
 import text2text as t2t
 from transformers import AutoTokenizer, AutoModel
+import sklearn.preprocessing as preprocessing
 
 def mean_pooling(model_output, attention_mask):
   token_embeddings = model_output[0]
@@ -10,17 +11,16 @@ def mean_pooling(model_output, attention_mask):
 
 class Vectorizer(t2t.Transformer):
 
-  pretrained_model = 'sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2'
-
-  def __init__(self):
-    self.__class__.tokenizer = AutoTokenizer.from_pretrained(self.__class__.pretrained_model)
-    self.__class__.model = AutoModel.from_pretrained(self.__class__.pretrained_model)
+  def __init__(self, pretrained_model='sentence-transformers/all-mpnet-base-v2'):
+    self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
+    self.__class__.model = AutoModel.from_pretrained(pretrained_model)
 
   def batch_embed(self, input_lines):
     encoder_inputs = self.__class__.tokenizer(input_lines, padding=True, truncation=True, return_tensors='pt')
     with torch.no_grad():
       model_output = self.__class__.model(**encoder_inputs)
-    return mean_pooling(model_output, encoder_inputs['attention_mask'])
+    X = mean_pooling(model_output, encoder_inputs['attention_mask'])
+    return preprocessing.normalize(X, norm='l2')
 
   def transform(self, input_lines, src_lang='en', batch_process=False, **kwargs):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
