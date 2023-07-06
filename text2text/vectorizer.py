@@ -11,10 +11,10 @@ def mean_pooling(model_output, attention_mask):
 
 class Vectorizer(t2t.Transformer):
 
-  def __init__(self, pretrained_model='sentence-transformers/all-mpnet-base-v2', batch_process=True):
+  def __init__(self, pretrained_model='sentence-transformers/all-mpnet-base-v2', batch_size=0):
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_model)
     self.__class__.model = AutoModel.from_pretrained(pretrained_model)
-    self.__class__.batch_process = batch_process
+    self.__class__.batch_size = batch_size
 
   def batch_embed(self, input_lines):
     encoder_inputs = self.__class__.tokenizer(input_lines, padding=True, truncation=True, return_tensors='pt')
@@ -27,11 +27,14 @@ class Vectorizer(t2t.Transformer):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)
     tokenizer = self.__class__.tokenizer
     model = self.__class__.model
-    if self.__class__.batch_process:
-      return np.array(self.batch_embed(input_lines))
-    else:
+    batch_size = self.__class__.batch_size
+    if batch_size > 0:
       embeddings = None
-      for line in input_lines:
-        if embeddings is None: embeddings = self.batch_embed([line])
-        else: embeddings = np.concatenate((embeddings, self.batch_embed([line])), axis=0)
+      for i in range(0, len(input_lines), batch_size):
+        lines = input_lines[i:i+batch_size]
+        this_batch = self.batch_embed(lines)
+        if embeddings is None: embeddings = this_batch
+        else: embeddings = np.concatenate((embeddings, this_batch), axis=0)
       return np.array(embeddings)
+    else:
+      return np.array(self.batch_embed(input_lines))
