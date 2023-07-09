@@ -12,12 +12,13 @@ def test_from_texts() -> None:
 
 
 @pytest.mark.requires("langchain")
-def test_retrieval_with_stfidf_params() -> None:
+def test_retrieval() -> None:
     input_texts = ["I have a pen.", "Do you have a pen?", "I have a bag."]
     stfidf_retriever = STFIDFRetriever.from_texts(
-        texts=input_texts, k=2
+        texts=input_texts
     )
-    assert len(stfidf_retriever._get_relevant_documents("pen")) == 2
+    assert len(stfidf_retriever.index.retrieve(["pen"], k=2)[0]) == 2
+
 
 @pytest.mark.requires("langchain")
 def test_from_documents() -> None:
