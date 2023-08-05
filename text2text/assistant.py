@@ -1,18 +1,19 @@
 import pandas as pd
+import logging
 import text2text as t2t
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, logging
 from auto_gptq import AutoGPTQForCausalLM
+
+logging.set_verbosity(logging.CRITICAL)
 
 class Assistant(t2t.Transformer):
 
   def __init__(self, **kwargs):
-    model_name_or_path = kwargs.get("model_name_or_path", "TheBloke/vicuna-13b-v1.3-GPTQ")
-    model_basename = kwargs.get("model_basename", "vicuna-13b-v1.3-GPTQ-4bit-128g.no-act.order")
+    model_name_or_path = kwargs.get("model_name_or_path", "TheBloke/vicuna-13B-v1.5-16K-GPTQ")
 
     self.__class__.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
 
     self.__class__.model = AutoGPTQForCausalLM.from_quantized(model_name_or_path,
-      model_basename=model_basename,
       use_safetensors=True,
       trust_remote_code=False,
       device="cuda:0",
@@ -31,9 +32,9 @@ class Assistant(t2t.Transformer):
       df["input_line"] = df["knowledge"].apply(' '.join) + " - " + df["input_line"]
     df["input_line"] = "USER: " + df["input_line"] + "\nASSISTANT:"
     temperature = kwargs.get('temperature', 0.7)
-    top_p = kwargs.get('top_p', 0.9)
+    top_p = kwargs.get('top_p', 0.95)
     top_k = kwargs.get('top_k', 0)
-    repetition_penalty = kwargs.get('repetition_penalty', 1.1)
+    repetition_penalty = kwargs.get('repetition_penalty', 1.15)
     max_new_tokens = kwargs.get('max_new_tokens', 512)
     tok = self.__class__.tokenizer
     m = self.__class__.model
