@@ -186,8 +186,9 @@ t2t.Transformer.LANGUAGES
 ## Examples
 
 ### Assistant
-Based on Vicuna 13B, which is based on LLaMA, which is not commercially licensed.
-Not ChatGPT level but it works well.
+- Free private open source alternative to commercial LLMs. 
+- Commercial LLMs are costly, collect your data, impose quotas and rate limits that hinder development.
+- Run at no cost on Google Colab free tier, so you don't even need your own device.
 ```
 instructions = "Generate a JSON object that maps English characters as keys and Greek equivalents as values: {"
 res = t2t.Assistant().transform([instructions])
