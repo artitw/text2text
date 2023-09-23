@@ -37,7 +37,7 @@ class Assistant(t2t.Transformer):
     df = self.preprocess(input_lines, src_lang)
     tok = self.__class__.tokenizer
     input_ids = tok(df["input_line"].tolist(), return_tensors="pt", padding=True).input_ids
-    return len(input_ids[0])
+    return [len(x) for x in input_ids]
 
   def transform(self, input_lines, src_lang='en', retriever=None, **kwargs):
     df = self.preprocess(input_lines, src_lang, retriever, **kwargs)
