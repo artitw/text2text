@@ -5,8 +5,8 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name="text2text",
-  version="1.3.0",
-  author="Artit Wangperawong",
+  version="1.3.1",
+  author="artitw",
   author_email="artitw@gmail.com",
   description="Text2Text: Crosslingual NLP/G toolkit",
   long_description=long_description,

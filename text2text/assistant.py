@@ -21,7 +21,7 @@ class Assistant(t2t.Transformer):
       quantize_config=None
     )
 
-  def transform(self, input_lines, src_lang='en', retriever=None, **kwargs):
+  def preprocess(self, input_lines, src_lang='en', retriever=None, **kwargs):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
     df = pd.DataFrame({"input_line": input_lines})
     if src_lang != 'en':
@@ -31,6 +31,16 @@ class Assistant(t2t.Transformer):
       df["knowledge"] = retriever.retrieve(df["input_line"].str.lower().tolist(), k=k)
       df["input_line"] = df["knowledge"].apply(' '.join) + " - " + df["input_line"]
     df["input_line"] = "USER: " + df["input_line"] + "\nASSISTANT:"
+    return df
+
+  def num_tokens(self, input_lines, src_lang='en'):
+    df = self.preprocess(input_lines, src_lang)
+    tok = self.__class__.tokenizer
+    input_ids = tok(df["input_line"].tolist(), return_tensors="pt", padding=True).input_ids
+    return len(input_ids[0])
+
+  def transform(self, input_lines, src_lang='en', retriever=None, **kwargs):
+    df = self.preprocess(input_lines, src_lang, retriever, **kwargs)
     temperature = kwargs.get('temperature', 0.7)
     top_p = kwargs.get('top_p', 0.95)
     top_k = kwargs.get('top_k', 0)
