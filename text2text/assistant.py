@@ -1,10 +1,13 @@
-import pandas as pd
 import logging
+import pandas as pd
 import text2text as t2t
 from transformers import AutoTokenizer, logging
 from auto_gptq import AutoGPTQForCausalLM
 
 logging.set_verbosity(logging.CRITICAL)
+
+def _clean_output(input_prompt, output_text):
+  return output_text.replace('<s>',"").replace('</s>',"").replace(input_prompt, "").strip()
 
 class Assistant(t2t.Transformer):
 
@@ -21,11 +24,8 @@ class Assistant(t2t.Transformer):
       quantize_config=None
     )
 
-  def preprocess(self, input_lines, src_lang='en', retriever=None, **kwargs):
-    input_lines = t2t.Transformer.transform(self, input_lines, src_lang, **kwargs)
+  def preprocess(self, input_lines, retriever=None, **kwargs):
     df = pd.DataFrame({"input_line": input_lines})
-    if src_lang != 'en':
-      df["input_line"] = self._translate_lines(df["input_line"].tolist(), src_lang, 'en')
     if retriever:
       k = kwargs.get('k', 1)
       df["knowledge"] = retriever.retrieve(df["input_line"].str.lower().tolist(), k=k)
@@ -33,14 +33,14 @@ class Assistant(t2t.Transformer):
     df["input_line"] = "USER: " + df["input_line"] + "\nASSISTANT:"
     return df
 
-  def num_tokens(self, input_lines, src_lang='en'):
-    df = self.preprocess(input_lines, src_lang)
+  def completion_tokens(self, input_lines):
+    df = self.preprocess(input_lines)
     tok = self.__class__.tokenizer
     input_ids = tok(df["input_line"].tolist(), return_tensors="pt", padding=True).input_ids
     return [len(x) for x in input_ids]
 
-  def transform(self, input_lines, src_lang='en', retriever=None, **kwargs):
-    df = self.preprocess(input_lines, src_lang, retriever, **kwargs)
+  def transform(self, input_lines, retriever=None, **kwargs):
+    df = self.preprocess(input_lines, retriever, **kwargs)
     temperature = kwargs.get('temperature', 0.7)
     top_p = kwargs.get('top_p', 0.95)
     top_k = kwargs.get('top_k', 0)
@@ -62,6 +62,41 @@ class Assistant(t2t.Transformer):
     )
 
     df["output_line"] = tok.batch_decode(m.generate(**generate_kwargs)) 
-    df["output_line"] = df.apply(lambda row: row["output_line"].replace('<s>',"").replace('</s>',"").replace(row["input_line"], "").strip(), axis=1)
+    df["output_line"] = df.apply(lambda row: _clean_output(row["input_line"], row["output_line"]), axis=1)
 
     return df["output_line"].tolist()
+
+  completion = transform
+
+  def chat_completion(self, input_lines, **kwargs):
+    chat_history = []
+    for line in input_lines:
+      chat_history.append(f'{line["role"].upper()}: {line["content"]}')
+    chat_history.append("ASSISTANT: ")
+    input_prompt = "\n".join(chat_history)
+      
+    temperature = kwargs.get('temperature', 0.7)
+    top_p = kwargs.get('top_p', 0.95)
+    top_k = kwargs.get('top_k', 0)
+    repetition_penalty = kwargs.get('repetition_penalty', 1.15)
+    max_new_tokens = kwargs.get('max_new_tokens', 512)
+    tok = self.__class__.tokenizer
+    m = self.__class__.model
+
+    input_ids = tok([input_prompt], return_tensors="pt", padding=True).input_ids
+    input_ids = input_ids.to(m.device)
+    generate_kwargs = dict(
+        input_ids=input_ids,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        do_sample=temperature > 0.0,
+        top_p=top_p,
+        top_k=top_k,
+        repetition_penalty=repetition_penalty,
+    )
+    
+    results = tok.batch_decode(m.generate(**generate_kwargs))[0]
+    return {
+      "role": "assistant",
+      "content": _clean_output(input_prompt, results)
+    }

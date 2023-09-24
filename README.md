@@ -186,15 +186,34 @@ t2t.Transformer.LANGUAGES
 ## Examples
 
 ### Assistant
-- Free private open source alternative to commercial LLMs. 
+- Free private open source alternative to commercial LLMs.
 - Commercial LLMs are costly, collect your data, impose quotas and rate limits that hinder development.
 - Run at no cost on Google Colab free tier, so you don't even need your own device.
+
 ```
+import text2text as t2t
+asst = t2t.Assistant()
 instructions = "Generate a JSON object that maps English characters as keys and Greek equivalents as values: {"
-res = t2t.Assistant().transform([instructions])
+res = asst.transform([instructions])
 #[
 #  '{\n"a": "α",\n"b": "β",\n"c": "γ",\n"d": "δ",\n"e": "ε",\n"f": "φ",\n"g": "χ",\n"h": "ι",\n"i": "η",\n"j": "κ",\n"k": "λ",\n"l": "μ",\n"m": "ν",\n"n": "ξ",\n"o": "ο",\n"p": "π",\n"q": "ρ",\n"r": "σ",\n"s": "τ",\n"t": "υ",\n"u": "ύ",\n"v": "φ",\n"w": "χ",\n"x": "ψ",\n"y": "ω",\n"z": "ζ"\n}'
 #]
+
+#OpenAI API format
+input_prompts = ["Hello, world!"]
+print(
+    asst.completion_tokens(input_prompts),
+    asst.completion(input_prompts)
+)
+#[13]
+#['Hello there! How can I help you today? If you have any questions or need assistance with something, feel free to ask.']
+
+results = asst.chat_completion([
+    {"role": "user",  "content": "Hi"},
+    {"role": "assistant", "content": "Hello, how are you?"},
+    {"role": "user", "content": "What should I do today?"}
+])
+#{'role': 'assistant', 'content': '1. Make a list of things to be grateful for.\n2. Go outside and take a walk in nature.\n3. Practice mindfulness meditation.\n4. Connect with a loved one or friend.\n5. Do something kind for someone else.\n6. Engage in a creative activity like drawing or writing.\n7. Read an uplifting book or listen to motivational podcasts.'}
 ```
 - To use a dynamic knowledge base, see [![Q&A Assistant Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hkNgpSmmUA-mzUibqz25xq-E8KYOLuVx?usp=sharing)
 - To use with LangChain, see [![LangChain integration](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1K6Kk80w9vjFZ7PL9dPRgVuOPuaWcY4ae?usp=sharing)
