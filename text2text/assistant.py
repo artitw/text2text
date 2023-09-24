@@ -24,7 +24,7 @@ class Assistant(t2t.Transformer):
       quantize_config=None
     )
 
-  def preprocess(self, input_lines, retriever=None, **kwargs):
+  def completion_preprocess(self, input_lines, retriever=None, **kwargs):
     df = pd.DataFrame({"input_line": input_lines})
     if retriever:
       k = kwargs.get('k', 1)
@@ -34,13 +34,13 @@ class Assistant(t2t.Transformer):
     return df
 
   def completion_tokens(self, input_lines):
-    df = self.preprocess(input_lines)
+    df = self.completion_preprocess(input_lines)
     tok = self.__class__.tokenizer
     input_ids = tok(df["input_line"].tolist(), return_tensors="pt", padding=True).input_ids
     return [len(x) for x in input_ids]
 
   def transform(self, input_lines, retriever=None, **kwargs):
-    df = self.preprocess(input_lines, retriever, **kwargs)
+    df = self.completion_preprocess(input_lines, retriever, **kwargs)
     temperature = kwargs.get('temperature', 0.7)
     top_p = kwargs.get('top_p', 0.95)
     top_k = kwargs.get('top_k', 0)
@@ -68,12 +68,20 @@ class Assistant(t2t.Transformer):
 
   completion = transform
 
-  def chat_completion(self, input_lines, **kwargs):
-    chat_history = []
-    for line in input_lines:
-      chat_history.append(f'{line["role"].upper()}: {line["content"]}')
+  def chat_completion_preprocess(self, messages):
+    chat_history = [f'{line["role"].upper()}: {line["content"]}' for line in messages]
     chat_history.append("ASSISTANT: ")
     input_prompt = "\n".join(chat_history)
+    return input_prompt
+
+  def chat_completion_tokens(self, messages):
+    input_prompt = self.chat_completion_preprocess(messages)
+    tok = self.__class__.tokenizer
+    input_ids = tok([input_prompt], return_tensors="pt", padding=True).input_ids[0]
+    return len(input_ids)
+
+  def chat_completion(self, messages, **kwargs):
+    input_prompt = self.chat_completion_preprocess(messages)
       
     temperature = kwargs.get('temperature', 0.7)
     top_p = kwargs.get('top_p', 0.95)

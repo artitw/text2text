@@ -35,7 +35,7 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 </details>
 
 ## Colab Notebooks
-* Assistant (free private chatGPT alternative) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1K6Kk80w9vjFZ7PL9dPRgVuOPuaWcY4ae?usp=sharing)
+* Assistant (free private ChatGPT LLM alternative) [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1K6Kk80w9vjFZ7PL9dPRgVuOPuaWcY4ae?usp=sharing)
 * Assistant with knowledge base [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hkNgpSmmUA-mzUibqz25xq-E8KYOLuVx?usp=sharing)
 * STF-IDF multilingual search [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RaWj5SqWvyC2SsCTGg8IAVcl9G5hOB50?usp=sharing)
 * All examples [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
@@ -201,19 +201,16 @@ res = asst.transform([instructions])
 
 #OpenAI API format
 input_prompts = ["Hello, world!"]
-print(
-    asst.completion_tokens(input_prompts),
-    asst.completion(input_prompts)
-)
-#[13]
-#['Hello there! How can I help you today? If you have any questions or need assistance with something, feel free to ask.']
+asst.completion_tokens(input_prompts) #[13]
+asst.completion(input_prompts) #['Hello there! How can I help you today? If you have any questions or need assistance with something, feel free to ask.']
 
-results = asst.chat_completion([
+chat_history = [
     {"role": "user",  "content": "Hi"},
     {"role": "assistant", "content": "Hello, how are you?"},
     {"role": "user", "content": "What should I do today?"}
-])
-#{'role': 'assistant', 'content': '1. Make a list of things to be grateful for.\n2. Go outside and take a walk in nature.\n3. Practice mindfulness meditation.\n4. Connect with a loved one or friend.\n5. Do something kind for someone else.\n6. Engage in a creative activity like drawing or writing.\n7. Read an uplifting book or listen to motivational podcasts.'}
+]
+asst.chat_completion_tokens(chat_history) #31
+asst.chat_completion(chat_history) #{'role': 'assistant', 'content': '1. Make a list of things to be grateful for.\n2. Go outside and take a walk in nature.\n3. Practice mindfulness meditation.\n4. Connect with a loved one or friend.\n5. Do something kind for someone else.\n6. Engage in a creative activity like drawing or writing.\n7. Read an uplifting book or listen to motivational podcasts.'}
 ```
 - To use a dynamic knowledge base, see [![Q&A Assistant Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hkNgpSmmUA-mzUibqz25xq-E8KYOLuVx?usp=sharing)
 - To use with LangChain, see [![LangChain integration](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1K6Kk80w9vjFZ7PL9dPRgVuOPuaWcY4ae?usp=sharing)
