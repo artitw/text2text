@@ -199,18 +199,33 @@ res = asst.transform([instructions])
 #  '{\n"a": "α",\n"b": "β",\n"c": "γ",\n"d": "δ",\n"e": "ε",\n"f": "φ",\n"g": "χ",\n"h": "ι",\n"i": "η",\n"j": "κ",\n"k": "λ",\n"l": "μ",\n"m": "ν",\n"n": "ξ",\n"o": "ο",\n"p": "π",\n"q": "ρ",\n"r": "σ",\n"s": "τ",\n"t": "υ",\n"u": "ύ",\n"v": "φ",\n"w": "χ",\n"x": "ψ",\n"y": "ω",\n"z": "ζ"\n}'
 #]
 
-#OpenAI API format
-input_prompts = ["Hello, world!"]
-asst.completion_tokens(input_prompts) #[13]
-asst.completion(input_prompts) #['Hello there! How can I help you today? If you have any questions or need assistance with something, feel free to ask.']
+#OpenAI Completion API
+
+prompt = """
+I have a clove of garlic, some brown rice, a few baby bok choy,
+some olive oil, and a few slices of bacon.
+How can I prepare a meal our of these ingredients?
+"""
+
+input_prompts = [prompt]
+num_tokens = asst.completion_tokens(input_prompts)
+print(num_tokens[0])
+
+results = asst.completion(input_prompts)
+print(results[0])
+
+#OpenAI Chat Completion API
 
 chat_history = [
     {"role": "user",  "content": "Hi"},
     {"role": "assistant", "content": "Hello, how are you?"},
     {"role": "user", "content": "What should I do today?"}
 ]
-asst.chat_completion_tokens(chat_history) #31
-asst.chat_completion(chat_history) #{'role': 'assistant', 'content': '1. Make a list of things to be grateful for.\n2. Go outside and take a walk in nature.\n3. Practice mindfulness meditation.\n4. Connect with a loved one or friend.\n5. Do something kind for someone else.\n6. Engage in a creative activity like drawing or writing.\n7. Read an uplifting book or listen to motivational podcasts.'}
+num_tokens = asst.chat_completion_tokens(chat_history) #31
+print(num_tokens)
+
+result = asst.chat_completion(chat_history) #{'role': 'assistant', 'content': '1. Make a list of things to be grateful for.\n2. Go outside and take a walk in nature.\n3. Practice mindfulness meditation.\n4. Connect with a loved one or friend.\n5. Do something kind for someone else.\n6. Engage in a creative activity like drawing or writing.\n7. Read an uplifting book or listen to motivational podcasts.'}
+print(result["content"])
 ```
 - To use a dynamic knowledge base, see [![Q&A Assistant Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hkNgpSmmUA-mzUibqz25xq-E8KYOLuVx?usp=sharing)
 - To use with LangChain, see [![LangChain integration](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1K6Kk80w9vjFZ7PL9dPRgVuOPuaWcY4ae?usp=sharing)
