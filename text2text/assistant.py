@@ -1,8 +1,7 @@
 import logging
 import pandas as pd
 import text2text as t2t
-from transformers import AutoTokenizer, logging
-from auto_gptq import AutoGPTQForCausalLM
+from transformers import AutoModelForCausalLM, AutoTokenizer, logging
 
 logging.set_verbosity(logging.CRITICAL)
 
@@ -14,15 +13,12 @@ class Assistant(t2t.Transformer):
   def __init__(self, **kwargs):
     model_name_or_path = kwargs.get("model_name_or_path", "TheBloke/vicuna-13B-v1.5-16K-GPTQ")
 
-    self.__class__.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True)
+    self.__class__.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True, padding_side='left')
 
-    self.__class__.model = AutoGPTQForCausalLM.from_quantized(model_name_or_path,
-      use_safetensors=True,
-      trust_remote_code=False,
-      device="cuda:0",
-      use_triton=False,
-      quantize_config=None
-    )
+    self.__class__.model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
+                                             device_map="auto",
+                                             trust_remote_code=False,
+                                             revision="main")
 
   def completion_preprocess(self, input_lines, retriever=None, **kwargs):
     df = pd.DataFrame({"input_line": input_lines})
