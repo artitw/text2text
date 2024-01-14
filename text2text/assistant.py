@@ -36,6 +36,8 @@ class Assistant(t2t.Transformer):
     return [len(x) for x in input_ids]
 
   def transform(self, input_lines, retriever=None, **kwargs):
+    if isinstance(input_lines, str):
+      input_lines = [input_lines]
     df = self.completion_preprocess(input_lines, retriever, **kwargs)
     temperature = kwargs.get('temperature', 0.7)
     top_p = kwargs.get('top_p', 0.95)
