@@ -1,7 +1,7 @@
 import logging
 import pandas as pd
 import text2text as t2t
-from transformers import AutoModelForCausalLM, AutoTokenizer, logging
+from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer, logging
 
 logging.set_verbosity(logging.CRITICAL)
 
@@ -86,13 +86,16 @@ class Assistant(t2t.Transformer):
     top_k = kwargs.get('top_k', 0)
     repetition_penalty = kwargs.get('repetition_penalty', 1.15)
     max_new_tokens = kwargs.get('max_new_tokens', 512)
+    stream = kwargs.get('stream', False)
     tok = self.__class__.tokenizer
     m = self.__class__.model
+    streamer = TextStreamer(tok, skip_prompt=True, skip_special_tokens=True) if stream else None
 
     input_ids = tok([input_prompt], return_tensors="pt", padding=True).input_ids
     input_ids = input_ids.to(m.device)
     generate_kwargs = dict(
         input_ids=input_ids,
+        streamer=streamer,
         max_new_tokens=max_new_tokens,
         temperature=temperature,
         do_sample=temperature > 0.0,

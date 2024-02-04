@@ -224,7 +224,7 @@ chat_history = [
 num_tokens = asst.chat_completion_tokens(chat_history) #31
 print(num_tokens)
 
-result = asst.chat_completion(chat_history) #{'role': 'assistant', 'content': '1. Make a list of things to be grateful for.\n2. Go outside and take a walk in nature.\n3. Practice mindfulness meditation.\n4. Connect with a loved one or friend.\n5. Do something kind for someone else.\n6. Engage in a creative activity like drawing or writing.\n7. Read an uplifting book or listen to motivational podcasts.'}
+result = asst.chat_completion(chat_history, stream=True) #{'role': 'assistant', 'content': '1. Make a list of things to be grateful for.\n2. Go outside and take a walk in nature.\n3. Practice mindfulness meditation.\n4. Connect with a loved one or friend.\n5. Do something kind for someone else.\n6. Engage in a creative activity like drawing or writing.\n7. Read an uplifting book or listen to motivational podcasts.'}
 print(result["content"])
 ```
 - To use a dynamic knowledge base, see [![Q&A Assistant Demo](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1hkNgpSmmUA-mzUibqz25xq-E8KYOLuVx?usp=sharing)
