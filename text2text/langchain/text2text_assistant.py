@@ -20,7 +20,7 @@ class Text2TextAssistant(LLM):
     ) -> str:
         if stop is not None:
             raise ValueError("stop kwargs are not permitted.")
-        return self.model.transform([prompt], **kwargs)[0]
+        return self.model.transform(messages=[{"role": "user", "content": prompt}], **kwargs)["content"]
 
     @property
     def _identifying_params(self) -> Mapping[str, Any]:

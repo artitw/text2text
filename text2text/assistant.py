@@ -1,111 +1,119 @@
-import logging
-import pandas as pd
-import text2text as t2t
-from transformers import AutoModelForCausalLM, AutoTokenizer, TextStreamer, logging
-
-logging.set_verbosity(logging.CRITICAL)
+import os
+import sys
+import torch
+from hqq.core.quantize import BaseQuantizeConfig
+from transformers import AutoConfig, AutoTokenizer
+from huggingface_hub import snapshot_download
+from .mixtral.build_model import OffloadConfig, QuantConfig, build_model
+from transformers import TextStreamer
 
 def _clean_output(input_prompt, output_text):
-  return output_text.replace('<s>',"").replace('</s>',"").replace(input_prompt, "").strip()
+  input_prompt = input_prompt.replace('[INST]',' [INST] ').replace('  ',' ')
+  output_text = output_text.replace('[INST]',' [INST] ').replace('  ',' ')
+  return output_text.replace(input_prompt,"").replace('<s>',"").replace('</s>',"").strip()
 
-class Assistant(t2t.Transformer):
-
+class Assistant(object):
   def __init__(self, **kwargs):
-    model_name_or_path = kwargs.get("model_name_or_path", "TheBloke/vicuna-13B-v1.5-16K-GPTQ")
+    os.environ["LC_ALL"] = "en_US.UTF-8"
+    os.environ["LD_LIBRARY_PATH"] = "/usr/lib64-nvidia"
+    os.environ["LIBRARY_PATH"] = "/usr/local/cuda/lib64/stubs"
+    os.system("ldconfig /usr/lib64-nvidia")
 
-    self.__class__.tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, use_fast=True, padding_side='left')
+    model_name = "Mixtral-8x7B-Instruct-v0.1-offloading-demo"
+    state_path = model_name
+    repo_id = f"lavawolfiee/{model_name}"
+    snapshot_download(repo_id=repo_id, local_dir=model_name)
+    config = AutoConfig.from_pretrained(model_name)
+    self.__class__.device = torch.device("cuda:0")
 
-    self.__class__.model = AutoModelForCausalLM.from_pretrained(model_name_or_path,
-                                             device_map="auto",
-                                             trust_remote_code=False,
-                                             revision="main")
+    offload_per_layer = 4 # Change to 5 if only 12 GB of GPU VRAM
 
-  def completion_preprocess(self, input_lines, retriever=None, **kwargs):
-    df = pd.DataFrame({"input_line": input_lines})
-    if retriever:
-      k = kwargs.get('k', 1)
-      df["knowledge"] = retriever.retrieve(df["input_line"].str.lower().tolist(), k=k)
-      df["input_line"] = df["knowledge"].apply(' '.join) + " - " + df["input_line"]
-    df["input_line"] = "USER: " + df["input_line"] + "\nASSISTANT:"
-    return df
+    num_experts = config.num_local_experts
 
-  def completion_tokens(self, input_lines):
-    df = self.completion_preprocess(input_lines)
-    tok = self.__class__.tokenizer
-    input_ids = tok(df["input_line"].tolist(), return_tensors="pt", padding=True).input_ids
-    return [len(x) for x in input_ids]
-
-  def transform(self, input_lines, retriever=None, **kwargs):
-    if isinstance(input_lines, str):
-      input_lines = [input_lines]
-    df = self.completion_preprocess(input_lines, retriever, **kwargs)
-    temperature = kwargs.get('temperature', 0.7)
-    top_p = kwargs.get('top_p', 0.95)
-    top_k = kwargs.get('top_k', 0)
-    repetition_penalty = kwargs.get('repetition_penalty', 1.15)
-    max_new_tokens = kwargs.get('max_new_tokens', 512)
-    tok = self.__class__.tokenizer
-    m = self.__class__.model
-
-    input_ids = tok(df["input_line"].tolist(), return_tensors="pt", padding=True).input_ids
-    input_ids = input_ids.to(m.device)
-    generate_kwargs = dict(
-        input_ids=input_ids,
-        max_new_tokens=max_new_tokens,
-        temperature=temperature,
-        do_sample=temperature > 0.0,
-        top_p=top_p,
-        top_k=top_k,
-        repetition_penalty=repetition_penalty,
+    offload_config = OffloadConfig(
+        main_size=config.num_hidden_layers * (num_experts - offload_per_layer),
+        offload_size=config.num_hidden_layers * offload_per_layer,
+        buffer_size=4,
+        offload_per_layer=offload_per_layer,
     )
 
-    df["output_line"] = tok.batch_decode(m.generate(**generate_kwargs)) 
-    df["output_line"] = df.apply(lambda row: _clean_output(row["input_line"], row["output_line"]), axis=1)
+    attn_config = BaseQuantizeConfig(
+        nbits=4,
+        group_size=64,
+        quant_zero=True,
+        quant_scale=True,
+    )
+    attn_config["scale_quant_params"]["group_size"] = 256
 
-    return df["output_line"].tolist()
 
-  completion = transform
+    ffn_config = BaseQuantizeConfig(
+        nbits=2,
+        group_size=16,
+        quant_zero=True,
+        quant_scale=True,
+    )
+    quant_config = QuantConfig(ffn_config=ffn_config, attn_config=attn_config)
 
-  def chat_completion_preprocess(self, messages):
-    chat_history = [f'{line["role"].upper()}: {line["content"]}' for line in messages]
-    chat_history.append("ASSISTANT: ")
-    input_prompt = "\n".join(chat_history)
-    return input_prompt
 
+    self.__class__.model = build_model(
+        device=self.__class__.device,
+        quant_config=quant_config,
+        offload_config=offload_config,
+        state_path=state_path,
+    )
+
+    self.__class__.tokenizer = AutoTokenizer.from_pretrained(model_name)
+    self.__class__.streamer = TextStreamer(self.__class__.tokenizer, skip_prompt=True, skip_special_tokens=True)
+    self.__class__.cache = {}
+  
   def chat_completion_tokens(self, messages):
-    input_prompt = self.chat_completion_preprocess(messages)
-    tok = self.__class__.tokenizer
-    input_ids = tok([input_prompt], return_tensors="pt", padding=True).input_ids[0]
-    return len(input_ids)
+    tokenizer = self.__class__.tokenizer
+    device = self.__class__.device
+    input_ids = tokenizer.apply_chat_template(messages, return_tensors="pt").to(device)
+    return len(input_ids[0])
 
-  def chat_completion(self, messages, **kwargs):
-    input_prompt = self.chat_completion_preprocess(messages)
-      
-    temperature = kwargs.get('temperature', 0.7)
-    top_p = kwargs.get('top_p', 0.95)
-    top_k = kwargs.get('top_k', 0)
-    repetition_penalty = kwargs.get('repetition_penalty', 1.15)
-    max_new_tokens = kwargs.get('max_new_tokens', 512)
-    stream = kwargs.get('stream', False)
-    tok = self.__class__.tokenizer
-    m = self.__class__.model
-    streamer = TextStreamer(tok, skip_prompt=True, skip_special_tokens=True) if stream else None
+  def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=True, **kwargs):
+    tokenizer = self.__class__.tokenizer
+    cache = self.__class__.cache
+    device = self.__class__.device
+    streamer = self.__class__.streamer
+    model = self.__class__.model
 
-    input_ids = tok([input_prompt], return_tensors="pt", padding=True).input_ids
-    input_ids = input_ids.to(m.device)
-    generate_kwargs = dict(
-        input_ids=input_ids,
-        streamer=streamer,
-        max_new_tokens=max_new_tokens,
-        temperature=temperature,
-        do_sample=temperature > 0.0,
-        top_p=top_p,
-        top_k=top_k,
-        repetition_penalty=repetition_penalty,
+    input_ids = tokenizer.apply_chat_template(messages, return_tensors="pt").to(device)
+
+    input_string = tokenizer.apply_chat_template(messages, tokenize=False)
+
+    past_key_values = cache.get(input_string, None)
+    if past_key_values:
+      seq_len = input_ids.size(1) + past_key_values[0][0][0].size(1)
+      attention_mask = torch.ones([1, seq_len - 1], dtype=torch.int, device=device)
+    else:
+      attention_mask = torch.ones_like(input_ids)
+
+    results = model.generate(
+      input_ids=input_ids,
+      attention_mask=attention_mask,
+      past_key_values=past_key_values,
+      streamer=streamer if stream else None,
+      do_sample=kwargs.get("do_sample", True),
+      temperature=kwargs.get("temperature", 0.9),
+      top_p=kwargs.get("top_p", 0.9),
+      max_new_tokens=kwargs.get("max_new_tokens", 512),
+      pad_token_id=tokenizer.eos_token_id,
+      return_dict_in_generate=True,
+      output_hidden_states=False,
     )
-    
-    results = tok.batch_decode(m.generate(**generate_kwargs))[0]
+
+    cache[input_string] = results["past_key_values"]
+
+    results = tokenizer.batch_decode(**results)[0]
+
     return {
       "role": "assistant",
-      "content": _clean_output(input_prompt, results)
+      "content": _clean_output(input_string, results)
     }
+
+    return results
+
+  def transform(self, input_lines, src_lang='en', **kwargs):
+    return self.chat_completion([{"role": "user", "content": input_lines}])
