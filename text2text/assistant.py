@@ -117,3 +117,5 @@ class Assistant(object):
 
   def transform(self, input_lines, src_lang='en', **kwargs):
     return self.chat_completion([{"role": "user", "content": input_lines}])
+
+  completion = transform
