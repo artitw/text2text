@@ -81,13 +81,17 @@ class Assistant(object):
 
     input_ids = tokenizer.apply_chat_template(messages, return_tensors="pt").to(device)
 
-    input_string = tokenizer.apply_chat_template(messages, tokenize=False)
+    attention_mask = None
+    past_key_values = None
+    for i in range(1,len(messages)):
+      past_input_string = tokenizer.apply_chat_template(messages[:-i], tokenize=False)
+      past_key_values = cache.get(past_input_string, None)
+      if past_key_values:
+        seq_len = input_ids.size(1) + past_key_values[0][0][0].size(1)
+        attention_mask = torch.ones([1, seq_len - 1], dtype=torch.int, device=device)
+        break
 
-    past_key_values = cache.get(input_string, None)
-    if past_key_values:
-      seq_len = input_ids.size(1) + past_key_values[0][0][0].size(1)
-      attention_mask = torch.ones([1, seq_len - 1], dtype=torch.int, device=device)
-    else:
+    if attention_mask == None:
       attention_mask = torch.ones_like(input_ids)
 
     results = model.generate(
@@ -104,18 +108,18 @@ class Assistant(object):
       output_hidden_states=False,
     )
 
-    cache[input_string] = results["past_key_values"]
-
-    results = tokenizer.batch_decode(**results)[0]
-
-    return {
+    output_string = tokenizer.batch_decode(**results)[0]
+    input_string = tokenizer.apply_chat_template(messages, tokenize=False)
+    messages.append({
       "role": "assistant",
-      "content": _clean_output(input_string, results)
-    }
+      "content": _clean_output(input_string, output_string)
+    })
+    cache_string = tokenizer.apply_chat_template(messages, tokenize=False)
+    self.__class__.cache[cache_string] = results["past_key_values"]
 
-    return results
+    return messages[-1]
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    return self.chat_completion([{"role": "user", "content": input_lines}])
+    return self.chat_completion([{"role": "user", "content": input_lines}])["content"]
 
   completion = transform
