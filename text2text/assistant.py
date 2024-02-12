@@ -81,17 +81,12 @@ class Assistant(object):
 
     input_ids = tokenizer.apply_chat_template(messages, return_tensors="pt").to(device)
 
-    attention_mask = None
-    past_key_values = None
-    for i in range(1,len(messages)):
-      past_input_string = tokenizer.apply_chat_template(messages[:-i], tokenize=False)
-      past_key_values = cache.get(past_input_string, None)
-      if past_key_values:
-        seq_len = input_ids.size(1) + past_key_values[0][0][0].size(1)
-        attention_mask = torch.ones([1, seq_len - 1], dtype=torch.int, device=device)
-        break
-
-    if attention_mask == None:
+    past_input_string = tokenizer.apply_chat_template(messages[:-1], tokenize=False)
+    past_key_values = cache.get(past_input_string, None)
+    if past_key_values:
+      seq_len = input_ids.size(1) + past_key_values[0][0][0].size(1)
+      attention_mask = torch.ones([1, seq_len - 1], dtype=torch.int, device=device)
+    else:
       attention_mask = torch.ones_like(input_ids)
 
     results = model.generate(
