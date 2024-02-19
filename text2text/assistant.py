@@ -105,14 +105,14 @@ class Assistant(object):
 
     output_string = tokenizer.batch_decode(**results)[0]
     input_string = tokenizer.apply_chat_template(messages, tokenize=False)
-    messages.append({
+    assistant_output = {
       "role": "assistant",
       "content": _clean_output(input_string, output_string)
-    })
-    cache_string = tokenizer.apply_chat_template(messages, tokenize=False)
+    }
+    cache_string = tokenizer.apply_chat_template(messages+[assistant_output], tokenize=False)
     self.__class__.cache[cache_string] = results["past_key_values"]
 
-    return messages[-1]
+    return assistant_output
 
   def transform(self, input_lines, src_lang='en', **kwargs):
     return self.chat_completion([{"role": "user", "content": input_lines}])["content"]
