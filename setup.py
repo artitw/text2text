@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name="text2text",
-  version="1.4.5",
+  version="1.4.6",
   author="artitw",
   author_email="artitw@gmail.com",
   description="Text2Text: Crosslingual NLP/G toolkit",
@@ -20,16 +20,11 @@ setuptools.setup(
   ],
   keywords='multilingual crosslingual gpt chatgpt bert natural language processing nlp nlg text generation gpt question answer answering information retrieval tfidf tf-idf bm25 search index summary summarizer summarization tokenizer tokenization translation backtranslation data augmentation science machine learning colab embedding levenshtein sub-word edit distance conversational dialog chatbot mixtral',
   install_requires=[
-    'accelerate',
-    'bitsandbytes',
-    'peft',
     'faiss-cpu',
     'flask',
-    'langchain',
     'googledrivedownloader',
     'numpy',
     'ollama',
-    'optimum',
     'pandas',
     'scikit-learn',
     'scipy',
@@ -37,7 +32,7 @@ setuptools.setup(
     'torch',
     'tqdm',
     'transformers',
+    'huggingface_hub',
     'hqq',
-    'huggingface_hub'
   ],
 )
