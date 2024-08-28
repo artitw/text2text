@@ -13,29 +13,53 @@ from peft import LoraConfig
 from datasets import DatasetDict, load_dataset
 
 @dataclass
-class PeftModelArguments:
-    peft_method: str = field(default="qlora")
-    lora_alpha: int = field(default=16)
-    lora_dropout: float = field(default=0.1)
-    lora_r: float = field(default=8)
-    target_modules: str = field(default="all-linear")
-    use_reentrant: bool = field(default=True)
-
-@dataclass
 class DataTrainingArguments:
+    """
+    Defines data arguments and stores t2t default values.
+    """
     dataset_name: str = field(
         default="smangrul/ultrachat-10k-chatml",
-        metadata={"help": "Dataset for fine-tuning."}
-    )
+        metadata={"help": "Dataset for fine-tuning."})
     text_field: str = field(
         default="text",
-        metadata={"help": "Field in dataset to use as input text."}
-    )
+        metadata={"help": "Field in dataset to use as input text."})
     splits: str = field(default="train,test")
     max_seq_length: int = field(default=2048)
 
 @dataclass
+class PeftModelArguments:
+    """
+    Defines and stores t2t default values for PEFT model configs.
+    """
+    peft_method: str = field(
+        default="qlora",
+        metadata={"help": "PEFT method to use. Only support QLoRA currently."})
+    lora_alpha: int = field(
+        default=16,
+        metadata={"help": "The alpha parameter for Lora scaling."})
+    lora_dropout: float = field(
+        default=0.1,
+        metadata={"help": "The dropout probability for Lora layers."})
+    lora_r: float = field(
+        default=8,
+        metadata={"help": "Lora attention dimension (Rank)."})
+    target_modules: str = field(
+        default="all-linear",
+        metadata={"help": ("Modules to apply to adapter to."
+                           "Alternatively: 'q_proj,k_proj,v_proj,o_proj,down_proj,up_proj,gate_proj'"
+                           )
+                        }
+                    )
+    use_reentrant: bool = field(
+        default=True,
+        metadata={"help": "For gradient checkpointing."})
+
+
+@dataclass
 class PeftTrainingArguments(TrainingArguments):
+    """
+    Stores t2t default values for training args.
+    """
     num_train_epochs: int = field(
         default=1,
         metadata={"help": "Number of epochs to train for."})
@@ -53,23 +77,29 @@ class PeftTrainingArguments(TrainingArguments):
     learning_rate: float = field(default=1e-4)
     lr_scheduler_type: str = field(
         default="cosine",
-         metadata={"help": "LR scheduler type to use."})
-    weight_decay: str = field(default=1e-4)
+        metadata={"help": "LR scheduler type to use."})
+    weight_decay: str = field(
+        default=1e-4,
+        metadata={"help": "Weight decay for AdamW optimizer."})
     per_device_train_batch_size: int = field(default=8)
     per_device_eval_batch_size: int = field(default=8)
-    gradient_accumulation_steps: int = field(default=8)
+    gradient_accumulation_steps: int = field(
+        default=8,
+        metadata={"help": "Default value to support memory constraints."})
     gradient_checkpointing: bool = field(default=True)
 
 
-class Peft:
+class SFT:
     def __init__(self, model_name, output_dir, **kwargs):
         self.llm = model_name
         self.model_args = PeftModelArguments()
         self.data_args = DataTrainingArguments()
+        if not output_dir:
+            output_dir = f"{model_name.split("/")[-1]}-t2t-sft"
         self.train_args = PeftTrainingArguments(
             output_dir=output_dir)
 
-        # Try multiple inheritances for the dataclasses
+        # Update arguments in parsed
         for kwarg in kwargs:
             if hasattr(self.model_args, kwarg):
                 setattr(self.model_args, kwarg, kwargs[kwarg])
@@ -78,8 +108,9 @@ class Peft:
             elif hasattr(self.train_args, kwarg):
                 setattr(self.train_args, kwarg, kwargs[kwarg])
             else:
-                raise AttributeError("Invalid Argument")
-
+                raise AttributeError("Invalid Argument.")
+        # Todo: option to use HF hub or not
+            
     def prepare_model(self):
         # if self.model_args.peft_method == "qlora":
         bnb_config = BitsAndBytesConfig(
@@ -114,7 +145,7 @@ class Peft:
 
     def prepare_dataset(self):
         raw_datasets = DatasetDict()
-        for split in ["train", "test"]:
+        for split in self.data_args.splits:
             try:
                 dataset = load_dataset(self.data_args.dataset_name, 
                                        split=split)
@@ -130,7 +161,6 @@ class Peft:
         return train_split, test_split
 
     def train(self):
-                
         model, tokenizer, peft_config = self.prepare_model()
         train_dataset, test_dataset = self.prepare_dataset()
 

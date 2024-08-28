@@ -33,6 +33,8 @@ setuptools.setup(
     'tqdm',
     'transformers',
     'trl',
-    'peft'
+    'peft',
+    'bitsandbytes',
+    'accelerate'
   ],
 )
