@@ -34,7 +34,6 @@ setuptools.setup(
     'transformers',
     'trl',
     'peft',
-    'bitsandbytes',
-    'accelerate'
+    'bitsandbytes'
   ],
 )

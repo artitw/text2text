@@ -11,11 +11,14 @@ from trl import SFTTrainer
 from peft import LoraConfig
 
 from datasets import DatasetDict, load_dataset
+from huggingface_hub import login, notebook_login
+
+from IPython import get_ipython
 
 @dataclass
 class DataTrainingArguments:
     """
-    Defines data arguments and stores t2t default values.
+    Defines and stores t2t default values for data args.
     """
     dataset_name: str = field(
         default="smangrul/ultrachat-10k-chatml",
@@ -33,7 +36,7 @@ class PeftModelArguments:
     """
     peft_method: str = field(
         default="qlora",
-        metadata={"help": "PEFT method to use. Only support QLoRA currently."})
+        metadata={"help": "PEFT method to use. Only supports QLoRA currently."})
     lora_alpha: int = field(
         default=16,
         metadata={"help": "The alpha parameter for Lora scaling."})
@@ -85,21 +88,25 @@ class PeftTrainingArguments(TrainingArguments):
     per_device_eval_batch_size: int = field(default=8)
     gradient_accumulation_steps: int = field(
         default=8,
-        metadata={"help": "Default value to support memory constraints."})
+        metadata={"help": "Set here to support memory constraints."})
     gradient_checkpointing: bool = field(default=True)
 
 
 class SFT:
-    def __init__(self, model_name, output_dir, **kwargs):
+    def __init__(self, 
+                 model_name: str, 
+                 output_dir: str = None,
+                 **kwargs):
         self.llm = model_name
         self.model_args = PeftModelArguments()
         self.data_args = DataTrainingArguments()
+
         if not output_dir:
-            output_dir = f"{model_name.split("/")[-1]}-t2t-sft"
+            output_dir = f"{model_name.split('/')[-1]}-t2t-sft"
         self.train_args = PeftTrainingArguments(
             output_dir=output_dir)
 
-        # Update arguments in parsed
+        # Update argument if parsed
         for kwarg in kwargs:
             if hasattr(self.model_args, kwarg):
                 setattr(self.model_args, kwarg, kwargs[kwarg])
@@ -109,9 +116,14 @@ class SFT:
                 setattr(self.train_args, kwarg, kwargs[kwarg])
             else:
                 raise AttributeError("Invalid Argument.")
-        # Todo: option to use HF hub or not
+        # Todo: Add option to login to HF hub or not
             
     def prepare_model(self):
+        """
+        Prepare config and model according to peft method.
+        Currently only works for QLoRA.
+        """
+
         # if self.model_args.peft_method == "qlora":
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
@@ -120,7 +132,6 @@ class SFT:
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_storage=torch.uint8
         )
-
         model = AutoModelForCausalLM.from_pretrained(
             self.llm,
             quantization_config=bnb_config,
@@ -144,6 +155,9 @@ class SFT:
         return model, tokenizer, peft_config
 
     def prepare_dataset(self):
+        """
+        Prepare training (and eval) dataset.
+        """
         raw_datasets = DatasetDict()
         for split in self.data_args.splits:
             try:
@@ -200,5 +214,3 @@ class SFT:
         if trainer.is_fsdp_enabled:
             trainer.accelerator.state.fsdp_plugin.set_state_dict_type("FULL_STATE_DICT")
         trainer.save_model()
-
-#%env XLA_USE_BF16=1
