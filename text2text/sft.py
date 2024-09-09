@@ -91,20 +91,22 @@ class PeftTrainingArguments(TrainingArguments):
         metadata={"help": "Set here to support memory constraints."})
     gradient_checkpointing: bool = field(default=True)
 
+# Chatml data formatting for starters
+chatml_template = \
+    "{% for message in messages %}"\
+        "{{'<|im_start|>' + message['role'] + '\n' + message['content'] + '<|im_end|>' + '\n'}}"\
+        "{% if loop.last and add_generation_prompt %}"\
+            "{{ '<|im_start|>assistant\n' }}"\
+        "{% endif %}"\
+    "{% endfor %}"
 
 class SFT:
     def __init__(self, 
-                 model_name: str, 
-                 output_dir: str = None,
+                 model_name: str,
                  **kwargs):
         self.llm = model_name
         self.model_args = PeftModelArguments()
         self.data_args = DataTrainingArguments()
-
-        if not output_dir:
-            output_dir = f"{model_name.split('/')[-1]}-t2t-sft"
-        self.train_args = PeftTrainingArguments(
-            output_dir=output_dir)
 
         # Update argument if parsed
         for kwarg in kwargs:
@@ -112,10 +114,8 @@ class SFT:
                 setattr(self.model_args, kwarg, kwargs[kwarg])
             elif hasattr(self.data_args, kwarg):
                 setattr(self.data_args, kwarg, kwargs[kwarg])
-            elif hasattr(self.train_args, kwarg):
-                setattr(self.train_args, kwarg, kwargs[kwarg])
             else:
-                raise AttributeError("Invalid Argument.")
+                raise AttributeError(f"Invalid model or data argument: {kwarg}.")
         # Todo: Add option to login to HF hub or not
             
     def prepare_model(self):
@@ -132,7 +132,7 @@ class SFT:
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_storage=torch.uint8
         )
-        model = AutoModelForCausalLM.from_pretrained(
+        self.model = AutoModelForCausalLM.from_pretrained(
             self.llm,
             quantization_config=bnb_config,
             trust_remote_code=True,
@@ -140,7 +140,7 @@ class SFT:
             torch_dtype=torch.float32
         )
 
-        peft_config = LoraConfig(
+        self.peft_config = LoraConfig(
             lora_alpha= self.model_args.lora_alpha,
             lora_dropout= self.model_args.lora_dropout,
             r=self.model_args.lora_r,
@@ -149,10 +149,34 @@ class SFT:
             target_modules=self.model_args.target_modules
         )
         
-        tokenizer = AutoTokenizer(self.llm, trust_remote_code=True)
-        tokenizer.pad_token = tokenizer.eos_token
-
-        return model, tokenizer, peft_config
+        # Prepping tokenizer only for chatml
+        self.tokenizer = AutoTokenizer(
+            self.llm, 
+            pad_token="<pad>",
+            bos_token="<s>",
+            eos_token="<|im_end|>",
+            additional_special_tokens=["<|im_start|>user", 
+                                       "<|im_start|>assistant",
+                                       "<|im_start|>system",
+                                       "<|im_end|>",
+                                       "<s>", "<pad>"],
+            trust_remote_code=True)
+        
+        self.tokenizer.chat_template = chatml_template
+        self.model.resize_token_embeddings(len(self.tokenizer),
+                                           pad_to_multiple_of=8)
+        # self.tokenizer.pad_token = self.tokenizer.eos_token
+        # return model, self.tokenizer, peft_config
+    
+    def preprocess_chat(self, samples):
+        conversations = samples['messages']
+        for conversation in samples['messages']:
+            batch.append(self.tokenizer.apply_chat_template(
+                conversation,
+                tokenize=False))
+        batch = [self.tokenizer.apply_chat_template(conv, 
+                                                    tokenize=False,) for conv in conversations]
+        return {'text': batch}
 
     def prepare_dataset(self):
         """
@@ -167,32 +191,49 @@ class SFT:
             except:
                 print(f"Split type {split} not recognized as part of {self.dataset_name}")
                 pass
+        
+        raw_datasets = raw_datasets.map(
+            self.preprocess_chat,
+            batched=True,
+        )
 
-        train_split = raw_datasets["train"]
-        test_split = raw_datasets["test"]
-        print(f"Size of training split: {len(train_split)}, Size of test split: {len(test_split)}")
+        self.train_split = raw_datasets["train"]
+        self.test_split = raw_datasets["test"]
+        print(f"Size of training split: {len(self.train_split)}, Size of test split: {len(self.test_split)}")
 
-        return train_split, test_split
+        # return train_split, test_split
 
-    def train(self):
-        model, tokenizer, peft_config = self.prepare_model()
-        train_dataset, test_dataset = self.prepare_dataset()
+    def train(self, 
+              output_dir:str = None, 
+              **kwargs):
+        if not output_dir:
+            output_dir = f"{self.llm.split('/')[-1]}-t2t-sft"
+        self.train_args = PeftTrainingArguments(
+            output_dir=output_dir)
+        for kwarg in kwargs:
+            if hasattr(self.train_args, kwarg):
+                setattr(self.train_args, kwarg, kwargs[kwarg])
+            else:
+                raise AttributeError(f"Invalid training argument: {kwarg}.")
+            
+        self.prepare_model()
+        self.prepare_dataset()
 
         # Gradient checkpointing
-        model.config.use_cache = not self.train_args.gradient_checkpointing
+        self.model.config.use_cache = not self.train_args.gradient_checkpointing
         if self.train_args.gradient_checkpointing:
             self.train_args.gradient_checkpointing_kwargs = {
                 "use_reentrant": self.model_args.use_reentrant
             }
 
         trainer = SFTTrainer(
-            model=model,
-            tokenizer=tokenizer,
-            train_dataset=train_dataset,
-            eval_dataset=test_dataset,
+            model=self.model,
+            tokenizer=self.tokenizer,
+            train_dataset=self.train_dataset,
+            eval_dataset=self.test_dataset,
             args=self.train_args,
-            peft_config=peft_config,
-            packing=True,
+            peft_config=self.peft_config,
+            packing=False,
             dataset_kwargs={
                 "append_concat_token": False,
                 "add_special_tokens": False
