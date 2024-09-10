@@ -17,4 +17,4 @@ from .answerer import Answerer
 from .identifier import Identifier
 from .server import Server
 from .handler import Handler
-from .sft import SFT
+from .sft import SFTTrainer

@@ -56,6 +56,10 @@ class PeftModelArguments:
     use_reentrant: bool = field(
         default=True,
         metadata={"help": "For gradient checkpointing."})
+    use_attention: bool = field(
+        default=False,
+        metadata={"help": "Flash attention for training."}
+    )
 
 
 @dataclass
@@ -100,7 +104,7 @@ chatml_template = \
         "{% endif %}"\
     "{% endfor %}"
 
-class SFT:
+class SFTTrainer:
     def __init__(self, 
                  model_name: str,
                  **kwargs):
@@ -132,11 +136,13 @@ class SFT:
             bnb_4bit_use_double_quant=True,
             bnb_4bit_quant_storage=torch.uint8
         )
+
+        attn = "flash_attention_2" if self.model_args.use_attention else "eager"
         self.model = AutoModelForCausalLM.from_pretrained(
             self.llm,
             quantization_config=bnb_config,
             trust_remote_code=True,
-            attn_implementation="flash_attention_2",
+            attn_implementation=attn,
             torch_dtype=torch.float32
         )
 
