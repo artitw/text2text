@@ -60,7 +60,6 @@ class PeftModelArguments:
         default=False,
         metadata={"help": "Flash attention for training."})
 
-
 @dataclass
 class PeftTrainingArguments(TrainingArguments):
     """
@@ -137,12 +136,14 @@ class SFTTrainer:
         )
 
         attn = "flash_attention_2" if self.model_args.use_flash_attn else "eager"
+        model_dtype = torch.bfloat16 if attn == "flash_attention_2" else torch.float32
+
         self.model = AutoModelForCausalLM.from_pretrained(
             self.llm,
             quantization_config=bnb_config,
             trust_remote_code=True,
             attn_implementation=attn,
-            torch_dtype=torch.float32
+            torch_dtype=model_dtype
         )
 
         self.peft_config = LoraConfig(
