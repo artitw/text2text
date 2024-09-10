@@ -34,6 +34,7 @@ setuptools.setup(
     'transformers',
     'trl',
     'peft',
-    'bitsandbytes'
+    'bitsandbytes',
+    'flash-attn'
   ],
 )
