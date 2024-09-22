@@ -160,8 +160,6 @@ class BertConfig(object):
 try:
     from apex.normalization.fused_layer_norm import FusedLayerNorm as BertLayerNorm
 except ImportError:
-    print("Better speed can be achieved with apex installed.")
-
     class BertLayerNorm(nn.Module):
         def __init__(self, hidden_size, eps=1e-5):
             """Construct a layernorm module in the TF style (epsilon inside the square root).

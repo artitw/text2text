@@ -2,6 +2,7 @@ import os
 import ollama
 import psutil
 import subprocess
+import time
 
 from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
@@ -19,19 +20,27 @@ class Assistant(object):
     self.port = kwargs.get("port", 11434)
     self.model_url = f"{self.host}:{self.port}"
     self.model_name = kwargs.get("model_name", "llama3.1")
+    self.load_model()
+    self.client = ollama.Client(host=self.model_url)
+
+  def __del__(self):
+    ollama.delete(self.model_name)
+
+  def load_model(self):
+    return_code = os.system("sudo apt install -q -y lshw")
+    if return_code != 0:
+      print("Cannot install lshw.")
     return_code = os.system("curl -fsSL https://ollama.com/install.sh | sh")
     if return_code != 0:
       print("Cannot install ollama.")
     return_code = os.system("sudo systemctl enable ollama")
-    self.load_model()
-    self.client = ollama.Client(host=self.model_url)
-
-  def load_model(self):
-    sub = subprocess.Popen(
-      f"ollama serve & ollama pull {self.model_name} & ollama run {self.model_name}", 
-      shell=True, 
-      stdout=subprocess.PIPE
-    )
+    if return_code != 0:
+      print("Cannot enable ollama.")
+    sub = subprocess.Popen(["ollama", "serve"])
+    return_code = os.system("ollama -v")
+    if return_code != 0:
+      print("Cannot serve ollama.")
+    ollama.pull(self.model_name)
 
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
     if is_port_in_use(self.port):
