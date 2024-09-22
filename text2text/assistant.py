@@ -28,7 +28,7 @@ class Assistant(object):
 
   def load_model(self):
     sub = subprocess.Popen(
-      f"ollama serve & ollama pull {self.model_name}", 
+      f"ollama serve & ollama pull {self.model_name} & ollama run {self.model_name}", 
       shell=True, 
       stdout=subprocess.PIPE
     )
