@@ -202,7 +202,7 @@ chat_history = [
 
 result = asst.chat_completion(chat_history, stream=True) #{'role': 'assistant', 'content': '1. Make a list of things to be grateful for.\n2. Go outside and take a walk in nature.\n3. Practice mindfulness meditation.\n4. Connect with a loved one or friend.\n5. Do something kind for someone else.\n6. Engage in a creative activity like drawing or writing.\n7. Read an uplifting book or listen to motivational podcasts.'}
 for chunk in result:
-  print(chunk.raw['message']['content'], end='', flush=True)
+  print(chunk['message']['content'], end='', flush=True)
 
 # Running conversation
 messages = []

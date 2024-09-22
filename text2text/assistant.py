@@ -1,6 +1,7 @@
 import os
 import ollama
 import psutil
+import time
 from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
 
@@ -21,22 +22,22 @@ class Assistant(object):
     if return_code != 0:
       print("Cannot install ollama.")
     self.load_model()
-    self.client = Ollama(model=self.model_name, request_timeout=120.0)
+    self.client = ollama.Client(host=self.model_url)
 
   def load_model(self):
     return_code = os.system("sudo service ollama stop")
     return_code = os.system(f"ollama serve & ollama pull {self.model_name}")
+    time.sleep(5.0)
     if return_code != 0:
       print(f"{self.model_name} is not loading up. Restarting and trying again might help. Maybe needs more memory.")
 
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
     if is_port_in_use(self.port):
-      msgs = [ChatMessage(**m) for m in messages]
-      if stream:
-        return self.client.stream_chat(messages=msgs)
       if schema:
-        return self.client.as_structured_llm(schema).chat(messages=msgs).raw
-      return self.client.chat(messages=msgs).raw
+        msgs = [ChatMessage(**m) for m in messages]
+        llama_index_client = Ollama(model=self.model_name, request_timeout=120.0)
+        return llama_index_client.as_structured_llm(schema).chat(messages=msgs).raw
+      return self.client.chat(model=self.model_name, messages=messages, stream=stream)
     self.load_model()
     return self.chat_completion(messages=messages, stream=stream, **kwargs)
 
