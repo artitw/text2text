@@ -22,6 +22,7 @@ class Assistant(object):
     self.model_name = kwargs.get("model_name", "llama3.1")
     self.load_model()
     self.client = ollama.Client(host=self.model_url)
+    self.llama_index_client = Ollama(model=self.model_name, request_timeout=120.0)
 
   def __del__(self):
     ollama.delete(self.model_name)
@@ -46,11 +47,13 @@ class Assistant(object):
     if is_port_in_use(self.port):
       if schema:
         msgs = [ChatMessage(**m) for m in messages]
-        llama_index_client = Ollama(model=self.model_name, request_timeout=120.0)
-        return llama_index_client.as_structured_llm(schema).chat(messages=msgs).raw
+        return self.llama_index_client.as_structured_llm(schema).chat(messages=msgs).raw
       return self.client.chat(model=self.model_name, messages=messages, stream=stream)
     self.load_model()
     return self.chat_completion(messages=messages, stream=stream, **kwargs)
+
+  def embed(self, texts):
+    return ollama.embed(model=self.model_name, input=texts)
 
   def transform(self, input_lines, src_lang='en', **kwargs):
     return self.chat_completion([{"role": "user", "content": input_lines}])["message"]["content"]

@@ -225,9 +225,11 @@ class Song(BaseModel):
 
 result = asst.chat_completion([
     {"role": "user",  "content": "What is Britney Spears's best song?"}
-], schema=Song, max_new_tokens=16)
-
+], schema=Song) 
 # Song(name='Toxic', artist='Britney Spears')
+
+# Embeddings
+asst.embed(["hello, world!", "this will be embedded"])
 ```
 
 ### Tokenization
