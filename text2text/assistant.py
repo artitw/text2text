@@ -15,7 +15,7 @@ class Assistant(object):
     self.model_name = kwargs.get("model_name", "llama3.1")
     self.load_model()
     self.client = ollama.Client(host=self.model_url)
-    self.llama_index_client = Ollama(model=self.model_name, request_timeout=120.0)
+    self.structured_client = Ollama(model=self.model_name, request_timeout=120.0)
 
   def __del__(self):
     ollama.delete(self.model_name)
@@ -40,20 +40,22 @@ class Assistant(object):
       
     result = ollama.pull(self.model_name)
     if result["status"] != "success":
-      print(f"Cannot pull {self.model_name}.")
+      print(f"Did not pull {self.model_name}.")
     
     time.sleep(10)
-
+    
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
-    try:
-      if schema:
-        msgs = [ChatMessage(**m) for m in messages]
-        return self.llama_index_client.as_structured_llm(schema).chat(messages=msgs).raw
-      return self.client.chat(model=self.model_name, messages=messages, stream=stream)
-    except Exception as e:
-      print(e)
-      self.load_model()
-      return self.chat_completion(messages=messages, stream=stream, **kwargs)
+    if not ollama.ps():
+      result = ollama.pull(self.model_name)
+      if result["status"] == "success":
+        time.sleep(10)
+        return self.chat_completion(messages=messages, stream=stream, **kwargs)
+      raise Exception(f"Cannot pull {self.model_name}. Try restarting.")
+
+    if schema:
+      msgs = [ChatMessage(**m) for m in messages]
+      return self.structured_client.as_structured_llm(schema).chat(messages=msgs).raw
+    return self.client.chat(model=self.model_name, messages=messages, stream=stream)
 
   def embed(self, texts):
     return ollama.embed(model=self.model_name, input=texts)
