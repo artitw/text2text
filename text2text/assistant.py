@@ -45,13 +45,13 @@ class Assistant(object):
     time.sleep(10)
     
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
-    if not ollama.ps():
+    try:
+      ollama.ps()
       result = ollama.pull(self.model_name)
       if result["status"] == "success":
         time.sleep(10)
-        return self.chat_completion(messages=messages, stream=stream, **kwargs)
-      raise Exception(f"Cannot pull {self.model_name}. Try restarting.")
-
+      return self.chat_completion(messages=messages, stream=stream, **kwargs)
+    
     if schema:
       msgs = [ChatMessage(**m) for m in messages]
       return self.structured_client.as_structured_llm(schema).chat(messages=msgs).raw
