@@ -7,13 +7,6 @@ import time
 from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
 
-def is_port_in_use(port):
-  for conn in psutil.net_connections():
-    if conn.status == psutil.CONN_LISTEN and conn.laddr.port == int(port):
-      return True
-  return False
-
-
 class Assistant(object):
   def __init__(self, **kwargs):
     self.host = kwargs.get("host", "http://localhost")
@@ -31,26 +24,36 @@ class Assistant(object):
     return_code = os.system("sudo apt install -q -y lshw")
     if return_code != 0:
       print("Cannot install lshw.")
+
     return_code = os.system("curl -fsSL https://ollama.com/install.sh | sh")
     if return_code != 0:
       print("Cannot install ollama.")
+
     return_code = os.system("sudo systemctl enable ollama")
     if return_code != 0:
       print("Cannot enable ollama.")
+
     sub = subprocess.Popen(["ollama", "serve"])
     return_code = os.system("ollama -v")
     if return_code != 0:
       print("Cannot serve ollama.")
-    ollama.pull(self.model_name)
+      
+    result = ollama.pull(self.model_name)
+    if result["status"] != "success":
+      print(f"Cannot pull {self.model_name}.")
+    
+    time.sleep(10)
 
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
-    if is_port_in_use(self.port):
+    try:
       if schema:
         msgs = [ChatMessage(**m) for m in messages]
         return self.llama_index_client.as_structured_llm(schema).chat(messages=msgs).raw
       return self.client.chat(model=self.model_name, messages=messages, stream=stream)
-    self.load_model()
-    return self.chat_completion(messages=messages, stream=stream, **kwargs)
+    except Exception as e:
+      print(e)
+      self.load_model()
+      return self.chat_completion(messages=messages, stream=stream, **kwargs)
 
   def embed(self, texts):
     return ollama.embed(model=self.model_name, input=texts)
