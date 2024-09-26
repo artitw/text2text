@@ -1,4 +1,5 @@
 import os
+import logging
 from dataclasses import dataclass, field
 
 import torch
@@ -13,7 +14,8 @@ from peft import LoraConfig
 from datasets import DatasetDict, load_dataset
 from huggingface_hub import login, notebook_login
 
-from IPython import get_ipython
+logging.basicConfig(level=logging.INFO,
+                    format='%(levelname)s: %(message)s')
 
 @dataclass
 class DataTrainingArguments:
@@ -76,9 +78,10 @@ class PeftTrainingArguments(TrainingArguments):
         metadata={"help": "Number of steps to log at."})
     push_to_hub: bool = field(
         default=True,
-        metadata={"help": "Uplaod model to Huggingface hub or not."})
+        metadata={"help": "Upload model to Huggingface hub or not."})
     hub_private_repo: bool = field(default=True)
-    # bf16: bool = field(default=True)
+    bf16: bool = field(default=True)
+    fp16: bool = field(default=False)
     learning_rate: float = field(default=1e-4)
     lr_scheduler_type: str = field(
         default="cosine",
@@ -118,6 +121,7 @@ class SFTTrainer:
                 setattr(self.data_args, kwarg, kwargs[kwarg])
             else:
                 raise AttributeError(f"Invalid model or data argument: {kwarg}.")
+        
         # Todo: Add option to login to HF hub or not
             
     def prepare_model(self):
@@ -135,6 +139,17 @@ class SFTTrainer:
             bnb_4bit_quant_storage=torch.uint8
         )
 
+        # lora config
+        self.peft_config = LoraConfig(
+            lora_alpha= self.model_args.lora_alpha,
+            lora_dropout= self.model_args.lora_dropout,
+            r=self.model_args.lora_r,
+            bias="none",
+            task_type="CAUSAL_LM",
+            target_modules=self.model_args.target_modules
+        )
+
+        # Prepare model
         attn = "flash_attention_2" if self.model_args.use_flash_attn else "eager"
         model_dtype = torch.bfloat16 if attn == "flash_attention_2" else torch.float32
 
@@ -145,18 +160,9 @@ class SFTTrainer:
             attn_implementation=attn,
             torch_dtype=model_dtype
         )
-
-        self.peft_config = LoraConfig(
-            lora_alpha= self.model_args.lora_alpha,
-            lora_dropout= self.model_args.lora_dropout,
-            r=self.model_args.lora_r,
-            bias="none",
-            task_type="CAUSAL_LM",
-            target_modules=self.model_args.target_modules
-        )
         
-        # Prepping tokenizer only for chatml
-        self.tokenizer = AutoTokenizer(
+        # Currently preparing tokenizer only for chatml
+        self.tokenizer = AutoTokenizer.from_pretrained(
             self.llm, 
             pad_token="<pad>",
             bos_token="<s>",
@@ -171,8 +177,8 @@ class SFTTrainer:
         self.tokenizer.chat_template = chatml_template
         self.model.resize_token_embeddings(len(self.tokenizer),
                                            pad_to_multiple_of=8)
-        # self.tokenizer.pad_token = self.tokenizer.eos_token
-        # return model, self.tokenizer, peft_config
+        
+        logging.info(f"Prepared {self.llm} model for training with {self.model_args.peft_method}.")
     
     def preprocess_chat(self, samples):
         conversations = samples['messages']
@@ -205,9 +211,8 @@ class SFTTrainer:
 
         self.train_split = raw_datasets["train"]
         self.test_split = raw_datasets["test"]
-        print(f"Size of training split: {len(self.train_split)}, Size of test split: {len(self.test_split)}")
-
-        # return train_split, test_split
+        logging.info(f"Prepared dataset {self.data_args.dataset_name}")
+        logging.info(f"Size of training split: {len(self.train_split)}, Size of test split: {len(self.test_split)}")
 
     def train(self, 
               output_dir:str = None, 
