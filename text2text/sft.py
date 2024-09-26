@@ -182,10 +182,6 @@ class SFTTrainer:
     
     def preprocess_chat(self, samples):
         conversations = samples['messages']
-        for conversation in samples['messages']:
-            batch.append(self.tokenizer.apply_chat_template(
-                conversation,
-                tokenize=False))
         batch = [self.tokenizer.apply_chat_template(conv, 
                                                     tokenize=False,) for conv in conversations]
         return {'text': batch}
@@ -201,7 +197,7 @@ class SFTTrainer:
                                        split=split)
                 raw_datasets[split] = dataset
             except:
-                print(f"Split type {split} not recognized as part of {self.dataset_name}")
+                print(f"Split type {split} not recognized as part of {self.data_args.dataset_name}")
                 pass
         
         raw_datasets = raw_datasets.map(
@@ -212,7 +208,8 @@ class SFTTrainer:
         self.train_split = raw_datasets["train"]
         self.test_split = raw_datasets["test"]
         logging.info(f"Prepared dataset {self.data_args.dataset_name}")
-        logging.info(f"Size of training split: {len(self.train_split)}, Size of test split: {len(self.test_split)}")
+        logging.info(f"Size of training split: {len(self.train_split)}, \
+                     Size of test split: {len(self.test_split)}")
 
     def train(self, 
               output_dir:str = None, 
@@ -240,8 +237,8 @@ class SFTTrainer:
         trainer = SFTTrainer(
             model=self.model,
             tokenizer=self.tokenizer,
-            train_dataset=self.train_dataset,
-            eval_dataset=self.test_dataset,
+            train_dataset=self.train_split,
+            eval_dataset=self.test_split,
             args=self.train_args,
             peft_config=self.peft_config,
             packing=False,
