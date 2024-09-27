@@ -155,7 +155,7 @@ class SFTTrainer:
 
         self.model = AutoModelForCausalLM.from_pretrained(
             self.llm,
-            # quantization_config=bnb_config,
+            quantization_config=bnb_config,
             trust_remote_code=True,
             attn_implementation=attn,
             torch_dtype=model_dtype
