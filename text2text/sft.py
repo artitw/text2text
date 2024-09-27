@@ -1,5 +1,6 @@
 import os
 import logging
+from typing import List
 from dataclasses import dataclass, field
 
 import torch
@@ -121,7 +122,6 @@ class SFTTrainer:
                 setattr(self.data_args, kwarg, kwargs[kwarg])
             else:
                 raise AttributeError(f"Invalid model or data argument: {kwarg}.")
-        
         # Todo: Add option to login to HF hub or not
             
     def prepare_model(self):
@@ -155,7 +155,7 @@ class SFTTrainer:
 
         self.model = AutoModelForCausalLM.from_pretrained(
             self.llm,
-            quantization_config=bnb_config,
+            # quantization_config=bnb_config,
             trust_remote_code=True,
             attn_implementation=attn,
             torch_dtype=model_dtype
@@ -191,7 +191,7 @@ class SFTTrainer:
         Prepare training (and eval) dataset.
         """
         raw_datasets = DatasetDict()
-        for split in self.data_args.splits:
+        for split in self.data_args.splits.split(","):
             try:
                 dataset = load_dataset(self.data_args.dataset_name, 
                                        split=split)
