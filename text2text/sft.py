@@ -1,6 +1,5 @@
 import os
 import logging
-from typing import List
 from dataclasses import dataclass, field
 
 import torch
@@ -40,15 +39,19 @@ class PeftModelArguments:
     peft_method: str = field(
         default="qlora",
         metadata={"help": "PEFT method to use. Only supports QLoRA currently."})
+    model_dtype: str = field(
+        default="fp16",
+        metadata={"help": "Load model in this dtype." 
+                  "fp16 for colab's T4, can be modified for other GPU machines."})
     lora_alpha: int = field(
         default=16,
-        metadata={"help": "The alpha parameter for Lora scaling."})
+        metadata={"help": "The alpha parameter for LoRA scaling."})
     lora_dropout: float = field(
         default=0.1,
-        metadata={"help": "The dropout probability for Lora layers."})
+        metadata={"help": "The dropout probability for LoRA layers."})
     lora_r: float = field(
         default=8,
-        metadata={"help": "Lora attention dimension (Rank)."})
+        metadata={"help": "LoRA attention dimension (Rank)."})
     target_modules: str = field(
         default="all-linear",
         metadata={"help": ("Modules to apply to adapter to."
@@ -108,35 +111,32 @@ chatml_template = \
 
 class SFTTrainer:
     def __init__(self, 
-                 model_name: str,
-                 **kwargs):
-        self.llm = model_name
-        self.model_args = PeftModelArguments()
-        self.data_args = DataTrainingArguments()
-
-        # Update argument if parsed
-        for kwarg in kwargs:
-            if hasattr(self.model_args, kwarg):
-                setattr(self.model_args, kwarg, kwargs[kwarg])
-            elif hasattr(self.data_args, kwarg):
-                setattr(self.data_args, kwarg, kwargs[kwarg])
-            else:
-                raise AttributeError(f"Invalid model or data argument: {kwarg}.")
+                 use_hf: bool = True):
         # Todo: Add option to login to HF hub or not
+        pass
             
-    def prepare_model(self):
+    def prepare_model(self,
+                      model_name: str,
+                      **kwargs):
         """
         Prepare config and model according to peft method.
         Currently only works for QLoRA.
         """
 
+        self.llm = model_name
+        self.model_args = PeftModelArguments()
+        for kwarg in kwargs:
+            if hasattr(self.model_args, kwarg):
+                setattr(self.model_args, kwarg, kwargs[kwarg])
+            else:
+                raise AttributeError(f"Invalid model argument: {kwarg}.")
+
         # if self.model_args.peft_method == "qlora":
         bnb_config = BitsAndBytesConfig(
             load_in_4bit=True,
             bnb_4bit_quant_type="nf4",
-            bnb_4bit_compute_dtype=torch.bfloat16,
-            bnb_4bit_use_double_quant=True,
-            bnb_4bit_quant_storage=torch.uint8
+            bnb_4bit_compute_dtype=torch.bfloat16, # Compute dype for speedup
+            bnb_4bit_use_double_quant=True, # Nested quantization
         )
 
         # lora config
@@ -151,7 +151,8 @@ class SFTTrainer:
 
         # Prepare model
         attn = "flash_attention_2" if self.model_args.use_flash_attn else "eager"
-        model_dtype = torch.bfloat16 if attn == "flash_attention_2" else torch.float32
+        model_dtype = getattr(torch, self.model_args.model_dtype)
+        # model_dtype = torch.bfloat16 if attn == "flash_attention_2" else torch.float16
 
         self.model = AutoModelForCausalLM.from_pretrained(
             self.llm,
@@ -186,10 +187,18 @@ class SFTTrainer:
                                                     tokenize=False,) for conv in conversations]
         return {'text': batch}
 
-    def prepare_dataset(self):
+    def prepare_dataset(self, **kwargs):
         """
         Prepare training (and eval) dataset.
         """
+        self.data_args = DataTrainingArguments()
+
+        for kwarg in kwargs:
+            if hasattr(self.data_args, kwarg):
+                setattr(self.data_args, kwarg, kwargs[kwarg])
+            else:
+                raise AttributeError(f"Invalid data argument: {kwarg}.")
+
         raw_datasets = DatasetDict()
         for split in self.data_args.splits.split(","):
             try:
@@ -223,9 +232,8 @@ class SFTTrainer:
                 setattr(self.train_args, kwarg, kwargs[kwarg])
             else:
                 raise AttributeError(f"Invalid training argument: {kwarg}.")
-            
-        self.prepare_model()
-        self.prepare_dataset()
+        # self.prepare_model()
+        # self.prepare_dataset()
 
         # Gradient checkpointing
         self.model.config.use_cache = not self.train_args.gradient_checkpointing
