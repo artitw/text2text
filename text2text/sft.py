@@ -40,7 +40,7 @@ class PeftModelArguments:
         default="qlora",
         metadata={"help": "PEFT method to use. Only supports QLoRA currently."})
     model_dtype: str = field(
-        default="fp16",
+        default="float16",
         metadata={"help": "Load model in this dtype." 
                   "fp16 for colab's T4, can be modified for other GPU machines."})
     lora_alpha: int = field(
