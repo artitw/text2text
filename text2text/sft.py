@@ -11,7 +11,7 @@ from transformers import (
 from trl import SFTTrainer
 from peft import LoraConfig
 
-from datasets import DatasetDict, load_dataset
+from datasets import IterableDatasetDict, load_dataset
 from huggingface_hub import login, notebook_login
 
 logging.basicConfig(level=logging.INFO,
@@ -199,7 +199,7 @@ class SFTTrainer:
             else:
                 raise AttributeError(f"Invalid data argument: {kwarg}.")
 
-        raw_datasets = DatasetDict()
+        raw_datasets = IterableDatasetDict()
         for split in self.data_args.splits.split(","):
             # Try: (1)removing columns, (2)streaming to solve oom issue
             dataset = load_dataset(self.data_args.dataset_name, 
