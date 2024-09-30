@@ -203,14 +203,13 @@ class SFTTrainer:
         for split in self.data_args.splits.split(","):
             # Try: (1)removing columns, (2)streaming to solve oom issue
             dataset = load_dataset(self.data_args.dataset_name, 
-                                    split=split,)
-                                #    streaming=True)
+                                   split=split,
+                                   streaming=True)
             raw_datasets[split] = dataset
         
         raw_datasets = raw_datasets.map(
             self.preprocess_chat,
-            batched=True,
-            remove_columns=raw_datasets["train"].column_names)
+            batched=True)
 
         self.train_split = raw_datasets["train"]
         self.test_split = raw_datasets["test"]
