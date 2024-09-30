@@ -8,7 +8,7 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     BitsAndBytesConfig) 
-from trl import SFTTrainer
+from trl import SFTConfig, SFTTrainer
 from peft import LoraConfig
 
 from datasets import IterableDatasetDict, load_dataset
@@ -30,6 +30,8 @@ class DataTrainingArguments:
         metadata={"help": "Field in dataset to use as input text."})
     splits: str = field(default="train,test")
     max_seq_length: int = field(default=2048)
+    append_concat_token: bool = field(default=False)
+    add_special_tokens: bool = field(default=False)
 
 @dataclass
 class PeftModelArguments:
@@ -67,7 +69,7 @@ class PeftModelArguments:
         metadata={"help": "Flash attention for training."})
 
 @dataclass
-class PeftTrainingArguments(TrainingArguments):
+class PeftTrainingArguments(SFTConfig):
     """
     Stores t2t default values for training args.
     """
@@ -244,15 +246,15 @@ class SFTuner:
             tokenizer=self.tokenizer,
             train_dataset=self.train_split,
             eval_dataset=self.test_split,
-            args=self.train_args,
             peft_config=self.peft_config,
             packing=False,
-            dataset_kwargs={
-                "append_concat_token": False,
-                "add_special_tokens": False
-            },
             dataset_text_field=self.data_args.text_field,
-            max_seq_length=self.data_args.max_seq_length)
+            max_seq_length=self.data_args.max_seq_length,
+            args=self.train_args,
+            dataset_kwargs={
+                "append_concat_token": self.data_args.append_concat_token,
+                "add_special_tokens": self.data_args.add_special_tokens
+            })
 
         trainer.accelerator.print(f"{trainer.model}")
         if hasattr(trainer.model, "print_trainable_parameters"):
