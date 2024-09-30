@@ -214,8 +214,10 @@ class SFTTrainer:
         self.train_split = raw_datasets["train"]
         self.test_split = raw_datasets["test"]
         logging.info(f"Prepared dataset {self.data_args.dataset_name}")
-        logging.info(f"Size of training split: {len(self.train_split)}, \
-                     Size of test split: {len(self.test_split)}")
+        # logging.info(f"Size of training split: {len(self.train_split)}, \
+        #              Size of test split: {len(self.test_split)}")
+        
+        print(f"Sample from train set: \n{list(self.train_split.take(1))}")
 
     def train(self, 
               output_dir:str = None, 
