@@ -109,7 +109,7 @@ chatml_template = \
         "{% endif %}"\
     "{% endfor %}"
 
-class SFTTrainer:
+class SFTuner:
     def __init__(self, 
                  use_hf: bool = True):
         # Todo: Add option to login to HF hub or not
@@ -201,7 +201,6 @@ class SFTTrainer:
 
         raw_datasets = IterableDatasetDict()
         for split in self.data_args.splits.split(","):
-            # Try: (1)removing columns, (2)streaming to solve oom issue
             dataset = load_dataset(self.data_args.dataset_name, 
                                    split=split,
                                    streaming=True)
@@ -218,6 +217,7 @@ class SFTTrainer:
         #              Size of test split: {len(self.test_split)}")
         
         print(f"Sample from train set: \n{list(self.train_split.take(1))}")
+        return self.train_split
 
     def train(self, 
               output_dir:str = None, 
@@ -231,8 +231,6 @@ class SFTTrainer:
                 setattr(self.train_args, kwarg, kwargs[kwarg])
             else:
                 raise AttributeError(f"Invalid training argument: {kwarg}.")
-        # self.prepare_model()
-        # self.prepare_dataset()
 
         # Gradient checkpointing
         self.model.config.use_cache = not self.train_args.gradient_checkpointing
