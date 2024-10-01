@@ -11,7 +11,7 @@ from transformers import (
 from trl import SFTConfig, SFTTrainer
 from peft import LoraConfig
 
-from datasets import IterableDatasetDict, load_dataset
+from datasets import DatasetDict, IterableDatasetDict, load_dataset
 from huggingface_hub import login, notebook_login
 
 logging.basicConfig(level=logging.INFO,
@@ -154,7 +154,6 @@ class SFTuner:
         # Prepare model
         attn = "flash_attention_2" if self.model_args.use_flash_attn else "eager"
         model_dtype = getattr(torch, self.model_args.model_dtype)
-        # model_dtype = torch.bfloat16 if attn == "flash_attention_2" else torch.float16
 
         self.model = AutoModelForCausalLM.from_pretrained(
             self.llm,
@@ -189,7 +188,9 @@ class SFTuner:
                                                     tokenize=False,) for conv in conversations]
         return {'text': batch}
 
-    def prepare_dataset(self, **kwargs):
+    def prepare_dataset(self, 
+                        stream: bool = False,
+                        **kwargs):
         """
         Prepare training (and eval) dataset.
         """
@@ -201,15 +202,23 @@ class SFTuner:
             else:
                 raise AttributeError(f"Invalid data argument: {kwarg}.")
 
-        raw_datasets = IterableDatasetDict()
-        for split in self.data_args.splits.split(","):
-            dataset = load_dataset(self.data_args.dataset_name, 
-                                   split=split,
-                                   streaming=True)
-            raw_datasets[split] = dataset
+        if stream:
+            raw_datasets = IterableDatasetDict()
+            for split in self.data_args.splits.split(","):
+                dataset = load_dataset(self.data_args.dataset_name, 
+                                    split=split,
+                                    streaming=True)
+                raw_datasets[split] = dataset
+        else:
+            raw_datasets = DatasetDict()
+            for split in self.data_args.splits.split(","):
+                dataset = load_dataset(self.data_args.dataset_name, 
+                                    split=split)
+                raw_datasets[split] = dataset
         
         raw_datasets = raw_datasets.map(
             self.preprocess_chat,
+            remove_columns=raw_datasets["train"].column_names,
             batched=True)
 
         self.train_split = raw_datasets["train"]
@@ -218,8 +227,7 @@ class SFTuner:
         # logging.info(f"Size of training split: {len(self.train_split)}, \
         #              Size of test split: {len(self.test_split)}")
         
-        print(f"Sample from train set: \n{list(self.train_split.take(1))}")
-        return self.train_split
+        print(f"Sample text train set: \n{list(self.train_split.take(1))[0]['text']}")
 
     def train(self, 
               output_dir:str = None, 
