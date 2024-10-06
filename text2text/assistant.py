@@ -11,7 +11,7 @@ class Assistant(object):
     self.host = kwargs.get("host", "http://localhost")
     self.port = kwargs.get("port", 11434)
     self.model_url = f"{self.host}:{self.port}"
-    self.model_name = kwargs.get("model_name", "llama3.1")
+    self.model_name = kwargs.get("model_name", "llama3.2")
     self.load_model()
     self.client = ollama.Client(host=self.model_url)
     self.structured_client = Ollama(model=self.model_name, request_timeout=120.0)

@@ -20,9 +20,6 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
   * [Index](https://github.com/artitw/text2text#index)
   * [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance)
   * [Translation](https://github.com/artitw/text2text#translation)
-  * [Question Answering](https://github.com/artitw/text2text#question-answering)
-  * [Question Generation](https://github.com/artitw/text2text#question-generation)
-  * [Summarization](https://github.com/artitw/text2text#summarization)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
   * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
   * [Identification](https://github.com/artitw/text2text#identification)
@@ -60,10 +57,7 @@ Module Importing | `import text2text as t2t` | Libraries imported
 [BM25](https://github.com/artitw/text2text#bm25) | `t2t.Bm25er().transform(["Hello, World!"])` | `[{'!': 0.3068528194400547, ',': 0.3068528194400547, '▁Hello': 0.3068528194400547, '▁World': 0.3068528194400547}]`
 [Indexer](https://github.com/artitw/text2text#index) | `index = t2t.Indexer().transform(["Hello, World!"])` | Index object for information retrieval
 [Translation](https://github.com/artitw/text2text#translation) | `t2t.Translater().transform(["Hello, World!"], src_lang="en, tgt_lang="zh")` | `['你好,世界!']`
-[Question Generation](https://github.com/artitw/text2text#question-generation) | `t2t.Questioner().transform(["Hello, World!"], src_lang="en)` | `[('What is the name of the world you are in?', 'The world')]`
-[Summarization](https://github.com/artitw/text2text#summarization) | `t2t.Summarizer().transform(["Hello, World!"], src_lang="en)` | `["World ' s largest world"]`
 [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `t2t.Variator().transform(["Hello, World!"], src_lang="en)` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
-[Question Answering](https://github.com/artitw/text2text#question-answering) | `t2t.Answerer().transform(["Hello, World! [SEP] Hello, what?"], src_lang="en")` | `['World']`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Measurer().transform(["Hello, World! [SEP] Hello, what?"])` | `[2]`
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Fitter().transform(["Hello, World! [TGT] Hello, what?"])` | Finetuned model saved
 [Identification](https://github.com/artitw/text2text#identification) | `t2t.Identifier().transform(["Aj keď sa Buzz Aldrin stal až „druhým človekom“..."])` | `['sk', 'Slovak']`
@@ -225,7 +219,7 @@ class Song(BaseModel):
 
 result = asst.chat_completion([
     {"role": "user",  "content": "What is Britney Spears's best song?"}
-], schema=Song) 
+], schema=Song)
 # Song(name='Toxic', artist='Britney Spears')
 
 # Embeddings
@@ -455,76 +449,6 @@ t2t.Translator().transform(
 ```
 
 </details>
-
-### Question Answering
-Question must follow context with ` [SEP] ` in between.
-```
-t2t.Answerer().transform([
-  "Hello, this is Text2Text! [SEP] What is this?",
-  "It works very well. It's awesome! [SEP] How is it?"
-])
-
-t2t.Answerer().transform([
-  "很喜欢陈慧琳唱歌。[SEP] 喜欢做什么?"
-], src_lang="zh")
-
-# Answers
-['Text2Text', 'awesome']
-['唱歌']
-```
-
-### Question Generation
-```
-t2t.Questioner().transform(["很喜欢陈慧琳唱歌。"], src_lang='zh')
-t2t.Questioner().transform([
-  bio_str,
-  bio_str,
-  bio_str,
-  bio_str,
-  bio_str,
-  "I will go to school today to take my math exam.",
-  "I will go to school today to take my math exam.",
-  "Tomorrow is my cousin's birthday. He will turn 24 years old.",
-  notre_dame_str,
-  bacteria_str,
-  bacteria_str,
-  bacteria_str,
-  "I will go to school today to take my math exam. [SEP] school",
-  "I will go to school today to take my math exam. [SEP] exam",
-  "I will go to school today to take my math exam. [SEP] math",
-], src_lang='en')
-
-```
-Note that the last three answers were controlled by specifying the `[SEP]` token in the input above.
-```
-# Questions
-[('我喜欢做什么?', '唱歌')]
-[('What is biology the science that studies?', 'life'),
- ('What is the study of life?', 'studies'),
- ('What would you find the question " life "?', 'sound'),
- ('What can viruses do to living organisms?', 'attack'),
- ('What is the study of life?', 'studies'),
- ('Where will I go to to take my math exam?', 'school'),
- ('Where will I go to to take my math exam?', 'school'),
- ("What will my cousin's birthday?", 'turn'),
- ('What type of oversight does The Observer not have?', 'editorial'),
- ('What shape can bacteria be found in?', 'rods'),
- ('What is the typical length of bacteria?', 'micrometres'),
- ('What is the typical length of bacteria?', 'micrometres'),
- ('Where will I go to to take my math exam?', 'school'),
- ('What will I take after school?', 'exam'),
- ('What exam will I take?', 'math')]
-```
-
-### Summarization
-```
-t2t.Summarizer().transform([notre_dame_str, bacteria_str, bio_str], src_lang='en')
-
-# Summaries
-["Notre Dame's students run nine student - run outlets . [X_SEP] Scholastic magazine claims to be the oldest continuous collegiate publication in the United States . [X_SEP] The Observer is an independent publication .",
- 'Bacteria were among the first life forms to appear on Earth .',
- 'biology is the science that studies life .']
-```
 
 ### Data Augmentation / Back-Translation
 Back-translations useful for augmenting training data
