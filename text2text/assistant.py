@@ -67,7 +67,7 @@ class Assistant(object):
       response = requests.get("https://ollama.com/install.sh")
       install_script = response.text
       result = run_sh(install_script)
-      if "Install complete." not in result and "will run in CPU-only mode." not in result:
+      if result and "Install complete." not in result and "will run in CPU-only mode." not in result:
         raise Exception(result)
 
       self.ollama_serve_proc = subprocess.Popen(["ollama", "serve"])
