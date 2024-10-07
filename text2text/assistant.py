@@ -47,14 +47,18 @@ class Assistant(object):
     self.structured_client = Ollama(model=self.model_name, request_timeout=120.0)
 
   def __del__(self):
-    ollama.delete(self.model_name)
-    if self.ollama_serve_proc:
-      self.ollama_serve_proc.kill()
-      self.ollama_serve_proc = None
+    try:
+      if ollama_version():
+        ollama.delete(self.model_name)
+      if self.ollama_serve_proc:
+        self.ollama_serve_proc.kill()
+        self.ollama_serve_proc = None
+    except Exception as e:
+      warnings.warn(str(e))
 
   def load_model(self):
     if not ollama_version():
-      self.__del__(self)
+      self.__del__()
 
       return_code = os.system("sudo apt install -q -y lshw")
       if return_code != 0:
