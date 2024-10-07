@@ -63,7 +63,7 @@ class Assistant(object):
       result = os.system(
         "curl -fsSL https://ollama.com/install.sh | sh"
       )
-      if result!=0:
+      if result != 0:
         raise Exception("Cannot install ollama")
 
       self.ollama_serve_proc = subprocess.Popen(["ollama", "serve"])
@@ -79,6 +79,8 @@ class Assistant(object):
     result = ollama.pull(self.model_name)
     if result["status"] != "success":
       raise Exception(f"Did not pull {self.model_name}.")
+    
+    ollama_run_proc = subprocess.Popen(["ollama", "run", self.model_name])
         
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
     try:
@@ -86,6 +88,7 @@ class Assistant(object):
       if not result or not result.get("models"):
         result = ollama.pull(self.model_name)
         if result["status"] == "success":
+          ollama_run_proc = subprocess.Popen(["ollama", "run", self.model_name])
           return self.chat_completion(messages=messages, stream=stream, **kwargs)
         raise Exception(f"Did not pull {self.model_name}. Try restarting.")
     except Exception as e:
