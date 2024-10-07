@@ -84,12 +84,12 @@ class Assistant(object):
       if not result or not result.get("models"):
         warnings.warn("No model loaded. Retrying...")
         self.load_model()
-        return self.chat_completion(messages=messages, stream=stream, **kwargs)
+        return self.chat_completion(messages=messages, stream=stream, schema=schema, **kwargs)
     except Exception as e:
       warnings.warn(str(e))
       warnings.warn("Retrying...")
       self.load_model()
-      return self.chat_completion(messages=messages, stream=stream, **kwargs)
+      return self.chat_completion(messages=messages, stream=stream, schema=schema, **kwargs)
     
     if schema:
       msgs = [ChatMessage(**m) for m in messages]
