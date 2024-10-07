@@ -61,7 +61,7 @@ class Assistant(object):
     return self.client.chat(model=self.model_name, messages=messages, stream=stream)
 
   def embed(self, texts):
-    return ollama.embed(model=self.model_name, input=texts)
+    return ollama.embed(model=self.model_name, input=texts).get("embeddings", [])
 
   def transform(self, input_lines, src_lang='en', **kwargs):
     return self.chat_completion([{"role": "user", "content": input_lines}])["message"]["content"]
