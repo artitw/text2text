@@ -4,7 +4,7 @@ import psutil
 import time
 import subprocess
 import warnings
-import importlib.resources
+import requests
 
 import text2text as t2t
 
@@ -64,12 +64,11 @@ class Assistant(object):
       if return_code != 0:
         raise Exception("Cannot install lshw.")
 
-      inp_file = importlib.resources.files(t2t.utils) / 'ollama_install.sh'
-      with inp_file.open("rt") as f:
-        install_script = f.read()
-        result = run_sh(install_script)
-        if "Install complete." not in result and "will run in CPU-only mode." not in result:
-          raise Exception(result)
+      response = requests.get("https://ollama.com/install.sh")
+      install_script = response.text
+      result = run_sh(install_script)
+      if "Install complete." not in result and "will run in CPU-only mode." not in result:
+        raise Exception(result)
 
       self.ollama_serve_proc = subprocess.Popen(["ollama", "serve"])
       time.sleep(1)
