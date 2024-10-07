@@ -4,6 +4,7 @@ import psutil
 import time
 import subprocess
 import warnings
+import importlib.resources
 
 from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
@@ -14,8 +15,27 @@ def ollama_version():
     if result.startswith("ollama version "):
       return result.replace("ollama version ", "")
   except Exception as e:
-    warnings.warn(str(e))
+    pass
   return ""
+
+def run_sh(script_string):
+  try:
+    process = subprocess.Popen(
+        ['sh'],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True  # Treat input/output as text
+    )
+    output, error = process.communicate(input=script_string)
+
+    if process.returncode == 0:
+        return output
+    else:
+        return error
+
+  except Exception as e:
+      return str(e)
 
 class Assistant(object):
   def __init__(self, **kwargs):
@@ -42,18 +62,20 @@ class Assistant(object):
       if return_code != 0:
         raise Exception("Cannot install lshw.")
 
-      return_code = os.system("curl -fsSL https://ollama.com/install.sh | sh")
-      if return_code != 0:
-        raise Exception("Cannot install ollama.")
-
-      return_code = os.system("sudo systemctl enable ollama")
-      if return_code != 0:
-        raise Exception("Cannot enable ollama.")
+      resource_path = 'ollama_install.sh'
+      with importlib.resources.open_text('text2text.utils', resource_path) as f:
+          install_script = f.read()
+          result = run_sh(install_script)
+          if "Install complete." not in result and "will run in CPU-only mode." not in result:
+            raise Exception(result)
 
       self.ollama_serve_proc = subprocess.Popen(["ollama", "serve"])
       time.sleep(1)
 
-      result = subprocess.check_output(["ollama", "-v"], stderr=subprocess.STDOUT).decode("utf-8")
+      result = subprocess.check_output(
+        ["ollama", "-v"], 
+        stderr=subprocess.STDOUT
+      ).decode("utf-8")
       if not result.startswith("ollama version"):
         raise Exception(result)
       
