@@ -48,13 +48,13 @@ class Assistant(object):
 
   def __del__(self):
     ollama.delete(self.model_name)
-    self.ollama_serve_proc.kill()
+    if self.ollama_serve_proc:
+      self.ollama_serve_proc.kill()
+      self.ollama_serve_proc = None
 
   def load_model(self):
     if not ollama_version():
-      if self.ollama_serve_proc:
-        self.ollama_serve_proc.kill()
-        self.ollama_serve_proc = None
+      self.__del__(self)
 
       return_code = os.system("sudo apt install -q -y lshw")
       if return_code != 0:
