@@ -9,9 +9,12 @@ from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
 
 def ollama_version():
-  result = subprocess.check_output(["ollama", "-v"], stderr=subprocess.STDOUT).decode("utf-8")
-  if result.startswith("ollama version "):
-    return result.replace("ollama version ", "")
+  try:
+    result = subprocess.check_output(["ollama", "-v"], stderr=subprocess.STDOUT).decode("utf-8")
+    if result.startswith("ollama version "):
+      return result.replace("ollama version ", "")
+  except Exception as e:
+    warnings.warn(str(e))
   return ""
 
 class Assistant(object):
