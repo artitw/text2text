@@ -6,7 +6,7 @@ import subprocess
 import warnings
 import importlib.resources
 
-from . import utils
+import text2text as t2t
 
 from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
@@ -64,7 +64,7 @@ class Assistant(object):
       if return_code != 0:
         raise Exception("Cannot install lshw.")
 
-      inp_file = importlib.resources.files(utils) / 'ollama_install.sh'
+      inp_file = importlib.resources.files(t2t.utils) / 'ollama_install.sh'
       with inp_file.open("rt") as f:
         install_script = f.read()
         result = run_sh(install_script)
