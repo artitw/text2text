@@ -69,28 +69,22 @@ class Assistant(object):
       self.ollama_serve_proc = subprocess.Popen(["ollama", "serve"])
       time.sleep(1)
 
-      result = subprocess.check_output(
-        ["ollama", "-v"], 
-        stderr=subprocess.STDOUT
-      ).decode("utf-8")
-      if not result.startswith("ollama version"):
-        raise Exception(result)
+      if not ollama_version():
+        raise Exception("Cannot serve ollama")
       
     result = ollama.pull(self.model_name)
-    if result["status"] != "success":
-      raise Exception(f"Did not pull {self.model_name}.")
-    
-    ollama_run_proc = subprocess.Popen(["ollama", "run", self.model_name])
+    if result["status"] == "success":
+      ollama_run_proc = subprocess.Popen(["ollama", "run", self.model_name])
+    else:
+      raise Exception(f"Did not pull {self.model_name}. Try restarting.")
         
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
     try:
       result = ollama.ps()
       if not result or not result.get("models"):
-        result = ollama.pull(self.model_name)
-        if result["status"] == "success":
-          ollama_run_proc = subprocess.Popen(["ollama", "run", self.model_name])
-          return self.chat_completion(messages=messages, stream=stream, **kwargs)
-        raise Exception(f"Did not pull {self.model_name}. Try restarting.")
+        warnings.warn("No model loaded. Retrying...")
+        self.load_model()
+        return self.chat_completion(messages=messages, stream=stream, **kwargs)
     except Exception as e:
       warnings.warn(str(e))
       warnings.warn("Retrying...")
