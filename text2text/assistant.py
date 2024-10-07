@@ -1,12 +1,8 @@
 import os
 import ollama
-import psutil
 import time
 import subprocess
 import warnings
-import requests
-
-import text2text as t2t
 
 from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
@@ -64,11 +60,11 @@ class Assistant(object):
       if return_code != 0:
         raise Exception("Cannot install lshw.")
 
-      response = requests.get("https://ollama.com/install.sh")
-      install_script = response.text
-      result = run_sh(install_script)
-      if result and "Install complete." not in result and "will run in CPU-only mode." not in result:
-        raise Exception(result)
+      result = os.system(
+        "curl -fsSL https://ollama.com/install.sh | sh"
+      )
+      if result!=0:
+        raise Exception("Cannot install ollama")
 
       self.ollama_serve_proc = subprocess.Popen(["ollama", "serve"])
       time.sleep(1)
