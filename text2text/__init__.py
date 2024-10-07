@@ -9,6 +9,7 @@ from .counter import Counter
 from .tfidfer import Tfidfer
 from .bm25er import Bm25er
 from .indexer import Indexer
+from .rag_assistant import RagAssistant
 from .variator import Variator
 from .identifier import Identifier
 from .server import Server

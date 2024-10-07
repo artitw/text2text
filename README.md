@@ -52,7 +52,7 @@ Module Importing | `import text2text as t2t` | Libraries imported
 [Assistant](https://github.com/artitw/text2text#assistant) | `t2t.Assistant().transform("Describe Text2Text in a few words: ")` | `['Text2Text is an AI-powered text generation tool that creates coherent and continuous text based on prompts.']`
 [Language Model Setting](https://github.com/artitw/text2text#byot-bring-your-own-translator) | `t2t.Transformer.PRETRAINED_TRANSLATOR = "facebook/m2m100_418M"` | Change from default
 [Tokenization](https://github.com/artitw/text2text#tokenization) | `t2t.Tokenizer().transform(["Hello, World!"])` | `[['▁Hello', ',', '▁World', '!']]`
-[Embedding](https://github.com/artitw/text2text#embedding--vectorization) | `t2t.Vectorizer().transform(["Hello, World!"])` | `array([[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]], dtype=float32)`
+[Embedding](https://github.com/artitw/text2text#embedding--vectorization) | `t2t.Vectorizer().transform(["Hello, World!"])` | `[[0.18745188, 0.05658336, ..., 0.6332584 , 0.43805206]]`
 [TF-IDF](https://github.com/artitw/text2text#tf-idf) | `t2t.Tfidfer().transform(["Hello, World!"])` | `[{'!': 0.5, ',': 0.5, '▁Hello': 0.5, '▁World': 0.5}]`
 [BM25](https://github.com/artitw/text2text#bm25) | `t2t.Bm25er().transform(["Hello, World!"])` | `[{'!': 0.3068528194400547, ',': 0.3068528194400547, '▁Hello': 0.3068528194400547, '▁World': 0.3068528194400547}]`
 [Indexer](https://github.com/artitw/text2text#index) | `index = t2t.Indexer().transform(["Hello, World!"])` | Index object for information retrieval
@@ -249,12 +249,12 @@ t2t.Vectorizer().transform([
 ])
 
 # Embeddings
-array([[-0.00352954,  0.0260059 ,  0.00407429, ..., -0.04830331,
-        -0.02540749, -0.00924972],
-       [ 0.00043362,  0.00249816,  0.01755436, ...,  0.04451273,
-         0.05118701,  0.01895813],
-       [-0.03563676, -0.04856304,  0.00518898, ..., -0.00311068,
-         0.00071953, -0.00216325]])
+[[-0.00352954,  0.0260059 ,  0.00407429, ..., -0.04830331,
+  -0.02540749, -0.00924972],
+  [ 0.00043362,  0.00249816,  0.01755436, ...,  0.04451273,
+    0.05118701,  0.01895813],
+  [-0.03563676, -0.04856304,  0.00518898, ..., -0.00311068,
+    0.00071953, -0.00216325]]
 ```
 
 ### TF-IDF

@@ -7,6 +7,7 @@ class Handler(object):
 
   EXPOSED_TRANSFORMERS = {
     "assist": t2t.Assistant,
+    "rag_assist": t2t.RagAssistant,
     "bm25": t2t.Bm25er,
     "count": t2t.Counter,
     "identify":t2t.Identifier,

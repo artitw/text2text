@@ -1,10 +1,18 @@
 import os
 import ollama
 import psutil
+import time
 import subprocess
+import warnings
 
 from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
+
+def ollama_version():
+  result = subprocess.check_output(["ollama", "-v"], stderr=subprocess.STDOUT).decode("utf-8")
+  if result.startswith("ollama version "):
+    return result.replace("ollama version ", "")
+  return ""
 
 class Assistant(object):
   def __init__(self, **kwargs):
@@ -12,30 +20,39 @@ class Assistant(object):
     self.port = kwargs.get("port", 11434)
     self.model_url = f"{self.host}:{self.port}"
     self.model_name = kwargs.get("model_name", "llama3.2")
+    self.ollama_serve_proc = None
     self.load_model()
     self.client = ollama.Client(host=self.model_url)
     self.structured_client = Ollama(model=self.model_name, request_timeout=120.0)
 
   def __del__(self):
     ollama.delete(self.model_name)
+    self.ollama_serve_proc.kill()
 
   def load_model(self):
-    return_code = os.system("sudo apt install -q -y lshw")
-    if return_code != 0:
-      raise Exception("Cannot install lshw.")
+    if not ollama_version():
+      if self.ollama_serve_proc:
+        self.ollama_serve_proc.kill()
+        self.ollama_serve_proc = None
 
-    return_code = os.system("curl -fsSL https://ollama.com/install.sh | sh")
-    if return_code != 0:
-      raise Exception("Cannot install ollama.")
+      return_code = os.system("sudo apt install -q -y lshw")
+      if return_code != 0:
+        raise Exception("Cannot install lshw.")
 
-    return_code = os.system("sudo systemctl enable ollama")
-    if return_code != 0:
-      raise Exception("Cannot enable ollama.")
+      return_code = os.system("curl -fsSL https://ollama.com/install.sh | sh")
+      if return_code != 0:
+        raise Exception("Cannot install ollama.")
 
-    sub = subprocess.Popen(["ollama", "serve"])
-    return_code = os.system("ollama -v")
-    if return_code != 0:
-      raise Exception("Cannot serve ollama.")
+      return_code = os.system("sudo systemctl enable ollama")
+      if return_code != 0:
+        raise Exception("Cannot enable ollama.")
+
+      self.ollama_serve_proc = subprocess.Popen(["ollama", "serve"])
+      time.sleep(1)
+
+      result = subprocess.check_output(["ollama", "-v"], stderr=subprocess.STDOUT).decode("utf-8")
+      if not result.startswith("ollama version"):
+        raise Exception(result)
       
     result = ollama.pull(self.model_name)
     if result["status"] != "success":
@@ -44,14 +61,14 @@ class Assistant(object):
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
     try:
       result = ollama.ps()
-      if not result:
+      if not result or not result.get("models"):
         result = ollama.pull(self.model_name)
         if result["status"] == "success":
           return self.chat_completion(messages=messages, stream=stream, **kwargs)
         raise Exception(f"Did not pull {self.model_name}. Try restarting.")
     except Exception as e:
-      print(str(e))
-      print("Retrying...")
+      warnings.warn(str(e))
+      warnings.warn("Retrying...")
       self.load_model()
       return self.chat_completion(messages=messages, stream=stream, **kwargs)
     
