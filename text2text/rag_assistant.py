@@ -1,9 +1,22 @@
 import text2text as t2t
 
-import urllib.parse
-import urllib.request
-
+import requests
 import warnings
+import urllib.parse
+
+from bs4 import BeautifulSoup
+
+def get_cleaned_html(url):
+  r = requests.get(url)
+  soup = BeautifulSoup(r.text, 'html.parser')
+
+  # Remove unwanted tags
+  for script in soup(['script', 'style']):
+      script.decompose()
+
+  cleaned_text = soup.get_text(separator=' ', strip=True)
+
+  return cleaned_text
 
 def is_valid_url(url):
   try:
@@ -22,8 +35,7 @@ class RagAssistant(t2t.Assistant):
     for u in urls:
       if is_valid_url(u):
         try:
-          with urllib.request.urlopen(u) as f:
-            texts.append(f.read())
+          texts.append(get_cleaned_html(u))
         except Exception as e:
           warnings.warn(f"Skipping URL with errors: {u}")
       else:
@@ -31,7 +43,9 @@ class RagAssistant(t2t.Assistant):
 
     if schema:
       for t in texts:
-        res = t2t.Assistant.chat_completion(self, [{"role": "user",  "content": t}], schema=schema)
+        fields = ", ".join(schema.model_fields.keys())
+        prompt = f'Extract {fields} from the following text:\n\n{t}'
+        res = t2t.Assistant.chat_completion(self, [{"role": "user",  "content": prompt}], schema=schema)
         res = "\n".join(f'{k}: {v}' for k,v in vars(res).items())
         input_lines.append(res)
     else:
