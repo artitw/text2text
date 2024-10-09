@@ -35,5 +35,9 @@ setuptools.setup(
     'torch',
     'tqdm',
     'transformers',
+    'trl',
+    'peft',
+    'bitsandbytes',
+    'flash-attn'
   ],
 )
