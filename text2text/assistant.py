@@ -4,6 +4,7 @@ import time
 import subprocess
 import warnings
 
+from tqdm.auto import tqdm
 from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
 
@@ -57,30 +58,41 @@ class Assistant(object):
       warnings.warn(str(e))
 
   def load_model(self):
+    pbar = tqdm(total=6, desc='Model setup')
     if not ollama_version():
       self.__del__()
+      pbar.update(1)
 
       return_code = os.system("sudo apt install -q -y lshw")
       if return_code != 0:
         raise Exception("Cannot install lshw.")
+      pbar.update(1)
 
       result = os.system(
         "curl -fsSL https://ollama.com/install.sh | sh"
       )
       if result != 0:
         raise Exception("Cannot install ollama")
+      pbar.update(1)
 
       self.ollama_serve_proc = subprocess.Popen(["ollama", "serve"])
       time.sleep(1)
+      pbar.update(1)
 
       if not ollama_version():
         raise Exception("Cannot serve ollama")
+      pbar.update(1)
+    else:
+      pbar.update(5)
       
     result = ollama.pull(self.model_name)
     if result["status"] == "success":
       ollama_run_proc = subprocess.Popen(["ollama", "run", self.model_name])
+      pbar.update(1)
     else:
       raise Exception(f"Did not pull {self.model_name}. Try restarting.")
+
+    pbar.close()
         
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
     try:
@@ -96,8 +108,15 @@ class Assistant(object):
       return self.chat_completion(messages=messages, stream=stream, schema=schema, **kwargs)
     
     if schema:
-      msgs = [ChatMessage(**m) for m in messages]
-      return self.structured_client.as_structured_llm(schema).chat(messages=msgs).raw
+      try:
+        msgs = [ChatMessage(**m) for m in messages]
+        return self.structured_client.as_structured_llm(schema).chat(messages=msgs).raw
+      except Exception as e:
+        warnings.warn(str(e))
+        warnings.warn(f"Schema extraction failed for {messages}")
+        default_schema = schema()
+        warnings.warn(f"Returning schema with default values: {vars(default_schema)}")
+        return default_schema
     return self.client.chat(model=self.model_name, messages=messages, stream=stream)
 
   def embed(self, texts):

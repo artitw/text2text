@@ -4,6 +4,7 @@ import requests
 import warnings
 import urllib.parse
 
+from tqdm.auto import tqdm
 from bs4 import BeautifulSoup
 
 def get_cleaned_html(url):
@@ -32,7 +33,7 @@ class RagAssistant(t2t.Assistant):
     texts = kwargs.get("texts", [])
     urls = kwargs.get("urls", [])
     input_lines = []
-    for u in urls:
+    for u in tqdm(urls, desc='Scrape URLs'):
       if is_valid_url(u):
         try:
           texts.append(get_cleaned_html(u))
@@ -42,7 +43,7 @@ class RagAssistant(t2t.Assistant):
         warnings.warn(f"Skipping invalid URL: {u}")
 
     if schema:
-      for t in texts:
+      for t in tqdm(texts, desc='Schema extraction'):
         fields = ", ".join(schema.model_fields.keys())
         prompt = f'Extract {fields} from the following text:\n\n{t}'
         res = t2t.Assistant.chat_completion(self, [{"role": "user",  "content": prompt}], schema=schema)
@@ -57,6 +58,6 @@ class RagAssistant(t2t.Assistant):
     k = kwargs.get("k", 3)
     query = messages[-1]["content"]
     docs = self.index.retrieve([query], k=k)[0]
-    grounding_information = "\n\n".join(docs) + "\n\n"
-    messages[-1] = {"role": "user", "content": grounding_information+query}
+    grounding_information = "Ground your response based on the following information:\n\n" + "\n- ".join(docs)
+    messages[-1] = {"role": "user", "content": query + "\n\n" + grounding_information}
     return t2t.Assistant.chat_completion(self, messages=messages, stream=stream, schema=schema, **kwargs)
