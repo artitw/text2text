@@ -9,11 +9,8 @@ from .counter import Counter
 from .tfidfer import Tfidfer
 from .bm25er import Bm25er
 from .indexer import Indexer
+from .rag_assistant import RagAssistant
 from .variator import Variator
-from .abstractor import Abstractor
-from .questioner import Questioner
-from .summarizer import Summarizer
-from .answerer import Answerer
 from .identifier import Identifier
 from .server import Server
 from .handler import Handler

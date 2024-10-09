@@ -6,16 +6,14 @@ class Handler(object):
   """
 
   EXPOSED_TRANSFORMERS = {
-    "answer": t2t.Answerer,
     "assist": t2t.Assistant,
+    "rag_assist": t2t.RagAssistant,
     "bm25": t2t.Bm25er,
     "count": t2t.Counter,
     "identify":t2t.Identifier,
     "index": t2t.Indexer,
     "fit": t2t.Fitter,
     "measure": t2t.Measurer,
-    "question": t2t.Questioner,
-    "summarize": t2t.Summarizer,
     "tfidf": t2t.Tfidfer,
     "tokenize": t2t.Tokenizer,
     "translate": t2t.Translator,
