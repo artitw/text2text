@@ -1,8 +1,13 @@
 import text2text as t2t
 
+import pickle
+import sqlite3
 import requests
 import warnings
 import urllib.parse
+
+import numpy as np
+import pandas as pd
 
 from tqdm.auto import tqdm
 from bs4 import BeautifulSoup
@@ -41,9 +46,25 @@ def is_affirmative(response):
             
     return False
 
+RAG_TABLE_NAME = "rag_corpus_embeddings"
+
 class RagAssistant(t2t.Assistant):
   def __init__(self, **kwargs):
     super().__init__(**kwargs)
+    sqlite_path = kwargs.get("sqlite_path", None)
+    if sqlite_path:
+      conn = sqlite3.connect(sqlite_path)
+      query = f"SELECT document, embedding FROM {RAG_TABLE_NAME}"
+      self.records = pd.read_sql_query(query, conn)
+      conn.close()
+      self.records["embedding"] = self.records["embedding"].apply(lambda x: pickle.loads(x))
+      self.index = t2t.Indexer().transform([], encoders=[t2t.Vectorizer()])
+      self.index.add(
+        self.records["document"].tolist(), 
+        embeddings=np.vstack(self.records["embedding"])
+      )
+      return
+
     schema = kwargs.get("schema", None)
     texts = kwargs.get("texts", [])
     urls = kwargs.get("urls", [])
@@ -56,18 +77,29 @@ class RagAssistant(t2t.Assistant):
           warnings.warn(f"Skipping URL with errors: {u}")
       else:
         warnings.warn(f"Skipping invalid URL: {u}")
-
+    
     if schema:
+      column_names = schema.model_fields.keys()
+      self.records = pd.DataFrame(columns=column_names)
       for t in tqdm(texts, desc='Schema extraction'):
-        fields = ", ".join(schema.model_fields.keys())
+        fields = ", ".join(column_names)
         prompt = f'Extract {fields} from the following text:\n\n{t}'
         res = t2t.Assistant.chat_completion(self, [{"role": "user",  "content": prompt}], schema=schema)
+        new_row = pd.DataFrame([vars(res)])
+        self.records = pd.concat([self.records, new_row], ignore_index=True)
         res = "\n".join(f'{k}: {v}' for k,v in vars(res).items())
         input_lines.append(res)
     else:
       input_lines = texts
+      self.records = pd.DataFrame({"text": texts})
 
     self.index = t2t.Indexer().transform(input_lines, encoders=[t2t.Vectorizer()])
+    self.records = pd.concat([self.records, self.index.corpus], axis=1)
+    self.records["embedding"] = self.records["embedding"].apply(lambda x: pickle.dumps(x))
+    conn = sqlite3.connect("text2text.db")
+    self.records.to_sql(RAG_TABLE_NAME, conn, if_exists='replace', index=False)
+    conn.close()
+
 
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
     k = kwargs.get("k", 3)

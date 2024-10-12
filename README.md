@@ -1,11 +1,9 @@
-# Text2Text: Crosslingual NLP/G toolkit
-Transform texts in a hundred different [languages](https://github.com/artitw/text2text#languages-available)!
+# Text2Text Language Modeling Toolkit
 
 <details>
   <summary>Overview</summary>
 
 * [Colab Notebooks](https://github.com/artitw/text2text#colab-notebooks)
-* [Crosslingual Models](https://github.com/artitw/text2text#how-crosslingual-models-work-click-to-watch)
 * [Installation Requirements](https://github.com/artitw/text2text#installation-requirements)
 * [Quick Start Guide](https://github.com/artitw/text2text#api-quick-start-guide)
 * [Class Diagram](https://github.com/artitw/text2text#class-diagram)
@@ -36,9 +34,6 @@ Transform texts in a hundred different [languages](https://github.com/artitw/tex
 * STF-IDF multilingual search [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1RaWj5SqWvyC2SsCTGg8IAVcl9G5hOB50?usp=sharing)
 * All examples [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1LE_ifTpOGO5QJCKNQYtZe6c_tjbwnulR)
 
-## How Crosslingual Models Work (click to watch)
-[![Crosslingual Models](http://img.youtube.com/vi/caZLVcJqsqo/0.jpg)](https://youtu.be/caZLVcJqsqo "Cross-Lingual Models")
-
 ## Installation Requirements
 ```
 pip install -qq -U text2text
@@ -62,119 +57,6 @@ Module Importing | `import text2text as t2t` | Libraries imported
 [Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Fitter().transform(["Hello, World! [TGT] Hello, what?"])` | Finetuned model saved
 [Identification](https://github.com/artitw/text2text#identification) | `t2t.Identifier().transform(["Aj keď sa Buzz Aldrin stal až „druhým človekom“..."])` | `['sk', 'Slovak']`
 [Web Server](https://github.com/artitw/text2text#serving) | `t2t.Serve(host='0.0.0.0', port=80)` | Web server started on host and port
-
-## Languages Available
-<details>
-  <summary>Show all</summary>
-
-```
-t2t.Transformer.LANGUAGES
-
-# Dict of languages supported
-# code: language
-{'af': 'Afrikaans',
- 'am': 'Amharic',
- 'ar': 'Arabic',
- 'ast': 'Asturian',
- 'az': 'Azerbaijani',
- 'ba': 'Bashkir',
- 'be': 'Belarusian',
- 'bg': 'Bulgarian',
- 'bn': 'Bengali',
- 'br': 'Breton',
- 'bs': 'Bosnian',
- 'ca': 'Catalan_Valencian',
- 'ceb': 'Cebuano',
- 'cs': 'Czech',
- 'cy': 'Welsh',
- 'da': 'Danish',
- 'de': 'German',
- 'el': 'Greeek',
- 'en': 'English',
- 'es': 'Spanish',
- 'et': 'Estonian',
- 'fa': 'Persian',
- 'ff': 'Fulah',
- 'fi': 'Finnish',
- 'fr': 'French',
- 'fy': 'Western_Frisian',
- 'ga': 'Irish',
- 'gd': 'Gaelic_Scottish_Gaelic',
- 'gl': 'Galician',
- 'gu': 'Gujarati',
- 'ha': 'Hausa',
- 'he': 'Hebrew',
- 'hi': 'Hindi',
- 'hr': 'Croatian',
- 'ht': 'Haitian_Haitian_Creole',
- 'hu': 'Hungarian',
- 'hy': 'Armenian',
- 'id': 'Indonesian',
- 'ig': 'Igbo',
- 'ilo': 'Iloko',
- 'is': 'Icelandic',
- 'it': 'Italian',
- 'ja': 'Japanese',
- 'jv': 'Javanese',
- 'ka': 'Georgian',
- 'kk': 'Kazakh',
- 'km': 'Central_Khmer',
- 'kn': 'Kannada',
- 'ko': 'Korean',
- 'lb': 'Luxembourgish_Letzeburgesch',
- 'lg': 'Ganda',
- 'ln': 'Lingala',
- 'lo': 'Lao',
- 'lt': 'Lithuanian',
- 'lv': 'Latvian',
- 'mg': 'Malagasy',
- 'mk': 'Macedonian',
- 'ml': 'Malayalam',
- 'mn': 'Mongolian',
- 'mr': 'Marathi',
- 'ms': 'Malay',
- 'my': 'Burmese',
- 'ne': 'Nepali',
- 'nl': 'Dutch_Flemish',
- 'no': 'Norwegian',
- 'ns': 'Northern_Sotho',
- 'oc': 'Occitan',
- 'or': 'Oriya',
- 'pa': 'Panjabi_Punjabi',
- 'pl': 'Polish',
- 'ps': 'Pushto_Pashto',
- 'pt': 'Portuguese',
- 'ro': 'Romanian_Moldavian_Moldovan',
- 'ru': 'Russian',
- 'sd': 'Sindhi',
- 'si': 'Sinhala_Sinhalese',
- 'sk': 'Slovak',
- 'sl': 'Slovenian',
- 'so': 'Somali',
- 'sq': 'Albanian',
- 'sr': 'Serbian',
- 'ss': 'Swati',
- 'su': 'Sundanese',
- 'sv': 'Swedish',
- 'sw': 'Swahili',
- 'ta': 'Tamil',
- 'th': 'Thai',
- 'tl': 'Tagalog',
- 'tn': 'Tswana',
- 'tr': 'Turkish',
- 'uk': 'Ukrainian',
- 'ur': 'Urdu',
- 'uz': 'Uzbek',
- 'vi': 'Vietnamese',
- 'wo': 'Wolof',
- 'xh': 'Xhosa',
- 'yi': 'Yiddish',
- 'yo': 'Yoruba',
- 'zh': 'Chinese',
- 'zu': 'Zulu'}
-```
-
-</details>
 
 ## Examples
 

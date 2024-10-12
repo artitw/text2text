@@ -35,9 +35,11 @@ class Indexer(t2t.Transformer):
     if self.index.ntotal:
       starting_id = 1+np.amax(faiss.vector_to_array(self.index.id_map), initial=0)
     ids = list(range(starting_id, starting_id+len(input_lines)))
-    vectors = self.get_formatted_matrix(input_lines, src_lang=src_lang, **kwargs)
-    self.index.add_with_ids(vectors, np.array(ids))
-    new_docs = pd.DataFrame({'document': input_lines})
+    embeddings = kwargs.get("embeddings", None)
+    if embeddings is None:
+      embeddings = self.get_formatted_matrix(input_lines, src_lang=src_lang, **kwargs)
+    self.index.add_with_ids(embeddings, np.array(ids))
+    new_docs = pd.DataFrame({'document': input_lines, 'embedding': embeddings.tolist()})
     new_docs.index = ids
     self.corpus = pd.concat([self.corpus, new_docs])
     return self
@@ -67,7 +69,7 @@ class Indexer(t2t.Transformer):
     self.src_lang = src_lang
     d = self.get_formatted_matrix(["DUMMY"], src_lang=src_lang, **kwargs).shape[-1]
     self.index = faiss.IndexIDMap2(faiss.IndexFlatL2(d))
-    self.corpus = pd.DataFrame({"document": []})
+    self.corpus = pd.DataFrame({"document": [], "embedding": []})
     if not input_lines:
       return self
     return self.add(input_lines, src_lang=src_lang, **kwargs)
