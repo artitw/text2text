@@ -69,10 +69,10 @@ class RagAssistant(t2t.Assistant):
     texts = kwargs.get("texts", [])
     urls = kwargs.get("urls", [])
     input_lines = []
-    for u in tqdm(urls, desc='Scrape URLs'):
+    for u in tqdm(urls, desc='Scrape HTML'):
       if is_valid_url(u):
         try:
-          texts.append(get_cleaned_html(u))
+          texts.append(get_cleaned_html(u) + f"\nURL: {u}")
         except Exception as e:
           warnings.warn(f"Skipping URL with errors: {u}")
       else:
@@ -81,7 +81,7 @@ class RagAssistant(t2t.Assistant):
     if schema:
       column_names = schema.model_fields.keys()
       self.records = pd.DataFrame(columns=column_names)
-      for t in tqdm(texts, desc='Schema extraction'):
+      for t in tqdm(texts, desc='Extract Schema'):
         fields = ", ".join(column_names)
         prompt = f'Extract {fields} from the following text:\n\n{t}'
         res = t2t.Assistant.chat_completion(self, [{"role": "user",  "content": prompt}], schema=schema)
@@ -92,6 +92,8 @@ class RagAssistant(t2t.Assistant):
     else:
       input_lines = texts
       self.records = pd.DataFrame({"text": texts})
+
+    print(input_lines)
 
     self.index = t2t.Indexer().transform(input_lines, encoders=[t2t.Vectorizer()])
     self.records = pd.concat([self.records, self.index.corpus], axis=1)
@@ -115,6 +117,6 @@ class RagAssistant(t2t.Assistant):
       docs = self.index.retrieve([demand], k=k)[0]
     else:
       docs = self.index.retrieve([query], k=k)[0]
-    grounding_prompt = "Base your response on the following information:\n\n" + "\n- ".join(docs)
+    grounding_prompt = "Base your response on the following information:\n\n" + "\n\n".join(docs)
     messages[-1] = {"role": "user", "content": query + "\n\n" + grounding_prompt}
     return t2t.Assistant.chat_completion(self, messages=messages, stream=stream, schema=schema, **kwargs)

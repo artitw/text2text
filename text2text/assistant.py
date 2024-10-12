@@ -58,7 +58,7 @@ class Assistant(object):
       warnings.warn(str(e))
 
   def load_model(self):
-    pbar = tqdm(total=6, desc='Model setup')
+    pbar = tqdm(total=6, desc='Model Setup')
     if not ollama_version():
       self.__del__()
       pbar.update(1)
