@@ -33,7 +33,7 @@ def is_valid_url(url):
 
 def is_affirmative(response):
     affirmative_keywords = [
-        "yes", "yeah", "yep", "sure", "absolutely", "definitely", 
+        "y", "yes", "yeah", "yep", "sure", "absolutely", "definitely", 
         "certainly", "of course", "indeed", "affirmative", "correct", 
         "right", "exactly", "true", "positive"
     ]
@@ -51,54 +51,59 @@ RAG_TABLE_NAME = "rag_corpus_embeddings"
 class RagAssistant(t2t.Assistant):
   def __init__(self, **kwargs):
     super().__init__(**kwargs)
-    sqlite_path = kwargs.get("sqlite_path", None)
-    if sqlite_path:
-      conn = sqlite3.connect(sqlite_path)
-      query = f"SELECT document, embedding FROM {RAG_TABLE_NAME}"
-      self.records = pd.read_sql_query(query, conn)
-      conn.close()
-      self.records["embedding"] = self.records["embedding"].apply(lambda x: pickle.loads(x))
-      self.index = t2t.Indexer().transform([], encoders=[t2t.Vectorizer()])
-      self.index.add(
-        self.records["document"].tolist(), 
-        embeddings=np.vstack(self.records["embedding"])
-      )
-      return
-
     schema = kwargs.get("schema", None)
     texts = kwargs.get("texts", [])
     urls = kwargs.get("urls", [])
-    input_lines = []
-    for u in tqdm(urls, desc='Scrape HTML'):
-      if is_valid_url(u):
-        try:
-          texts.append(get_cleaned_html(u) + f"\nURL: {u}")
-        except Exception as e:
-          warnings.warn(f"Skipping URL with errors: {u}")
-      else:
-        warnings.warn(f"Skipping invalid URL: {u}")
+    sqlite_path = kwargs.get("sqlite_path", None)
+    encoders = kwargs.get("encoders", [t2t.Vectorizer()])
+    self.index = t2t.Indexer(encoders=encoders).transform([])
+
+    if urls:
+      for u in tqdm(urls, desc='Scrape HTML'):
+        if is_valid_url(u):
+          try:
+            texts.append(get_cleaned_html(u) + f"\nURL: {u}")
+          except Exception as e:
+            warnings.warn(f"Skipping URL with errors: {u}")
+        else:
+          warnings.warn(f"Skipping invalid URL: {u}")
     
+    db_fields = {"document", "embedding"}
     if schema:
       column_names = schema.model_fields.keys()
+      db_fields.update(column_names)
+      fields = ", ".join(column_names)
       self.records = pd.DataFrame(columns=column_names)
+      input_lines = []
       for t in tqdm(texts, desc='Extract Schema'):
-        fields = ", ".join(column_names)
         prompt = f'Extract {fields} from the following text:\n\n{t}'
         res = t2t.Assistant.chat_completion(self, [{"role": "user",  "content": prompt}], schema=schema)
         new_row = pd.DataFrame([vars(res)])
         self.records = pd.concat([self.records, new_row], ignore_index=True)
         res = "\n".join(f'{k}: {v}' for k,v in vars(res).items())
         input_lines.append(res)
+      self.index.add(input_lines)
+      self.records = pd.concat([self.records, self.index.corpus], axis=1)
     else:
-      input_lines = texts
-      self.records = pd.DataFrame({"text": texts})
-
-    print(input_lines)
-
-    self.index = t2t.Indexer().transform(input_lines, encoders=[t2t.Vectorizer()])
-    self.records = pd.concat([self.records, self.index.corpus], axis=1)
+      self.index.add(texts)
+      self.records = self.index.corpus
+    
     self.records["embedding"] = self.records["embedding"].apply(lambda x: pickle.dumps(x))
-    conn = sqlite3.connect("text2text.db")
+
+    if sqlite_path:
+      conn = sqlite3.connect(sqlite_path)
+      fields = ", ".join(db_fields)
+      query = f"SELECT {fields} FROM {RAG_TABLE_NAME}"
+      db_records = pd.read_sql_query(query, conn)
+      conn.close()
+      embeddings = db_records["embedding"].apply(lambda x: pickle.loads(x))
+      self.index.add(
+        db_records["document"].tolist(), 
+        embeddings=np.vstack(embeddings)
+      )
+      self.records = pd.concat([self.records, db_records], ignore_index=True)
+    
+    conn = sqlite3.connect(sqlite_path or "text2text.db")
     self.records.to_sql(RAG_TABLE_NAME, conn, if_exists='replace', index=False)
     conn.close()
 

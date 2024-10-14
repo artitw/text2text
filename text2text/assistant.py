@@ -42,10 +42,9 @@ class Assistant(object):
     self.port = kwargs.get("port", 11434)
     self.model_url = f"{self.host}:{self.port}"
     self.model_name = kwargs.get("model_name", "llama3.2")
+    self.schema_timeout = kwargs.get("schema_timeout", 120.0)
     self.ollama_serve_proc = None
     self.load_model()
-    self.client = ollama.Client(host=self.model_url)
-    self.structured_client = Ollama(model=self.model_name, request_timeout=120.0)
 
   def __del__(self):
     try:
@@ -84,28 +83,41 @@ class Assistant(object):
       pbar.update(1)
     else:
       pbar.update(5)
-      
+    
     result = ollama.pull(self.model_name)
     if result["status"] == "success":
       ollama_run_proc = subprocess.Popen(["ollama", "run", self.model_name])
       pbar.update(1)
     else:
       raise Exception(f"Did not pull {self.model_name}. Try restarting.")
+    
+    self.client = ollama.Client(host=self.model_url)
+    self.structured_client = Ollama(
+      model=self.model_name, 
+      request_timeout=self.schema_timeout
+    )
 
     pbar.close()
-        
-  def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
+
+  def model_loading(self):
     try:
-      result = ollama.ps()
-      if not result or not result.get("models"):
-        warnings.warn("No model loaded. Retrying...")
-        self.load_model()
-        return self.chat_completion(messages=messages, stream=stream, schema=schema, **kwargs)
+      ps_result = ollama.ps()
+      ls_result = ollama.list()
+      if ps_result and ls_result and \
+      ps_result.get("models", []) and ls_result.get("models", []) and \
+      ps_result.get("models")[0].get("name", "").startswith(self.model_name) and \
+      ls_result.get("models")[0].get("name", "").startswith(self.model_name):
+        return False
     except Exception as e:
       warnings.warn(str(e))
-      warnings.warn("Retrying...")
-      self.load_model()
-      return self.chat_completion(messages=messages, stream=stream, schema=schema, **kwargs)
+    warnings.warn("Model not loaded. Retrying...")
+    self.load_model()
+    return True
+        
+  def chat_completion(self, messages = [{"role": "user", "content": "hello"}], **kwargs):
+    while self.model_loading(): time.sleep(1)
+    stream = kwargs.get("stream", False)
+    schema = kwargs.get("schema", None)
     
     if schema:
       try:
@@ -120,7 +132,8 @@ class Assistant(object):
     return self.client.chat(model=self.model_name, messages=messages, stream=stream)
 
   def embed(self, texts):
-    return ollama.embed(model=self.model_name, input=texts).get("embeddings", [])
+    while self.model_loading(): time.sleep(1)
+    return self.client.embed(model=self.model_name, input=texts).get("embeddings", [])
 
   def transform(self, input_lines, src_lang='en', **kwargs):
     return self.chat_completion([{"role": "user", "content": input_lines}])["message"]["content"]
