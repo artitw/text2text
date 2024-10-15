@@ -55,8 +55,7 @@ class RagAssistant(t2t.Assistant):
     texts = kwargs.get("texts", [])
     urls = kwargs.get("urls", [])
     sqlite_path = kwargs.get("sqlite_path", None)
-    encoders = kwargs.get("encoders", [t2t.Vectorizer()])
-    self.index = t2t.Indexer(encoders=encoders).transform([])
+    self.index = t2t.CompositeIndexer()
 
     if urls:
       for u in tqdm(urls, desc='Scrape HTML'):
@@ -95,11 +94,14 @@ class RagAssistant(t2t.Assistant):
       fields = ", ".join(db_fields)
       query = f"SELECT {fields} FROM {RAG_TABLE_NAME}"
       db_records = pd.read_sql_query(query, conn)
+      db_records.dropna(subset=["document", "embedding"], inplace=True)
       conn.close()
       embeddings = db_records["embedding"].apply(lambda x: pickle.loads(x))
+      embeddings = pd.DataFrame(embeddings.to_list())
+      embeddings = [np.vstack(embeddings[col]) for col in embeddings.columns]
       self.index.add(
         db_records["document"].tolist(), 
-        embeddings=np.vstack(embeddings)
+        embeddings=embeddings
       )
       self.records = pd.concat([self.records, db_records], ignore_index=True)
     

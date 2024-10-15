@@ -1,11 +1,16 @@
 import text2text as t2t
+
+import warnings
+
 from transformers import AutoTokenizer
 
 class Tokenizer(t2t.Transformer):
 
   def __init__(self, **kwargs):
     pretrained_translator = self.__class__.PRETRAINED_TRANSLATOR
-    self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_translator)
+    with warnings.catch_warnings():
+      warnings.simplefilter("ignore")
+      self.__class__.tokenizer = AutoTokenizer.from_pretrained(pretrained_translator)
 
   def transform(self, input_lines, src_lang='en', output='tokens', **kwargs):
     input_lines = t2t.Transformer.transform(self, input_lines, src_lang=src_lang, **kwargs)

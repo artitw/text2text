@@ -10,8 +10,10 @@ class Indexer(t2t.Transformer):
 
   def __init__(self, **kwargs):
     self.input_lines = [] 
-    self.encoders = kwargs.get("encoders", [t2t.Vectorizer()])
-
+    self.encoders = kwargs.get("encoders", [t2t.Tfidfer()])
+    columns = ["document", "embedding"]
+    self.corpus = pd.DataFrame(columns=columns)
+  
   def get_formatted_matrix(self, input_lines, src_lang='en', **kwargs):
     res = np.array([[]]*len(input_lines))
     for encoder in self.encoders:
@@ -65,11 +67,10 @@ class Indexer(t2t.Transformer):
     return [self.corpus["document"].loc[[i for i in line_ids if i >= 0]].tolist() for line_ids in pred_ids]
 
   def transform(self, input_lines, src_lang='en', **kwargs):
-    super().transform(input_lines, src_lang='en', **kwargs)
+    super().transform(input_lines, src_lang=src_lang, **kwargs)
     self.src_lang = src_lang
     d = self.get_formatted_matrix(["DUMMY"], src_lang=src_lang, **kwargs).shape[-1]
     self.index = faiss.IndexIDMap2(faiss.IndexFlatL2(d))
-    self.corpus = pd.DataFrame({"document": [], "embedding": []})
     if not input_lines:
       return self
     return self.add(input_lines, src_lang=src_lang, **kwargs)
