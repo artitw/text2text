@@ -1,5 +1,6 @@
 import text2text as t2t
 
+import os
 import pickle
 import sqlite3
 import requests
@@ -89,7 +90,7 @@ class RagAssistant(t2t.Assistant):
     
     self.records["embedding"] = self.records["embedding"].apply(lambda x: pickle.dumps(x))
 
-    if sqlite_path:
+    if sqlite_path and os.path.exists(sqlite_path):
       conn = sqlite3.connect(sqlite_path)
       fields = ", ".join(db_fields)
       query = f"SELECT {fields} FROM {RAG_TABLE_NAME}"
