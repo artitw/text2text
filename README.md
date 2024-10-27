@@ -519,7 +519,7 @@ To cite this work, use the following BibTeX citations.
 ```
 @misc{text2text@2020,
   author={Wangperawong, Artit},
-  title={Text2Text: Crosslingual NLP/G toolkit},
+  title={Text2Text Language Modeling Toolkit},
   year={2020},
   publisher = {GitHub},
   journal = {GitHub repository},
