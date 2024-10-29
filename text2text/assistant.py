@@ -62,7 +62,7 @@ class Assistant(object):
       self.__del__()
       pbar.update(1)
 
-      return_code = os.system("sudo apt install -q -y lshw")
+      return_code = os.system("apt install -q -y lshw")
       if return_code != 0:
         raise Exception("Cannot install lshw.")
       pbar.update(1)
