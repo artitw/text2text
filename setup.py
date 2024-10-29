@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name="text2text",
-  version="1.8.2",
+  version="1.8.3",
   author="artitw",
   author_email="artitw@gmail.com",
   description="Text2Text Language Modeling Toolkit",

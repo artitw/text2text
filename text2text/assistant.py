@@ -3,10 +3,23 @@ import ollama
 import time
 import subprocess
 import warnings
+import platform
 
 from tqdm.auto import tqdm
 from llama_index.llms.ollama import Ollama
 from llama_index.core.llms import ChatMessage
+
+def can_use_apt():
+    # Check if the OS is Linux and if it is a Debian-based distribution
+    if platform.system() == "Linux":
+        try:
+            # Check if the apt command is available
+            result = os.system("apt --version")
+            return result == 0  # If the command runs successfully, return True
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return False
+    return False
 
 def ollama_version():
   try:
@@ -62,10 +75,15 @@ class Assistant(object):
       self.__del__()
       pbar.update(1)
 
-      return_code = os.system("apt install -q -y lshw")
-      if return_code != 0:
-        raise Exception("Cannot install lshw.")
-      pbar.update(1)
+      if can_use_apt():
+        return_code = os.system("apt install -q -y lshw curl")
+        if return_code != 0:
+          raise Exception("Cannot install lshw and/or curl.")
+        pbar.update(1)
+      elif platform.system() == "Windows":
+        raise Exception("Windows not supported.")
+      else:
+        pbar.update(1)
 
       result = os.system(
         "curl -fsSL https://ollama.com/install.sh | sh"
