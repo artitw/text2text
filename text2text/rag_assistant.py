@@ -114,14 +114,10 @@ class RagAssistant(t2t.Assistant):
   def chat_completion(self, messages=[{"role": "user", "content": "hello"}], stream=False, schema=None, **kwargs):
     k = kwargs.get("k", 3)
     query = messages[-1]["content"]
-    question_check = f"Respond YES if this is a question; otherwise respond NO: {query}"
-    question_check = [{"role": "user", "content": question_check}]
-    response = t2t.Assistant.chat_completion(self, question_check)["message"]["content"]
-    docs = []
-    if is_affirmative(response):
-      reword_prompt = f"Reword this question to be a demand: {query}"
-      reword_prompt = [{"role": "user", "content": reword_prompt}]
-      demand = t2t.Assistant.chat_completion(self, reword_prompt)["message"]["content"]
+    if len(query) > 100:
+      summarize_prompt = f'Summarize succinctly what the user wants in a sentence less than 10 words:\n\n"{query}"'
+      summarize_prompt = [{"role": "user", "content": summarize_prompt}]
+      demand = t2t.Assistant.chat_completion(self, summarize_prompt)["message"]["content"]
       docs = self.index.retrieve([demand], k=k)[0]
     else:
       docs = self.index.retrieve([query], k=k)[0]
