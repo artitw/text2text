@@ -78,8 +78,9 @@ def apt_install_packages(packages, sudo=True):
 class Assistant(object):
   def __init__(self, **kwargs):
     self.model_name = kwargs.get("model_name", "llama3.2")
-    self.ollama_serve_proc = None
     self.sudo = kwargs.get("sudo", is_sudo_available())
+    os.environ["OLLAMA_KEEP_ALIVE"] = kwargs.get("keep_alive", "-1m")
+    self.ollama_serve_proc = None
     self.load_model()
 
   def __del__(self):
