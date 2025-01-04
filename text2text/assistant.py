@@ -4,10 +4,19 @@ import time
 import subprocess
 import warnings
 import platform
-
 from tqdm.auto import tqdm
-from llama_index.llms.ollama import Ollama
-from llama_index.core.llms import ChatMessage
+
+def is_sudo_available():
+    try:
+        # Try to run 'sudo -v' which checks if sudo is available
+        subprocess.run(['sudo', '-v'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return True
+    except subprocess.CalledProcessError as e:
+        warnings.warn(str(e))
+        return False
+    except FileNotFoundError as e:
+        warnings.warn(str(e))
+        return False
 
 def can_use_apt():
     # Check if the OS is Linux and if it is a Debian-based distribution
@@ -68,13 +77,9 @@ def apt_install_packages(packages, sudo=True):
 
 class Assistant(object):
   def __init__(self, **kwargs):
-    self.host = kwargs.get("host", "http://localhost")
-    self.port = kwargs.get("port", 11434)
-    self.model_url = f"{self.host}:{self.port}"
     self.model_name = kwargs.get("model_name", "llama3.2")
-    self.schema_timeout = kwargs.get("schema_timeout", 120.0)
     self.ollama_serve_proc = None
-    self.sudo = kwargs.get("sudo", True)
+    self.sudo = kwargs.get("sudo", is_sudo_available())
     self.load_model()
 
   def __del__(self):
@@ -124,12 +129,6 @@ class Assistant(object):
       pbar.update(1)
     else:
       raise Exception(f"Did not pull {self.model_name}. Try restarting.")
-    
-    self.client = ollama.Client(host=self.model_url)
-    self.structured_client = Ollama(
-      model=self.model_name, 
-      request_timeout=self.schema_timeout
-    )
 
     pbar.close()
 
@@ -152,22 +151,41 @@ class Assistant(object):
     while self.model_loading(): time.sleep(1)
     stream = kwargs.get("stream", False)
     schema = kwargs.get("schema", None)
+    keep_alive = kwargs.get("keep_alive", -1)
     
     if schema:
       try:
-        msgs = [ChatMessage(**m) for m in messages]
-        return self.structured_client.as_structured_llm(schema).chat(messages=msgs).raw
+        response = ollama.chat(
+          model=self.model_name, 
+          messages=messages, 
+          format=schema.model_json_schema(),  # Use Pydantic to generate the schema or format=schema
+          options={'temperature': 0},  # Make responses more deterministic
+        )
+
+        # Use Pydantic to validate the response
+        schema_response = schema.model_validate_json(response.message.content)
+        return schema_response
       except Exception as e:
         warnings.warn(str(e))
         warnings.warn(f"Schema extraction failed for {messages}")
         default_schema = schema()
         warnings.warn(f"Returning schema with default values: {vars(default_schema)}")
         return default_schema
-    return self.client.chat(model=self.model_name, messages=messages, stream=stream)
+    return ollama.chat(
+      model=self.model_name, 
+      messages=messages, 
+      stream=stream, 
+      keep_alive=keep_alive
+    )
 
-  def embed(self, texts):
+  def embed(self, texts, **kwargs):
     while self.model_loading(): time.sleep(1)
-    return self.client.embed(model=self.model_name, input=texts).get("embeddings", [])
+    keep_alive = kwargs.get("keep_alive", -1)
+    return ollama.embed(
+      model=self.model_name, 
+      input=texts, 
+      keep_alive=keep_alive
+    ).get("embeddings", [])
 
   def transform(self, input_lines, src_lang='en', **kwargs):
     return self.chat_completion([{"role": "user", "content": input_lines}])["message"]["content"]
