@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name="text2text",
-  version="1.8.8",
+  version="1.8.9",
   author="artitw",
   author_email="artitw@gmail.com",
   description="Text2Text Language Modeling Toolkit",
@@ -23,7 +23,6 @@ setuptools.setup(
     'faiss-cpu',
     'flask',
     'beautifulsoup4',
-    'googledrivedownloader',
     'ollama',
     'numpy',
     'pandas',

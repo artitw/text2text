@@ -3,7 +3,6 @@ import requests
 import pickle
 import text2text as t2t
 import json
-from google_drive_downloader import GoogleDriveDownloader as gdd
 
 
 class Identifier(t2t.Vectorizer):
@@ -29,8 +28,6 @@ class Identifier(t2t.Vectorizer):
                 for chunk in response.iter_content(CHUNK_SIZE):
                     if chunk: # filter out keep-alive new chunks
                         f.write(chunk)
-
-            #gdd.download_file_from_google_drive(file_id='10-YNx9yDVJTUijVz_2aopcIF8rdXR78R', dest_path=model_file)
             
             model = pickle.load(open(model_file, 'rb'))
         
