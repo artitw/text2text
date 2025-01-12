@@ -468,36 +468,6 @@ t2t.Identifier().transform(["Aj keď sa Buzz Aldrin stal až „druhým človeko
 `['sk', 'Slovak']`
 ```
 
-### Serving
-We aim to serve all functionality above
-```
-# Start web server
-t2t.Server(host='0.0.0.0', port=80)
-
-# Make POST requests
-import socket
-import requests
-
-address = socket.gethostbyname(socket.getfqdn(socket.gethostname()))
-url = f"http://{address}"
-transformer = "Translator"
-payload = {
-  "input_lines": ["hello", "world"],
-  "src_lang": "en",
-  "tgt_lang": "ko",
-}
-r = requests.post(f"{url}/{transformer}", json=payload)
-print(r.json()) #{'result': ['안녕하세요', '세계']}
-
-# Indexer actions
-r = requests.post(f"{url}/Indexer/add", json=payload)
-r = requests.post(f"{url}/Indexer/size")
-r = requests.post(f"{url}/Indexer/search", json=payload)
-r = requests.post(f"{url}/Indexer/retrieve", json=payload)
-payload["ids"] = [0,1]
-r = requests.post(f"{url}/Indexer/remove", json=payload)
-```
-
 ## Questions?
 For questions or help using Text2Text, please submit a [GitHub issue](https://github.com/artitw/text2text/issues).
 

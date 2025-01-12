@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
   name="text2text",
-  version="1.9.0",
+  version="1.9.1",
   author="artitw",
   author_email="artitw@gmail.com",
   description="Text2Text Language Modeling Toolkit",
@@ -21,7 +21,6 @@ setuptools.setup(
   keywords='multilingual gpt chatgpt bert natural language processing nlp nlg text generation gpt question answer answering information retrieval tfidf tf-idf bm25 search index summary summarizer summarization tokenizer tokenization translation backtranslation data augmentation science machine learning colab embedding levenshtein sub-word edit distance conversational dialog chatbot llama rag',
   install_requires=[
     'faiss-cpu',
-    'flask',
     'beautifulsoup4',
     'psutil',
     'vllm',
