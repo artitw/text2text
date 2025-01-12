@@ -14,6 +14,16 @@ from tqdm.auto import tqdm
 from openai import OpenAI
 
 
+def get_most_free_cuda_memory():
+  cuda_device = -1
+  max_free_memory = 0
+  for i in range(torch.cuda.device_count()):
+    device_free_memory = torch.cuda.mem_get_info(i)[0]
+    if device_free_memory > max_free_memory:
+      max_free_memory = device_free_memory
+      cuda_device = i
+  return cuda_device, max_free_memory / (1024 ** 3)
+
 def can_use_apt():
   # Check if the OS is Linux and if it is a Debian-based distribution
   if platform.system() == "Linux":
@@ -52,6 +62,7 @@ class Assistant(object):
       "task": "generate",
     })
     self.config["device"] = "cuda" if torch.cuda.is_available() else "cpu"
+    self.cuda_device = 0
     self.min_device_memory_gb = kwargs.get("min_device_memory_gb", 8)
     self.server_proc = None
     self.load_model()
@@ -91,29 +102,33 @@ class Assistant(object):
     return False
 
   def set_available_device(self, num_tries=0):
-    if num_tries > 3:
+    if num_tries > torch.cuda.device_count() + 3:
       warnings.warn(f"{num_tries} times setting device. Aborting.")
       return
 
     memory_cuda = 0
     if torch.cuda.is_available():
       torch.cuda.empty_cache()
-      memory_cuda = torch.cuda.mem_get_info()[0] / (1024 ** 3)
-    
+      memory_cuda = torch.cuda.mem_get_info(self.cuda_device)[0] / (1024 ** 3)
+      
     gc.collect()
     memory_cpu = psutil.virtual_memory().available / (1024 ** 3)
 
     if self.config["device"] == "cuda" and memory_cuda < self.min_device_memory_gb:
-      warnings.warn(f"{self.config['device']} {memory_cuda}GB RAM free is less than {self.min_device_memory_gb}GB specified.")
-      if memory_cuda+memory_cpu >= self.min_device_memory_gb:
+      warnings.warn(f"{self.config['device']} {memory_cuda} GB RAM free is less than {self.min_device_memory_gb} GB specified.")
+      most_free_cuda, most_free_memory = get_most_free_cuda_memory()
+      self.cuda_device = most_free_cuda
+      if most_free_memory >= self.min_device_memory_gb:
+        warnings.warn(f"Try cuda:{self.cuda_device} with {most_free_memory} GB RAM free")
+      elif most_free_memory+memory_cpu >= self.min_device_memory_gb:
         self.config["cpu-offload-gb"] = memory_cpu
-        warnings.warn(f"{memory_cpu}GB cpu offloading")
+        warnings.warn(f"cuda:{self.cuda_device} with {memory_cpu} GB cpu offloading")
       else:
         self.config["device"] = "cpu"
         warnings.warn(f"Set device to {self.config['device']}")
-        self.set_available_device(num_tries=num_tries+1)
+      self.set_available_device(num_tries=num_tries+1)
     elif memory_cpu < self.min_device_memory_gb:
-      warnings.warn(f"{self.config['device']} {memory_cpu}GB RAM free is less than {self.min_device_memory_gb}GB specified.")
+      warnings.warn(f"{self.config['device']} {memory_cpu} GB RAM free is less than {self.min_device_memory_gb} GB specified.")
       pids = kill_processes("vllm")
       warnings.warn(f"Killed processes {pids}")
       self.config["device"] = "cuda" if torch.cuda.is_available() else "cpu"
@@ -125,9 +140,13 @@ class Assistant(object):
     args_strs = [f"--{k} {self.config[k]}" for k in self.config] 
     args_str = ' '.join(args_strs)
     cmd_str = f"python -m vllm.entrypoints.openai.api_server {args_str}"
+    env_mod = dict(os.environ)
+    if self.config["device"] == "cuda":
+      env_mod = dict(os.environ, CUDA_VISIBLE_DEVICES=str(self.cuda_device))
     try:
       self.server_proc = subprocess.Popen(
         shlex.split(cmd_str), 
+        env=env_mod,
         stdout=subprocess.PIPE, 
         stderr=subprocess.STDOUT, 
         text=True,
@@ -138,12 +157,12 @@ class Assistant(object):
 
   def wait_for_startup(self):
     while True:
+      time.sleep(1.0)
       output = self.server_proc.stdout.readline()
       if self.server_proc.poll() is not None:
         raise Exception(output)
       if "Application startup complete" in output:
         break
-      time.sleep(1.0)
 
   def load_model(self):
     pbar = tqdm(total=5, desc=f'Model Setup ({self.config["port"]})')
@@ -171,10 +190,10 @@ class Assistant(object):
     if schema:
       try:
         completion = self.client.beta.chat.completions.parse(
-            model=self.config["model"],
-            messages=messages,
-            response_format=schema,
-            extra_body=dict(guided_decoding_backend="outlines"),
+          model=self.config["model"],
+          messages=messages,
+          response_format=schema,
+          extra_body=dict(guided_decoding_backend="outlines"),
         )
         schema_response = completion.choices[0].message.parsed
         return schema_response
