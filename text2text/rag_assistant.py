@@ -117,7 +117,7 @@ class RagAssistant(t2t.Assistant):
     if len(query) > 100:
       summarize_prompt = f'Summarize succinctly what the user wants in a sentence less than 10 words:\n\n"{query}"'
       summarize_prompt = [{"role": "user", "content": summarize_prompt}]
-      demand = t2t.Assistant.chat_completion(self, summarize_prompt)["message"]["content"]
+      demand = t2t.Assistant.chat_completion(self, summarize_prompt).choices[0].message.content
       docs = self.index.retrieve([demand], k=k)[0]
     else:
       docs = self.index.retrieve([query], k=k)[0]

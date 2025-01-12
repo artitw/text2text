@@ -78,7 +78,7 @@ chat_history = [
 
 result = asst.chat_completion(chat_history, stream=True) #{'role': 'assistant', 'content': '1. Make a list of things to be grateful for.\n2. Go outside and take a walk in nature.\n3. Practice mindfulness meditation.\n4. Connect with a loved one or friend.\n5. Do something kind for someone else.\n6. Engage in a creative activity like drawing or writing.\n7. Read an uplifting book or listen to motivational podcasts.'}
 for chunk in result:
-  print(chunk['message']['content'], end='', flush=True)
+  print(chunk.choices[0].delta.content, end='', flush=True)
 
 # Running conversation
 messages = []
@@ -88,8 +88,8 @@ while True:
   messages.append({"role": "user", "content": user_input})
   print("Assistant: ")
   result = asst.chat_completion(messages, stream=False)
-  print(result["message"]["content"])
-  messages.append(result["message"])
+  print(result.choices[0].message.content)
+  messages.append(dict(result.choices[0].message))
   print()
 
 # Schema for structured output
@@ -103,9 +103,6 @@ result = asst.chat_completion([
     {"role": "user",  "content": "What is Britney Spears's best song?"}
 ], schema=Song)
 # Song(name='Toxic', artist='Britney Spears')
-
-# Embeddings
-asst.embed(["hello, world!", "this will be embedded"])
 ```
 
 ### Tokenization
@@ -519,7 +516,7 @@ To cite this work, use the following BibTeX citations.
 ```
 @misc{text2text@2020,
   author={Wangperawong, Artit},
-  title={Text2Text Language Modeling Toolkit},
+  title={Text2Text: Crosslingual NLP/G toolkit},
   year={2020},
   publisher = {GitHub},
   journal = {GitHub repository},

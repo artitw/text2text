@@ -1,170 +1,180 @@
 import os
-import ollama
+import gc
+import openai
 import time
+import psutil
+import shlex
+import signal
+import platform
+import requests
 import subprocess
 import warnings
-import platform
+import torch
+import vllm
 from tqdm.auto import tqdm
+from openai import OpenAI
 
-def is_sudo_available():
-    try:
-        # Try to run 'sudo -v' which checks if sudo is available
-        subprocess.run(['sudo', '-v'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        return True
-    except subprocess.CalledProcessError as e:
-        warnings.warn(str(e))
-        return False
-    except FileNotFoundError as e:
-        warnings.warn(str(e))
-        return False
 
 def can_use_apt():
-    # Check if the OS is Linux and if it is a Debian-based distribution
-    if platform.system() == "Linux":
-        try:
-            # Check if the apt command is available
-            result = os.system("apt --version")
-            return result == 0  # If the command runs successfully, return True
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            return False
-    return False
-
-def ollama_version():
-  try:
-    result = subprocess.check_output(["ollama", "-v"], stderr=subprocess.STDOUT).decode("utf-8")
-    if result.startswith("ollama version "):
-      return result.replace("ollama version ", "")
-  except Exception as e:
-    pass
-  return ""
-
-def run_sh(script_string):
-  try:
-    process = subprocess.Popen(
-        ['sh'],
-        stdin=subprocess.PIPE,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True  # Treat input/output as text
-    )
-    output, error = process.communicate(input=script_string)
-
-    if process.returncode == 0:
-        return output
-    else:
-        return error
-
-  except Exception as e:
-      return str(e)
-
-def apt_install_packages(packages, sudo=True):
+  # Check if the OS is Linux and if it is a Debian-based distribution
+  if platform.system() == "Linux":
     try:
-        # Update the package list
-        cmds = ['apt', 'update']
-        if sudo:
-          cmds = ['sudo']+cmds
-        subprocess.run(cmds, check=True)
-        
-        # Install the packages
-        cmds = ['apt', 'install', '-q', '-y'] + packages
-        if sudo:
-          cmds = ['sudo']+cmds
-        subprocess.run(cmds, check=True)
-        
-    except subprocess.CalledProcessError as e:
-        raise Exception(str(e))
+      # Check if the apt command is available
+      result = os.system("apt --version")
+      return result == 0  # If the command runs successfully, return True
+    except Exception as e:
+      warnings.warn(str(e))
+      return False
+  return False
+
+def kill_processes(keyword):
+  pids = []
+  # Iterate over all running processes
+  for proc in psutil.process_iter(['pid', 'name', 'cmdline']):
+    try:
+      # Check if the process name or command line contains 'vllm'
+      if keyword in ''.join(proc.info['cmdline']):
+        # Terminate the process
+        proc.terminate()  # or os.kill(proc.info['pid'], signal.SIGTERM)
+        proc.wait()  # Wait for the process to terminate
+        pids.append(proc.info['pid'])
+    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+      pass
+  return pids
 
 class Assistant(object):
   def __init__(self, **kwargs):
-    self.model_name = kwargs.get("model_name", "llama3.2")
-    self.sudo = kwargs.get("sudo", is_sudo_available())
-    os.environ["OLLAMA_KEEP_ALIVE"] = kwargs.get("keep_alive", "-1m")
-    self.ollama_serve_proc = None
+    self.config = kwargs.get("config", {
+      "model": "unsloth/Llama-3.2-3B-Instruct",
+      "api-key": "TEXT2TEXT",
+      "port": 11434,
+      "max-model-len": 32000,
+      "dtype": "half",
+      "task": "generate",
+    })
+    self.config["device"] = "cuda" if torch.cuda.is_available() else "cpu"
+    self.min_device_memory_gb = kwargs.get("min_device_memory_gb", 8)
+    self.server_proc = None
     self.load_model()
+    self.client = OpenAI(
+      base_url = f"http://localhost:{self.config['port']}/v1",
+      api_key = self.config['api-key'],
+    )
 
   def __del__(self):
     try:
-      if ollama_version():
-        ollama.delete(self.model_name)
-      if self.ollama_serve_proc:
-        self.ollama_serve_proc.kill()
-        self.ollama_serve_proc = None
+      if self.server_proc:
+        self.server_proc.kill()
+        self.server_proc = None
     except Exception as e:
       warnings.warn(str(e))
+    gc.collect()
+    torch.cuda.empty_cache()
+
+  def is_server_up(self):
+    try:
+      url = f'http://localhost:{self.config["port"]}/v1/models'
+      headers = {"Authorization": f"Bearer {self.config['api-key']}"}
+      res = requests.get(url, headers=headers)
+      if res.status_code == 200:
+        data = res.json().get("data", [])
+        if not data:
+          warnings.warn("No models found")
+          return False
+        model_name = data[0].get("id", "")
+        if model_name == self.config["model"]:
+          return True
+        warnings.warn(f'Running "{model_name}" does not match {self.config["model"]}')
+      else:
+        warnings.warn(res.text)
+    except Exception as e:
+      warnings.warn(str(e))
+    return False
+
+  def set_available_device(self, num_tries=0):
+    if num_tries > 3:
+      warnings.warn(f"{num_tries} times setting device. Aborting.")
+      return
+
+    memory_cuda = torch.cuda.mem_get_info()[0] / (1024 ** 3)
+    memory_cpu = psutil.virtual_memory().available / (1024 ** 3)
+
+    if self.config["device"] == "cuda" and memory_cuda < self.min_device_memory_gb:
+      warnings.warn(f"{self.config['device']} {memory_cuda}GB RAM free is less than {self.min_device_memory_gb}GB specified.")
+      if memory_cuda+memory_cpu >= self.min_device_memory_gb:
+        self.config["cpu-offload-gb"] = memory_cpu
+        warnings.warn(f"{memory_cpu}GB cpu offloading")
+      else:
+        self.config["device"] = "cpu"
+        warnings.warn(f"Set device to {self.config['device']}")
+        self.set_available_device(num_tries=num_tries+1)
+    elif memory_cpu < self.min_device_memory_gb:
+      warnings.warn(f"{self.config['device']} {memory_cpu}GB RAM free is less than {self.min_device_memory_gb}GB specified.")
+      pids = kill_processes("vllm")
+      gc.collect()
+      torch.cuda.empty_cache()
+      warnings.warn(f"Killed processes {pids}")
+      self.config["device"] = "cuda" if torch.cuda.is_available() else "cpu"
+      warnings.warn(f"Set device to {self.config['device']}")
+      self.set_available_device(num_tries=num_tries+1)
+
+  def serve_model(self):
+    self.set_available_device()
+    args_strs = [f"--{k} {self.config[k]}" for k in self.config] 
+    args_str = ' '.join(args_strs)
+    cmd_str = f"python -m vllm.entrypoints.openai.api_server {args_str}"
+    try:
+      self.server_proc = subprocess.Popen(
+        shlex.split(cmd_str), 
+        stdout=subprocess.PIPE, 
+        stderr=subprocess.STDOUT, 
+        text=True,
+        bufsize=1,
+      )
+    except Exception as e:
+      warnings.warn(str(e))
+
+  def wait_for_startup(self):
+    while True:
+      output = self.server_proc.stdout.readline()
+      if self.server_proc.poll() is not None:
+        raise Exception(output)
+      if "Application startup complete" in output:
+        break
+      time.sleep(1.0)
 
   def load_model(self):
-    pbar = tqdm(total=6, desc='Model Setup')
-    if not ollama_version():
+    pbar = tqdm(total=5, desc=f'Model Setup ({self.config["port"]})')
+    if self.is_server_up():
+      pbar.update(5)
+    else:
+      pbar.update(1)
       self.__del__()
       pbar.update(1)
-
-      if can_use_apt():
-        apt_install_packages(['lshw', 'curl'], self.sudo)
-        pbar.update(1)
-      elif platform.system() == "Windows":
-        raise Exception("Windows not supported.")
-      else:
-        pbar.update(1)
-
-      result = os.system(
-        "curl -fsSL https://ollama.com/install.sh | sh"
-      )
-      if result != 0:
-        raise Exception("Cannot install ollama")
+      if not can_use_apt():
+        warnings.warn("Text2Text not tested on this system.")
+      self.serve_model()
       pbar.update(1)
-
-      self.ollama_serve_proc = subprocess.Popen(["ollama", "serve"])
-      time.sleep(1)
+      self.wait_for_startup()
       pbar.update(1)
-
-      if not ollama_version():
-        raise Exception("Cannot serve ollama")
+      if not self.is_server_up():
+        raise Exception("vLLM server not found after startup")
       pbar.update(1)
-    else:
-      pbar.update(5)
-    
-    result = ollama.pull(self.model_name)
-    if result["status"] == "success":
-      ollama_run_proc = subprocess.Popen(["ollama", "run", self.model_name])
-      pbar.update(1)
-    else:
-      raise Exception(f"Did not pull {self.model_name}. Try restarting.")
-
     pbar.close()
-
-  def model_loading(self):
-    try:
-      ps_result = ollama.ps()
-      ls_result = ollama.list()
-      if ps_result and ls_result and \
-      ps_result.models and ls_result.models and \
-      ps_result.models[0].model.startswith(self.model_name) and \
-      ls_result.models[0].model.startswith(self.model_name):
-        return False
-    except Exception as e:
-      warnings.warn(str(e))
-    warnings.warn("Model not loaded. Retrying...")
-    self.load_model()
-    return True
         
   def chat_completion(self, messages = [{"role": "user", "content": "hello"}], **kwargs):
-    while self.model_loading(): time.sleep(1)
     stream = kwargs.get("stream", False)
     schema = kwargs.get("schema", None)
-    keep_alive = kwargs.get("keep_alive", -1)
     
     if schema:
       try:
-        response = ollama.chat(
-          model=self.model_name, 
-          messages=messages, 
-          format=schema.model_json_schema(),  # Use Pydantic to generate the schema or format=schema
-          options={'temperature': 0},  # Make responses more deterministic
+        completion = self.client.beta.chat.completions.parse(
+            model=self.config["model"],
+            messages=messages,
+            response_format=schema,
+            extra_body=dict(guided_decoding_backend="outlines"),
         )
-
-        # Use Pydantic to validate the response
-        schema_response = schema.model_validate_json(response.message.content)
+        schema_response = completion.choices[0].message.parsed
         return schema_response
       except Exception as e:
         warnings.warn(str(e))
@@ -172,23 +182,13 @@ class Assistant(object):
         default_schema = schema()
         warnings.warn(f"Returning schema with default values: {vars(default_schema)}")
         return default_schema
-    return ollama.chat(
-      model=self.model_name, 
+    return self.client.chat.completions.create(
+      model=self.config["model"], 
       messages=messages, 
       stream=stream, 
-      keep_alive=keep_alive
     )
 
-  def embed(self, texts, **kwargs):
-    while self.model_loading(): time.sleep(1)
-    keep_alive = kwargs.get("keep_alive", -1)
-    return ollama.embed(
-      model=self.model_name, 
-      input=texts, 
-      keep_alive=keep_alive
-    ).get("embeddings", [])
-
   def transform(self, input_lines, src_lang='en', **kwargs):
-    return self.chat_completion([{"role": "user", "content": input_lines}])["message"]["content"]
+    return self.chat_completion([{"role": "user", "content": input_lines}])
 
   completion = transform
