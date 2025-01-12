@@ -4,7 +4,6 @@ from .tokenizer import Tokenizer
 from .measurer import Measurer
 from .translator import Translator
 from .vectorizer import Vectorizer
-from .fitter import Fitter
 from .counter import Counter
 from .tfidfer import Tfidfer
 from .bm25er import Bm25er
@@ -13,6 +12,5 @@ from .composite_indexer import CompositeIndexer
 from .rag_assistant import RagAssistant
 from .variator import Variator
 from .identifier import Identifier
-from .server import Server
 from .handler import Handler
 from .sft import SFTuner

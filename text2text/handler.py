@@ -12,7 +12,6 @@ class Handler(object):
     "count": t2t.Counter,
     "identify":t2t.Identifier,
     "index": t2t.Indexer,
-    "fit": t2t.Fitter,
     "measure": t2t.Measurer,
     "tfidf": t2t.Tfidfer,
     "tokenize": t2t.Tokenizer,

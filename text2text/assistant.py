@@ -10,7 +10,6 @@ import requests
 import subprocess
 import warnings
 import torch
-import vllm
 from tqdm.auto import tqdm
 from openai import OpenAI
 
@@ -96,7 +95,12 @@ class Assistant(object):
       warnings.warn(f"{num_tries} times setting device. Aborting.")
       return
 
-    memory_cuda = torch.cuda.mem_get_info()[0] / (1024 ** 3)
+    memory_cuda = 0
+    if torch.cuda.is_available():
+      torch.cuda.empty_cache()
+      memory_cuda = torch.cuda.mem_get_info()[0] / (1024 ** 3)
+    
+    gc.collect()
     memory_cpu = psutil.virtual_memory().available / (1024 ** 3)
 
     if self.config["device"] == "cuda" and memory_cuda < self.min_device_memory_gb:
@@ -111,8 +115,6 @@ class Assistant(object):
     elif memory_cpu < self.min_device_memory_gb:
       warnings.warn(f"{self.config['device']} {memory_cpu}GB RAM free is less than {self.min_device_memory_gb}GB specified.")
       pids = kill_processes("vllm")
-      gc.collect()
-      torch.cuda.empty_cache()
       warnings.warn(f"Killed processes {pids}")
       self.config["device"] = "cuda" if torch.cuda.is_available() else "cpu"
       warnings.warn(f"Set device to {self.config['device']}")
@@ -158,7 +160,7 @@ class Assistant(object):
       self.wait_for_startup()
       pbar.update(1)
       if not self.is_server_up():
-        raise Exception("vLLM server not found after startup")
+        raise Exception("Model server not found after startup")
       pbar.update(1)
     pbar.close()
         

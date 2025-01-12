@@ -6,7 +6,6 @@
 * [Colab Notebooks](https://github.com/artitw/text2text#colab-notebooks)
 * [Installation Requirements](https://github.com/artitw/text2text#installation-requirements)
 * [Quick Start Guide](https://github.com/artitw/text2text#api-quick-start-guide)
-* [Class Diagram](https://github.com/artitw/text2text#class-diagram)
 * [Languages Available](https://github.com/artitw/text2text#languages-available)
 * [Requirements & Installation](https://github.com/artitw/text2text#requirements-and-installation)
 * [Examples](https://github.com/artitw/text2text#examples)
@@ -19,9 +18,7 @@
   * [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance)
   * [Translation](https://github.com/artitw/text2text#translation)
   * [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation)
-  * [Finetuning](https://github.com/artitw/text2text#training--finetuning)
   * [Identification](https://github.com/artitw/text2text#identification)
-  * [Web Server](https://github.com/artitw/text2text#serving)
 * [Questions?](https://github.com/artitw/text2text#questions)
 * [Citation](https://github.com/artitw/text2text#citation)
 * [Contributing](https://github.com/artitw/text2text#contributing)
@@ -54,9 +51,7 @@ Module Importing | `import text2text as t2t` | Libraries imported
 [Translation](https://github.com/artitw/text2text#translation) | `t2t.Translater().transform(["Hello, World!"], src_lang="en, tgt_lang="zh")` | `['你好,世界!']`
 [Data Augmentation](https://github.com/artitw/text2text#data-augmentation--back-translation) | `t2t.Variator().transform(["Hello, World!"], src_lang="en)` | `['Hello the world!', 'Welcome to the world.', 'Hello to the world!',...`
 [Distance](https://github.com/artitw/text2text#levenshtein-sub-word-edit-distance) | `t2t.Measurer().transform(["Hello, World! [SEP] Hello, what?"])` | `[2]`
-[Training/Finetuning](https://github.com/artitw/text2text#training--finetuning) | `t2t.Fitter().transform(["Hello, World! [TGT] Hello, what?"])` | Finetuned model saved
 [Identification](https://github.com/artitw/text2text#identification) | `t2t.Identifier().transform(["Aj keď sa Buzz Aldrin stal až „druhým človekom“..."])` | `['sk', 'Slovak']`
-[Web Server](https://github.com/artitw/text2text#serving) | `t2t.Serve(host='0.0.0.0', port=80)` | Web server started on host and port
 
 ## Examples
 
@@ -443,21 +438,6 @@ t2t.Variator().transform([bacteria_str], src_lang='en')
 ```
 
 </details>
-
-### Training / Finetuning
-Finetune cross-lingual model on your data
-```
-result = t2t.Fitter().transform(["Hello, World! [TGT] 你好,世界!"],
-  src_lang="en",
-  tgt_lang="zh",
-  num_epochs=10,
-  save_directory="model_dir"
-)
-
-# load and use model from saved directory
-t2t.Transformer.PRETRAINED_TRANSLATOR = "model_dir"
-t2t.Translator().transform("Hello, World!", src_lang="en", tgt_lang="zh")
-```
 
 ### Identification
 Identify the language of a text. Not yet accurate for short sequences (<10 tokens)
