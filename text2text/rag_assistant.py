@@ -1,6 +1,7 @@
 import text2text as t2t
 
 import os
+import json
 import pickle
 import sqlite3
 import requests
@@ -76,8 +77,12 @@ class RagAssistant(t2t.Assistant):
       self.records = pd.DataFrame(columns=column_names)
       input_lines = []
       for t in tqdm(texts, desc='Extract Schema'):
-        prompt = f'Extract {fields} from the following text:\n\n{t}'
-        res = t2t.Assistant.chat_completion(self, [{"role": "user",  "content": prompt}], schema=schema)
+        prompt = f'{t}\n\nFor the text above, what {"are" if len(fields) > 1 else "is"} {fields}?'
+        messages = [
+          {"role": "system", "content": f"You are an expert at extracting structured outputs from text."},
+          {"role": "user",  "content": prompt}
+        ]
+        res = t2t.Assistant.chat_completion(self, messages=messages, schema=schema)
         new_row = pd.DataFrame([vars(res)])
         self.records = pd.concat([self.records, new_row], ignore_index=True)
         res = "\n".join(f'{k}: {v}' for k,v in vars(res).items())
@@ -116,8 +121,11 @@ class RagAssistant(t2t.Assistant):
     query = messages[-1]["content"]
     if len(query) > 100:
       summarize_prompt = f'Summarize succinctly what the user wants in a sentence less than 10 words:\n\n"{query}"'
-      summarize_prompt = [{"role": "user", "content": summarize_prompt}]
-      demand = t2t.Assistant.chat_completion(self, summarize_prompt).choices[0].message.content
+      summarize_prompt = [
+        {"role": "system", "content": f"You are an expert at summarization."},
+        {"role": "user", "content": summarize_prompt}
+      ]
+      demand = t2t.Assistant.chat_completion(self, messages=summarize_prompt).choices[0].message.content
       docs = self.index.retrieve([demand], k=k)[0]
     else:
       docs = self.index.retrieve([query], k=k)[0]

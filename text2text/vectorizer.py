@@ -12,6 +12,8 @@ class Vectorizer(object):
       "api-key": "TEXT2TEXT",
       "port": 11211,
       "task": "embed",
+      "max-num-seqs": 8,
+      "enforce-eager": True,
     })
 
   def embed(self, input_lines):

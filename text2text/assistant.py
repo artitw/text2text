@@ -57,9 +57,11 @@ class Assistant(object):
       "model": "unsloth/Llama-3.2-3B-Instruct",
       "api-key": "TEXT2TEXT",
       "port": 11434,
-      "max-model-len": 32000,
-      "dtype": "half",
       "task": "generate",
+      "max-model-len": 64000,
+      "max-num-seqs": 8,
+      "dtype": "half",
+      "enforce-eager": True,
     })
     self.config["device"] = "cuda" if torch.cuda.is_available() else "cpu"
     self.cuda_device = 0
@@ -138,7 +140,7 @@ class Assistant(object):
   def serve_model(self):
     self.set_available_device()
     args_strs = [f"--{k} {self.config[k]}" for k in self.config] 
-    args_str = ' '.join(args_strs)
+    args_str = ' '.join(args_strs).replace("True", "").replace("False", "")
     cmd_str = f"python -m vllm.entrypoints.openai.api_server {args_str}"
     env_mod = dict(os.environ)
     if self.config["device"] == "cuda":
@@ -189,14 +191,15 @@ class Assistant(object):
     
     if schema:
       try:
-        completion = self.client.beta.chat.completions.parse(
+        completion = self.client.chat.completions.create(
           model=self.config["model"],
           messages=messages,
-          response_format=schema,
-          extra_body=dict(guided_decoding_backend="outlines"),
+          extra_body={
+            "guided_json": schema.model_json_schema(),
+            "guided_decoding_backend": "xgrammar",
+          }
         )
-        schema_response = completion.choices[0].message.parsed
-        return schema_response
+        return schema.parse_raw(completion.choices[0].message.content)
       except Exception as e:
         warnings.warn(str(e))
         warnings.warn(f"Schema extraction failed for {messages}")
